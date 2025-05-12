@@ -17,10 +17,7 @@ func main() {
 
 	tradeHandler := handler.NewTradeHandler(db)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/trades/new", http.StatusFound)
-	})
-
+	r.Get("/", tradeHandler.List)
 	r.Get("/trades/new", tradeHandler.NewForm)
 	r.Post("/trades", tradeHandler.Create)
 

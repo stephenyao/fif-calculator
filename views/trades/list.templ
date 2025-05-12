@@ -1,0 +1,42 @@
+package trades
+
+import "fif-clacultor/views"
+import "fif-clacultor/internal/model"
+
+templ TradeList(trades []*model.Trade) {
+    @views.Layout("Trade List") {
+        @list(trades)
+    }
+}
+
+templ list(trades []*model.Trade) {
+    <div class="min-h-screen bg-gray-100 p-6">
+        <div class="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6">
+            <h2 class="text-2xl font-bold mb-4">Trade List</h2>
+            <table class="min-w-full table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-200 text-left">
+                        <th class="px-4 py-2">Symbol</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Quantity</th>
+                        <th class="px-4 py-2">Price</th>
+                        <th class="px-4 py-2">Currency</th>
+                        <th class="px-4 py-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, trade := range trades {
+                        <tr class="border-b">
+                            <td class="px-4 py-2">{trade.Symbol}</td>
+                            <td class="px-4 py-2">{trade.BuyDate}</td>
+                            <td class="px-4 py-2">{trade.Quantity}</td>
+                            <td class="px-4 py-2">{trade.Price}</td>
+                            <td class="px-4 py-2">{trade.Currency}</td>
+                            <td class="px-4 py-2">{trade.Action}</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

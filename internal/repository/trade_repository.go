@@ -22,3 +22,9 @@ func (r *TradeRepository) Insert(trade *model.Trade) error {
 		`, &trade)
 	return err
 }
+
+func (r *TradeRepository) GetAll() ([]*model.Trade, error) {
+	var trades []*model.Trade
+	err := r.DB.Select(&trades, `SELECT * FROM trades ORDER BY buy_date DESC`)
+	return trades, err
+}
