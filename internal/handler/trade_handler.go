@@ -4,7 +4,6 @@ import (
 	"fif-clacultor/internal/model"
 	"fif-clacultor/internal/repository"
 	"fif-clacultor/views/trades"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 	"strconv"
@@ -51,10 +50,13 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 	tradeList, err := h.Repo.GetAll()
-	fmt.Println(err)
 	if err != nil {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
 	}
 
 	trades.TradeList(tradeList).Render(r.Context(), w)
+}
+
+func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
+	trades.TradeDetail().Render(r.Context(), w)
 }

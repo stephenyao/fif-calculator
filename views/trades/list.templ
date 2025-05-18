@@ -2,6 +2,7 @@ package trades
 
 import "fif-clacultor/views"
 import "fif-clacultor/internal/model"
+import "strconv"
 
 templ TradeList(trades []*model.Trade) {
     @views.Layout("Trade List") {
@@ -30,8 +31,16 @@ templ list(trades []*model.Trade) {
                     </tr>
                 </thead>
                 <tbody>
+                    <script>
+                        function navigateToDetails(path) {
+                          window.location.href=path
+                        }
+                    </script>
                     for _, trade := range trades {
-                        <tr class="border-b">
+                        <tr
+                            onclick={templ.JSFuncCall("navigateToDetails", "trades/" + strconv.Itoa(trade.ID))}
+                        	class="cursor-pointer hover:bg-blue-50 transition"
+                        >
                             <td class="px-4 py-2">{trade.Symbol}</td>
                             <td class="px-4 py-2">{trade.BuyDate}</td>
                             <td class="px-4 py-2">{trade.Quantity}</td>

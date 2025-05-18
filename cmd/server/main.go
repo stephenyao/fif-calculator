@@ -20,6 +20,7 @@ func main() {
 	r.Get("/", tradeHandler.List)
 	r.Get("/trades/new", tradeHandler.NewForm)
 	r.Post("/trades", tradeHandler.Create)
+	r.Get("/trades/{id}", tradeHandler.Show)
 
 	http.ListenAndServe(":8080", r)
 }
