@@ -28,3 +28,12 @@ func (r *TradeRepository) GetAll() ([]*model.Trade, error) {
 	err := r.DB.Select(&trades, `SELECT * FROM trades ORDER BY buy_date DESC`)
 	return trades, err
 }
+
+func (r *TradeRepository) GetByID(id int) (*model.Trade, error) {
+	var trade model.Trade
+	err := r.DB.Get(&trade, "SELECT * FROM trades WHERE id = ?", id)
+	if err != nil {
+		return nil, err
+	}
+	return &trade, nil
+}

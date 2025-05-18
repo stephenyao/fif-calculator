@@ -4,6 +4,7 @@ import (
 	"fif-clacultor/internal/model"
 	"fif-clacultor/internal/repository"
 	"fif-clacultor/views/trades"
+	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 	"strconv"
@@ -58,5 +59,17 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
-	trades.TradeDetail().Render(r.Context(), w)
+	param := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(param)
+
+	if err != nil {
+		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
+	}
+
+	trade, err := h.Repo.GetByID(id)
+	//println(trade)
+	if err != nil {
+		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
+	}
+	trades.TradeDetail(trade).Render(r.Context(), w)
 }

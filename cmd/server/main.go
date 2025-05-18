@@ -19,6 +19,7 @@ func main() {
 
 	r.Get("/", tradeHandler.List)
 	r.Get("/trades/new", tradeHandler.NewForm)
+	r.Get("/trades", tradeHandler.List)
 	r.Post("/trades", tradeHandler.Create)
 	r.Get("/trades/{id}", tradeHandler.Show)
 
