@@ -22,6 +22,7 @@ func main() {
 	r.Get("/trades", tradeHandler.List)
 	r.Post("/trades", tradeHandler.Create)
 	r.Get("/trades/{id}", tradeHandler.Show)
+	r.Post("/trades/{id}/delete", tradeHandler.Delete)
 
 	http.ListenAndServe(":8080", r)
 }

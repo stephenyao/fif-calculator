@@ -37,3 +37,8 @@ func (r *TradeRepository) GetByID(id int) (*model.Trade, error) {
 	}
 	return &trade, nil
 }
+
+func (r *TradeRepository) DeleteByID(id int) error {
+	_, err := r.DB.Exec("DELETE FROM trades WHERE id = ?", id)
+	return err
+}
