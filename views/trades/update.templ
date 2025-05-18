@@ -1,0 +1,11 @@
+package trades
+
+import "fif-clacultor/views"
+import "fif-clacultor/internal/model"
+import "strconv"
+
+templ UpdateTradeForm(trade *model.Trade) {
+    @views.Layout("Update Trade") {
+        @TradeForm(trade, templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/edit" ))
+    }
+}

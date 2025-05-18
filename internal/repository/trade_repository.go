@@ -42,3 +42,12 @@ func (r *TradeRepository) DeleteByID(id int) error {
 	_, err := r.DB.Exec("DELETE FROM trades WHERE id = ?", id)
 	return err
 }
+
+func (r *TradeRepository) Update(trade *model.Trade) error {
+	_, err := r.DB.Exec(`
+		UPDATE trades 
+		SET symbol = ?, buy_date = ?, quantity = ?, price = ?, currency = ?, action = ?
+		WHERE id = ?
+	`, trade.Symbol, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.ID)
+	return err
+}

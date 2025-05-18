@@ -43,42 +43,13 @@ func NewTradeForm() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = form().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = TradeForm(nil, "/trades").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
 		templ_7745c5c3_Err = views.Layout("New Trade").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func form() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var3 == nil {
-			templ_7745c5c3_Var3 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen bg-gray-100 p-6 flex items-center justify-center\"><form action=\"/trades\" method=\"post\" class=\"bg-white shadow-md rounded-xl p-8 w-full max-w-xl space-y-6\"><h2 class=\"text-2xl font-bold text-gray-800\">Enter New Trade</h2><div><label for=\"symbol\" class=\"block mb-1 font-medium text-gray-700\">Symbol</label> <input id=\"symbol\" name=\"symbol\" type=\"text\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"buyDate\" class=\"block mb-1 font-medium text-gray-700\">Buy Date</label> <input id=\"buyDate\" name=\"buyDate\" type=\"date\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"quantity\" class=\"block mb-1 font-medium text-gray-700\">Quantity</label> <input id=\"quantity\" name=\"quantity\" type=\"number\" step=\"any\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"price\" class=\"block mb-1 font-medium text-gray-700\">Price</label> <input id=\"price\" name=\"price\" type=\"number\" step=\"any\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"currency\" class=\"block mb-1 font-medium text-gray-700\">Currency</label> <input id=\"currency\" name=\"currency\" type=\"text\" value=\"USD\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"action\" class=\"block mb-1 font-medium text-gray-700\">Action</label> <select id=\"action\" name=\"action\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"><option value=\"buy\">Buy</option> <option value=\"sell\">Sell</option></select></div><div class=\"text-right\"><button type=\"submit\" class=\"bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition\">Save Trade</button></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

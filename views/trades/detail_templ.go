@@ -158,16 +158,25 @@ func details(trade *model.Trade) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td></tr></tbody></table><form action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td></tr></tbody></table><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 templ.SafeURL = templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/delete")
+		var templ_7745c5c3_Var10 templ.SafeURL = templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/edit")
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var10)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" method=\"post\" onsubmit=\"return confirm(&#39;Are you sure you want to delete this trade?&#39;);\"><button type=\"submit\" class=\"mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700\">Delete Trade</button></form><div class=\"mt-6\"><a href=\"/trades\" class=\"text-blue-600 underline\">← Back to Trade List</a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700\">Edit Trade</a><form action=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var11 templ.SafeURL = templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/delete")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var11)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" method=\"post\" onsubmit=\"return confirm(&#39;Are you sure you want to delete this trade?&#39;);\"><button type=\"submit\" class=\"mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700\">Delete Trade</button></form><div class=\"mt-6\"><a href=\"/trades\" class=\"text-blue-600 underline\">← Back to Trade List</a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
