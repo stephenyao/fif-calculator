@@ -46,7 +46,7 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/trades/new", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {

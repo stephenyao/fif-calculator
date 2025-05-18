@@ -13,6 +13,11 @@ templ list(trades []*model.Trade) {
     <div class="min-h-screen bg-gray-100 p-6">
         <div class="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6">
             <h2 class="text-2xl font-bold mb-4">Trade List</h2>
+            <div class="flex justify-end mb-4">
+                <a href="/trades/new" class="inline-block bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition">
+                    + New Trade
+                </a>
+            </div>
             <table class="min-w-full table-auto border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-left">
