@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fif-clacultor/internal/constants"
 	"fif-clacultor/internal/model"
 	"fif-clacultor/views/trades"
 	"fmt"
@@ -30,9 +31,9 @@ func computeCostBasisBySymbol(trades []*model.Trade) map[string]float64 {
 		var costBasis float64 = 0
 		for _, trade := range trades {
 			switch trade.Action {
-			case "buy":
+			case constants.Buy:
 				costBasis += trade.Price * trade.Quantity
-			case "sell":
+			case constants.Sell:
 				costBasis -= trade.Price * trade.Quantity
 			}
 		}
