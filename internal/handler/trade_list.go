@@ -17,7 +17,7 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 	trades.TradeList(tradeList, costBasisViewModel(tradeList)).Render(r.Context(), w)
 }
 
-func costBasisViewModel(trades []*model.Trade) CostBasisViewModel {
+func costBasisViewModel(trades []model.Trade) CostBasisViewModel {
 	costBasisBySymbol := model.CostBasisBySymbol(trades)
 	totalCostBasis := 0.0
 

@@ -5,12 +5,12 @@ import (
 	"math"
 )
 
-func CostBasisBySymbol(trades []*Trade) map[string]float64 {
+func CostBasisBySymbol(trades []Trade) map[string]float64 {
 	costBasisBySymbol := make(map[string]float64)
 
 	// Build up a map of trades by symbol so they can be iterated through
 
-	tradesBySymbol := make(map[string][]*Trade)
+	tradesBySymbol := make(map[string][]Trade)
 
 	for _, trade := range trades {
 		tradesBySymbol[trade.Symbol] = append(tradesBySymbol[trade.Symbol], trade)
@@ -18,7 +18,7 @@ func CostBasisBySymbol(trades []*Trade) map[string]float64 {
 
 	// Iterate through each trade by symbol and calculate the cost basis
 	for symbol, trades := range tradesBySymbol {
-		var queue []*Trade
+		var queue []Trade
 
 		for _, trade := range trades {
 			switch trade.Action {
