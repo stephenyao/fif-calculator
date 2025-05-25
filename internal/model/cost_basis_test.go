@@ -7,7 +7,7 @@ import (
 
 func TestCostBasisBySymbol(t *testing.T) {
 	t.Run("buy and sell orders of exact same quantity", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 15, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/02/01", 10, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/03/01", 30, 300, "USD", constants.Sell},
@@ -26,7 +26,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("buy orders is greater than sell order quantity", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 10, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/02/01", 20, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/03/01", 10, 300, "USD", constants.Sell},
@@ -46,7 +46,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("buy orders is greater than sell order with overflow to next buy order", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 15, 110, "USD", constants.Buy},
 			{0, "XYZ", "2024/02/01", 10, 110, "USD", constants.Buy},
 			{0, "XYZ", "2024/03/01", 5, 300, "USD", constants.Sell},
@@ -66,7 +66,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("buy orders is greater than sell order with overflow to second buy order", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 10, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/02/01", 10, 110, "USD", constants.Buy},
 			{0, "XYZ", "2024/03/01", 15, 300, "USD", constants.Sell},
@@ -86,7 +86,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("Multiple buy and sell orders should use FIFO", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 10, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/02/01", 20, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/03/01", 5, 300, "USD", constants.Sell},
@@ -108,7 +108,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("First order is sell order should not be counted", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 10, 100, "USD", constants.Sell},
 			{0, "XYZ", "2024/02/01", 20, 100, "USD", constants.Buy},
 		}
@@ -126,7 +126,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("All sell orders", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 10, 100, "USD", constants.Sell},
 			{0, "XYZ", "2024/02/01", 20, 100, "USD", constants.Sell},
 		}
@@ -144,7 +144,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 	})
 
 	t.Run("Two symbols", func(t *testing.T) {
-		var trades []*Trade = []*Trade{
+		var trades []Trade = []Trade{
 			{0, "XYZ", "2024/01/01", 10, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/02/01", 20, 100, "USD", constants.Buy},
 			{0, "XYZ", "2024/03/01", 5, 300, "USD", constants.Sell},

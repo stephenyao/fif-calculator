@@ -30,10 +30,9 @@ func CostBasisBySymbol(trades []Trade) map[string]float64 {
 					continue
 				}
 
+				// If the first buy order quantity can absorb the sell order, reduce that buy order quantity and skip to next order
 				if queue[0].Quantity > trade.Quantity {
-					copy := queue[0]
-					copy.Quantity -= trade.Quantity
-					queue[0] = copy
+					queue[0].Quantity -= trade.Quantity
 					continue
 				}
 
@@ -55,9 +54,7 @@ func CostBasisBySymbol(trades []Trade) map[string]float64 {
 
 				// Mutate and subtract the quantity from the first Buy trade in the queue
 				if remainder < 0 {
-					copy := queue[0]
-					copy.Quantity -= math.Abs(remainder)
-					queue[0] = copy
+					queue[0].Quantity -= math.Abs(remainder)
 				}
 			}
 		}
