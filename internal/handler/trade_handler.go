@@ -6,7 +6,7 @@ import (
 )
 
 type TradeHandler struct {
-	Repo *repository.TradeRepository
+	Repo repository.TradeRepository
 }
 
 func NewTradeHandler(db *sqlx.DB) *TradeHandler {

@@ -2,16 +2,36 @@ package trades
 
 import "fif-clacultor/views"
 import "fif-clacultor/internal/model"
+import . "fif-clacultor/internal/view_model"
 import "strconv"
 
-templ TradeList(trades []*model.Trade) {
+templ TradeList(trades []*model.Trade, viewModel CostBasisViewModel) {
     @views.Layout("Trade List") {
-        @list(trades)
+        <div class="min-h-screen bg-gray-100 p-6 flex flex-col gap-4">
+            @list(trades)
+            @costBasis(viewModel)
+        </div>
     }
 }
 
+templ costBasis(viewModel CostBasisViewModel) {
+     <div class="max-w-4xl w-full mx-auto bg-white shadow-md rounded-xl p-6">
+        <div class="flex gap-2 flex-wrap w-full justify-start">
+            for symbol, cost := range viewModel.CostBasisBySymbol {
+                 <div class="rounded-lg border border-gray-200 p-4 shadow-sm bg-gray-50">
+                    <strong>{symbol}</strong>
+                    <p>Cost basis is {cost}</p>
+                </div>
+            }
+            <div>
+               Total cost basis: {viewModel.TotalCostBasis}, isValidForFIF: {viewModel.IsValidForFIF}
+            </div>
+        </div>
+     </div>
+}
+
 templ list(trades []*model.Trade) {
-    <div class="min-h-screen bg-gray-100 p-6">
+    <div class="">
         <div class="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6">
             <h2 class="text-2xl font-bold mb-4">Trade List</h2>
             <div class="flex justify-end mb-4">

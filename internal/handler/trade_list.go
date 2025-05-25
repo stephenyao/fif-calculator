@@ -1,10 +1,9 @@
 package handler
 
 import (
-	"fif-clacultor/internal/constants"
 	"fif-clacultor/internal/model"
+	. "fif-clacultor/internal/view_model"
 	"fif-clacultor/views/trades"
-	"fmt"
 	"net/http"
 )
 
@@ -15,35 +14,22 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
 	}
 
-	trades.TradeList(tradeList).Render(r.Context(), w)
+	trades.TradeList(tradeList, costBasisViewModel(tradeList)).Render(r.Context(), w)
 }
 
-func computeCostBasisBySymbol(trades []*model.Trade) map[string]float64 {
-	tradesBySymbol := make(map[string][]*model.Trade)
+func costBasisViewModel(trades []*model.Trade) CostBasisViewModel {
+	costBasisBySymbol := model.CostBasisBySymbol(trades)
+	totalCostBasis := 0.0
 
-	for _, trade := range trades {
-		tradesBySymbol[trade.Symbol] = append(tradesBySymbol[trade.Symbol], trade)
+	for _, costBasis := range costBasisBySymbol {
+		totalCostBasis += costBasis
 	}
 
-	costBasisBySymbol := make(map[string]float64)
+	isValidForFIF := totalCostBasis >= 50000
 
-	for symbol, trades := range tradesBySymbol {
-		var costBasis float64 = 0
-		for _, trade := range trades {
-			switch trade.Action {
-			case constants.Buy:
-				costBasis += trade.Price * trade.Quantity
-			case constants.Sell:
-				costBasis -= trade.Price * trade.Quantity
-			}
-		}
-
-		costBasisBySymbol[symbol] = costBasis
+	return CostBasisViewModel{
+		costBasisBySymbol,
+		totalCostBasis,
+		isValidForFIF,
 	}
-
-	for symbol, costBasis := range costBasisBySymbol {
-		fmt.Printf("The cost basis of %s is %f", symbol, costBasis)
-	}
-
-	return costBasisBySymbol
 }
