@@ -2,7 +2,6 @@ package model
 
 import (
 	"fif-clacultor/internal/constants"
-	"math"
 )
 
 func CostBasisBySymbol(trades []Trade) map[string]float64 {
@@ -25,36 +24,27 @@ func CostBasisBySymbol(trades []Trade) map[string]float64 {
 			case constants.Buy:
 				queue = append(queue, trade)
 			case constants.Sell:
-				// If buy queue is empty then move onto the next trade
 				if len(queue) == 0 {
 					continue
 				}
 
-				// If the first buy order quantity can absorb the sell order, reduce that buy order quantity and skip to next order
-				if queue[0].Quantity > trade.Quantity {
-					queue[0].Quantity -= trade.Quantity
-					continue
-				}
+				sellQuantity := trade.Quantity
 
-				remainder := trade.Quantity - queue[0].Quantity
-				// While there is more of the sell order left, keep draining the queue
-				for remainder >= 0 {
-					queue = queue[1:]
+				// As long as there's still sell quantity, keep draining the queue
+				for sellQuantity > 0 {
+					buyQuantity := queue[0].Quantity
+
+					if buyQuantity > sellQuantity {
+						queue[0].Quantity -= sellQuantity
+						sellQuantity = 0
+					} else {
+						queue = queue[1:]
+						sellQuantity -= buyQuantity
+					}
 
 					if len(queue) == 0 {
 						break
 					}
-
-					if remainder == 0 {
-						break
-					}
-
-					remainder -= queue[0].Quantity
-				}
-
-				// Mutate and subtract the quantity from the first Buy trade in the queue
-				if remainder < 0 {
-					queue[0].Quantity -= math.Abs(remainder)
 				}
 			}
 		}
