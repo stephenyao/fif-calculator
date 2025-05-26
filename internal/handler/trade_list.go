@@ -25,8 +25,8 @@ func costBasisViewModel(trades []model.Trade) CostBasisViewModel {
 	costBasisBySymbol := model.CostBasisBySymbol(trades)
 	totalCostBasis := 0.0
 
-	for _, costBasis := range costBasisBySymbol {
-		totalCostBasis += costBasis
+	for _, costBasisSymbol := range costBasisBySymbol {
+		totalCostBasis += costBasisSymbol.CostBasis
 	}
 
 	isValidForFIF := totalCostBasis >= 50000

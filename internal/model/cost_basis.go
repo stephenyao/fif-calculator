@@ -2,10 +2,11 @@ package model
 
 import (
 	"fif-clacultor/internal/constants"
+	. "fif-clacultor/internal/view_model"
 )
 
-func CostBasisBySymbol(trades []Trade) map[string]float64 {
-	costBasisBySymbol := make(map[string]float64)
+func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {
+	costBasisBySymbol := make(map[string]SymbolCostBasis)
 
 	// Build up a map of trades by symbol so they can be iterated through
 
@@ -18,12 +19,15 @@ func CostBasisBySymbol(trades []Trade) map[string]float64 {
 	// Iterate through each trade by symbol and calculate the cost basis
 	for symbol, trades := range tradesBySymbol {
 		var queue []Trade
+		var totalBought, totalSold float64
 
 		for _, trade := range trades {
 			switch trade.Action {
 			case constants.Buy:
 				queue = append(queue, trade)
+				totalBought += trade.Quantity
 			case constants.Sell:
+				totalSold += trade.Quantity
 				if len(queue) == 0 {
 					continue
 				}
@@ -53,7 +57,8 @@ func CostBasisBySymbol(trades []Trade) map[string]float64 {
 		for _, buyTrade := range queue {
 			costBasisForSymbol += buyTrade.Price * buyTrade.Quantity
 		}
-		costBasisBySymbol[symbol] = costBasisForSymbol
+		overSold := totalSold > totalBought
+		costBasisBySymbol[symbol] = SymbolCostBasis{costBasisForSymbol, totalBought, totalSold, overSold}
 	}
 
 	return costBasisBySymbol
