@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fif-clacultor/internal/model"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -34,7 +35,9 @@ func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
 
 func (r *SQLTradeRepository) GetAll() ([]model.Trade, error) {
 	var trades []model.Trade
-	err := r.DB.Select(&trades, `SELECT * FROM trades ORDER BY buy_date ASC`)
+
+	query := fmt.Sprintf("SELECT * FROM trades ORDER BY buy_date DESC")
+	err := r.DB.Select(&trades, query)
 	return trades, err
 }
 

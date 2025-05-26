@@ -5,6 +5,7 @@ import (
 	. "fif-clacultor/internal/view_model"
 	"fif-clacultor/views/trades"
 	"net/http"
+	"slices"
 )
 
 func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +15,10 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
 	}
 
-	trades.TradeList(tradeList, costBasisViewModel(tradeList)).Render(r.Context(), w)
+	tradesByDescDate := slices.Clone(tradeList)
+	slices.Reverse(tradesByDescDate)
+
+	trades.TradeList(tradeList, costBasisViewModel(tradesByDescDate)).Render(r.Context(), w)
 }
 
 func costBasisViewModel(trades []model.Trade) CostBasisViewModel {
