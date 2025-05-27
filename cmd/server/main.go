@@ -18,6 +18,7 @@ func main() {
 
 	tradeHandler := handler.NewTradeHandler(db)
 	costBasisHandler := handler.CostBasisHandler{}
+	fifHandler := handler.FIFHandler{}
 
 	r.Use(middleware.StripSlashes)
 
@@ -30,6 +31,7 @@ func main() {
 	r.Get("/trades/{id}/edit", tradeHandler.EditForm)
 	r.Post("/trades/{id}/edit", tradeHandler.Update)
 	r.Get("/cost-basis", costBasisHandler.Index)
+	r.Get("/fif-calculation", fifHandler.Index)
 
 	http.ListenAndServe(":8080", r)
 }

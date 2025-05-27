@@ -1,0 +1,13 @@
+package fif
+
+import "fif-clacultor/views"
+
+templ Index(currentPath string) {
+    @views.Layout("FIF", currentPath) {
+	    @body()
+	}
+}
+
+templ body() {
+	<h1>FIF basis</h1>
+}
