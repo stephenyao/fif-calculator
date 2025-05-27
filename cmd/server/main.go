@@ -17,6 +17,7 @@ func main() {
 	r := chi.NewRouter()
 
 	tradeHandler := handler.NewTradeHandler(db)
+	costBasisHandler := handler.CostBasisHandler{}
 
 	r.Use(middleware.StripSlashes)
 
@@ -28,6 +29,7 @@ func main() {
 	r.Post("/trades/{id}/delete", tradeHandler.Delete)
 	r.Get("/trades/{id}/edit", tradeHandler.EditForm)
 	r.Post("/trades/{id}/edit", tradeHandler.Update)
+	r.Get("/cost-basis", costBasisHandler.Index)
 
 	http.ListenAndServe(":8080", r)
 }

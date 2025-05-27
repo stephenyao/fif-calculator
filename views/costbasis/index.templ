@@ -1,0 +1,13 @@
+package costbasis
+
+import "fif-clacultor/views"
+
+templ Index(currentPath string) {
+    @views.Layout("Cost basis", currentPath) {
+        @body()
+    }
+}
+
+templ body() {
+    <h1>Cost basis</h1>
+}
