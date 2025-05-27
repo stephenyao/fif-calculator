@@ -5,8 +5,8 @@ import "fif-clacultor/internal/model"
 import . "fif-clacultor/internal/viewmodel"
 import "strconv"
 
-templ TradeList(trades []model.Trade, viewModel CostBasisViewModel) {
-    @views.Layout("Trade List") {
+templ TradeList(currentPath string, trades []model.Trade, viewModel CostBasisViewModel) {
+    @views.Layout("Trade List", currentPath) {
         <div class="min-h-screen bg-gray-100 p-6 flex flex-col gap-4">
             @list(trades)
             @costBasis(viewModel)

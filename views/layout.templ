@@ -2,7 +2,7 @@ package views
 
 import . "fif-clacultor/internal/viewmodel"
 
-templ Layout(title string) {
+templ Layout(title string, currentPath string) {
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -12,7 +12,7 @@ templ Layout(title string) {
       <title>{title}</title>
     </head>
     <body class="bg-gray-100 text-gray-900">
-        @NavigationMenu(NewNavigationViewModel())
+        @NavigationMenu(NewNavigationViewModel(currentPath))
         { children... }
     </body>
   </html>

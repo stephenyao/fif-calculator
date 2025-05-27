@@ -18,7 +18,11 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 	tradesByDescDate := slices.Clone(tradeList)
 	slices.Reverse(tradesByDescDate)
 
-	trades.TradeList(tradeList, costBasisViewModel(tradesByDescDate)).Render(r.Context(), w)
+	trades.TradeList(
+		r.URL.Path,
+		tradeList,
+		costBasisViewModel(tradesByDescDate),
+	).Render(r.Context(), w)
 }
 
 func costBasisViewModel(trades []model.Trade) CostBasisViewModel {

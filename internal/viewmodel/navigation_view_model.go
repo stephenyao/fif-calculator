@@ -10,13 +10,13 @@ type NavigationViewModel struct {
 	CurrentPath string
 }
 
-func NewNavigationViewModel() *NavigationViewModel {
+func NewNavigationViewModel(currentPath string) *NavigationViewModel {
 	return &NavigationViewModel{
 		Items: []NavigationItem{
 			NavigationItem{"Manage Trades", "/trades"},
 			NavigationItem{"Cost Basis", "/cost-basis"},
 			NavigationItem{"FIF calculation", "/fif-calculation"},
 		},
-		CurrentPath: "/trades",
+		CurrentPath: currentPath,
 	}
 }

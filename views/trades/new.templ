@@ -3,7 +3,7 @@ package trades
 import "fif-clacultor/views"
 
 templ NewTradeForm() {
-    @views.Layout("New Trade") {
+    @views.Layout("New Trade", "") {
         @TradeForm(nil, "/trades")
     }
 }

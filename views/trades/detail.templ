@@ -5,7 +5,7 @@ import "fif-clacultor/internal/model"
 import "strconv"
 
 templ TradeDetail(trade *model.Trade) {
-    @views.Layout("Trade detail") {
+    @views.Layout("Trade detail", "") {
         @details(trade)
     }
 }
