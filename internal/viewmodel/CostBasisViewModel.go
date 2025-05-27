@@ -1,4 +1,4 @@
-package view_model
+package viewmodel
 
 type SymbolCostBasis struct {
 	CostBasis   float64

@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "fif-clacultor/views"
 import "fif-clacultor/internal/model"
-import . "fif-clacultor/internal/view_model"
+import . "fif-clacultor/internal/viewmodel"
 import "strconv"
 
 func TradeList(trades []model.Trade, viewModel CostBasisViewModel) templ.Component {

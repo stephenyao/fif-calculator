@@ -2,7 +2,7 @@ package model
 
 import (
 	"fif-clacultor/internal/constants"
-	. "fif-clacultor/internal/view_model"
+	. "fif-clacultor/internal/viewmodel"
 )
 
 func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {

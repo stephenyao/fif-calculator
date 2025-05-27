@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fif-clacultor/internal/model"
-	. "fif-clacultor/internal/view_model"
+	. "fif-clacultor/internal/viewmodel"
 	"fif-clacultor/views/trades"
 	"net/http"
 	"slices"
