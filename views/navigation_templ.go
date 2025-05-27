@@ -8,7 +8,9 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func navigationMenu() templ.Component {
+import . "fif-clacultor/internal/viewmodel"
+
+func NavigationMenu(viewModel *NavigationViewModel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,12 +31,76 @@ func navigationMenu() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"bg-white shadow-md p-4 border-b border-gray-200 flex flex-row overflow-x-auto\"><ul class=\"flex flex-row space-x-4 max-w-4xl w-full mx-auto \"><li class=\"flex-shrink-0\"><button class=\"block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out\n                           bg-blue-500 text-white shadow-md\" onclick=\"alert(&#39;Navigate to Manage Trades&#39;)\">Manage Trades</button></li><li class=\"flex-shrink-0\"><button class=\"block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out\n                           text-gray-700 hover:bg-gray-100 hover:text-blue-600\" onclick=\"alert(&#39;Navigate to Cost Basis&#39;)\">Cost Basis</button></li><li class=\"flex-shrink-0\"><button class=\"block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out\n                           text-gray-700 hover:bg-gray-100 hover:text-blue-600\" onclick=\"alert(&#39;Navigate to FIF Calculation&#39;)\">FIF Calculation</button></li><li class=\"flex-shrink-0\"><button class=\"block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out\n                           text-gray-700 hover:bg-gray-100 hover:text-blue-600\" onclick=\"alert(&#39;Navigate to FIF Report&#39;)\">FIF Report</button></li></ul></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"bg-white shadow-md p-4 border-b border-gray-200 flex flex-row overflow-x-auto\"><ul class=\"flex flex-row space-x-4 max-w-4xl w-full mx-auto\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, item := range viewModel.Items {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"flex-shrink-0\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 = []any{
+				"block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out shadow-md " +
+					className(item.URL == viewModel.CurrentPath)}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(item.URL)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var2).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/navigation.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/navigation.templ`, Line: 17, Col: 35}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</ul></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		return nil
 	})
+}
+
+func className(isActive bool) string {
+	if isActive {
+		return "bg-blue-500 text-white shadow-md"
+	} else {
+		return "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+	}
 }
 
 var _ = templruntime.GeneratedTemplate

@@ -1,44 +1,31 @@
 package views
 
-templ navigationMenu() {
+import . "fif-clacultor/internal/viewmodel"
+
+templ NavigationMenu(viewModel *NavigationViewModel) {
     <nav class="bg-white shadow-md p-4 border-b border-gray-200 flex flex-row overflow-x-auto">
-        <ul class="flex flex-row space-x-4 max-w-4xl w-full mx-auto ">
-            <li class="flex-shrink-0">
-                <button
-                    class="block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out
-                           bg-blue-500 text-white shadow-md"
-                    onclick="alert('Navigate to Manage Trades')"
-                >
-                    Manage Trades
-                </button>
-            </li>
-            <li class="flex-shrink-0">
-                <button
-                    class="block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out
-                           text-gray-700 hover:bg-gray-100 hover:text-blue-600"
-                    onclick="alert('Navigate to Cost Basis')"
-                >
-                    Cost Basis
-                </button>
-            </li>
-            <li class="flex-shrink-0">
-                <button
-                    class="block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out
-                           text-gray-700 hover:bg-gray-100 hover:text-blue-600"
-                    onclick="alert('Navigate to FIF Calculation')"
-                >
-                    FIF Calculation
-                </button>
-            </li>
-            <li class="flex-shrink-0">
-                <button
-                    class="block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out
-                           text-gray-700 hover:bg-gray-100 hover:text-blue-600"
-                    onclick="alert('Navigate to FIF Report')"
-                >
-                    FIF Report
-                </button>
-            </li>
+        <ul class="flex flex-row space-x-4 max-w-4xl w-full mx-auto">
+            for _, item := range viewModel.Items {
+                <li class="flex-shrink-0">
+                    <a
+                        href={templ.SafeURL(item.URL)}
+                        class={
+                            "block w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out " +
+                            className(item.URL == viewModel.CurrentPath)
+                        }
+                    >
+                        {item.Title}
+                    </a>
+                </li>
+            }
         </ul>
     </nav>
+}
+
+func className(isActive bool) string {
+    if isActive {
+        return "bg-blue-500 text-white shadow-md"
+    } else {
+        return "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+    }
 }
