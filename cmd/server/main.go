@@ -22,7 +22,7 @@ func main() {
 
 	r.Use(middleware.StripSlashes)
 
-	r.Get("/", tradeHandler.List)
+	r.Get("/", tradeHandler.Index)
 	r.Get("/trades/new", tradeHandler.NewForm)
 	r.Get("/trades", tradeHandler.List)
 	r.Post("/trades", tradeHandler.Create)
