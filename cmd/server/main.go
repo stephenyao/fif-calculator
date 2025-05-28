@@ -17,7 +17,7 @@ func main() {
 	r := chi.NewRouter()
 
 	tradeHandler := handler.NewTradeHandler(db)
-	costBasisHandler := handler.CostBasisHandler{}
+	costBasisHandler := handler.NewCostBasisHandler(db)
 	fifHandler := handler.FIFHandler{}
 
 	r.Use(middleware.StripSlashes)

@@ -13,6 +13,7 @@ type TradeRepository interface {
 	GetByID(id int) (*model.Trade, error)
 	GetAll() ([]model.Trade, error)
 	GetBySymbol(symbol string) ([]*model.Trade, error)
+	GetAllByAscendingDate() ([]model.Trade, error)
 }
 
 type SQLTradeRepository struct {
@@ -37,6 +38,14 @@ func (r *SQLTradeRepository) GetAll() ([]model.Trade, error) {
 	var trades []model.Trade
 
 	query := fmt.Sprintf("SELECT * FROM trades ORDER BY buy_date DESC")
+	err := r.DB.Select(&trades, query)
+	return trades, err
+}
+
+func (r *SQLTradeRepository) GetAllByAscendingDate() ([]model.Trade, error) {
+	var trades []model.Trade
+
+	query := fmt.Sprintf("SELECT * FROM trades ORDER BY buy_date ASC")
 	err := r.DB.Select(&trades, query)
 	return trades, err
 }
