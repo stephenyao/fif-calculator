@@ -1,0 +1,7 @@
+package views
+
+templ Link(path string, title string) {
+    <a href={templ.SafeURL(path)} class="inline-block bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition">
+        {title}
+    </a>
+}
