@@ -42,7 +42,7 @@ func NavigationMenu(viewModel *NavigationViewModel) templ.Component {
 			}
 			var templ_7745c5c3_Var2 = []any{
 				"block font-medium w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out " +
-					className(item.URL == viewModel.CurrentPath)}
+					className(item.IsActive)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

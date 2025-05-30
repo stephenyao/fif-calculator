@@ -4,8 +4,8 @@ import "fif-clacultor/views"
 import "fif-clacultor/internal/model"
 import "strconv"
 
-templ TradeDetail(trade *model.Trade) {
-    @views.Layout("Trade detail", "") {
+templ TradeDetail(curentPath string, trade *model.Trade) {
+    @views.Layout("Trade detail", curentPath) {
         @details(trade)
     }
 }

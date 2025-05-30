@@ -1,8 +1,11 @@
 package viewmodel
 
+import "strings"
+
 type NavigationItem struct {
-	Title string
-	URL   string
+	Title    string
+	URL      string
+	IsActive bool
 }
 
 type NavigationViewModel struct {
@@ -11,12 +14,20 @@ type NavigationViewModel struct {
 }
 
 func NewNavigationViewModel(currentPath string) *NavigationViewModel {
+	items := []NavigationItem{
+		{"Manage Trades", "/trades", false},
+		{"Cost Basis", "/cost-basis", false},
+		{"FIF calculation", "/fif-calculation", false},
+	}
+
+	for i := range items {
+		if strings.HasPrefix(currentPath, items[i].URL) {
+			items[i].IsActive = true
+		}
+	}
+
 	return &NavigationViewModel{
-		Items: []NavigationItem{
-			NavigationItem{"Manage Trades", "/trades"},
-			NavigationItem{"Cost Basis", "/cost-basis"},
-			NavigationItem{"FIF calculation", "/fif-calculation"},
-		},
+		Items:       items,
 		CurrentPath: currentPath,
 	}
 }

@@ -7,5 +7,5 @@ import (
 
 func (h *TradeHandler) NewForm(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	trades.NewTradeForm().Render(r.Context(), w)
+	trades.NewTradeForm(r.URL.Path).Render(r.Context(), w)
 }

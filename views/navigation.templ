@@ -11,7 +11,7 @@ templ NavigationMenu(viewModel *NavigationViewModel) {
                         href={templ.SafeURL(item.URL)}
                         class={
                             "block font-medium w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out " +
-                            className(item.URL == viewModel.CurrentPath)
+                            className(item.IsActive)
                         }
                     >
                         {item.Title}

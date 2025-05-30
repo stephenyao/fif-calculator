@@ -2,8 +2,8 @@ package trades
 
 import . "fif-clacultor/views"
 
-templ NewTradeForm() {
-    @Layout("New Trade", "") {
+templ NewTradeForm(currentPath string) {
+    @Layout("New Trade", currentPath) {
         @Page() {
             @Section() {
                 @TradeForm(nil, "/trades")

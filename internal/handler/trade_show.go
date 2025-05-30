@@ -20,5 +20,5 @@ func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
 	}
-	trades.TradeDetail(trade).Render(r.Context(), w)
+	trades.TradeDetail(r.URL.Path, trade).Render(r.Context(), w)
 }

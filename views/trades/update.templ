@@ -4,8 +4,8 @@ import . "fif-clacultor/views"
 import "fif-clacultor/internal/model"
 import "strconv"
 
-templ UpdateTradeForm(trade *model.Trade) {
-    @Layout("Update Trade", "") {
+templ UpdateTradeForm(currentPath string, trade *model.Trade) {
+    @Layout("Update Trade", currentPath) {
          @Page() {
             @Section() {
                  @TradeForm(trade, templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/edit" ))
