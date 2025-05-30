@@ -4,17 +4,17 @@ import . "fif-clacultor/views"
 
 templ Index(currentPath string) {
     @Layout("FIF", currentPath) {
-	    @body()
+        @Page() {
+            @Section() {
+                @body()
+            }
+        }
 	}
 }
 
 templ body() {
-    <div class="min-h-screen bg-gray-100 p-6 flex flex-col gap-4">
-        <div class="max-w-4xl w-full mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
-            <div class="flex items-center justify-between">
-                <p>Start a new FIF calculation</p>
-                @Link("/fif/start", "New calculation")
-            </div>
-        </div>
+    <div class="flex items-center justify-between">
+        <p>Start a new FIF calculation</p>
+        @Link("/fif/start", "New calculation")
     </div>
 }

@@ -33,7 +33,7 @@ func TradeForm(trade *model.Trade, action templ.SafeURL) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen bg-gray-100 p-6 flex items-center justify-center\"><form action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex items-center justify-center\"><form action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,7 +42,7 @@ func TradeForm(trade *model.Trade, action templ.SafeURL) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" method=\"post\" class=\"bg-white shadow-md rounded-xl p-8 w-full max-w-xl space-y-6\"><h2 class=\"text-2xl font-bold text-gray-800\">Enter New Trade</h2><div><label for=\"symbol\" class=\"block mb-1 font-medium text-gray-700\">Symbol</label> <input id=\"symbol\" name=\"symbol\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" method=\"post\" class=\"w-full max-w-xl space-y-6\"><h2 class=\"text-2xl font-bold text-gray-800\">Enter New Trade</h2><div><label for=\"symbol\" class=\"block mb-1 font-medium text-gray-700\">Symbol</label> <input id=\"symbol\" name=\"symbol\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -5,8 +5,8 @@ import "strconv"
 import "fif-clacultor/internal/constants"
 
 templ TradeForm(trade *model.Trade, action templ.SafeURL) {
-    <div class="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
-        <form action={action} method="post" class="bg-white shadow-md rounded-xl p-8 w-full max-w-xl space-y-6">
+    <div class="flex items-center justify-center">
+        <form action={action} method="post" class="w-full max-w-xl space-y-6">
             <h2 class="text-2xl font-bold text-gray-800">Enter New Trade</h2>
 
             <div>

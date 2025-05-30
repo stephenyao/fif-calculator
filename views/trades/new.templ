@@ -1,9 +1,13 @@
 package trades
 
-import "fif-clacultor/views"
+import . "fif-clacultor/views"
 
 templ NewTradeForm() {
-    @views.Layout("New Trade", "") {
-        @TradeForm(nil, "/trades")
+    @Layout("New Trade", "") {
+        @Page() {
+            @Section() {
+                @TradeForm(nil, "/trades")
+            }
+        }
     }
 }
