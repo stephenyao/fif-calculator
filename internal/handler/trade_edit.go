@@ -21,5 +21,9 @@ func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
 	}
 
-	trades.UpdateTradeForm(r.URL.Path, trade).Render(r.Context(), w)
+	err = trades.UpdateTradeForm(r.URL.Path, trade).Render(r.Context(), w)
+
+	if err != nil {
+		http.Error(w, "Could not render start page", http.StatusInternalServerError)
+	}
 }

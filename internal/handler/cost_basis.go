@@ -27,7 +27,11 @@ func (h *CostBasisHandler) Index(w http.ResponseWriter, r *http.Request) {
 
 	viewModel := ccostBasisViewModel(tradeList)
 
-	costbasis.Index(r.URL.Path, viewModel).Render(r.Context(), w)
+	err = costbasis.Index(r.URL.Path, viewModel).Render(r.Context(), w)
+
+	if err != nil {
+		http.Error(w, "Could not render start page", http.StatusInternalServerError)
+	}
 }
 
 func ccostBasisViewModel(trades []model.Trade) CostBasisViewModel {

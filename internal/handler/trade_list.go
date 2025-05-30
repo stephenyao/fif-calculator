@@ -18,11 +18,15 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 	tradesByDescDate := slices.Clone(tradeList)
 	slices.Reverse(tradesByDescDate)
 
-	trades.TradeList(
+	err = trades.TradeList(
 		r.URL.Path,
 		tradeList,
 		costBasisViewModel(tradesByDescDate),
 	).Render(r.Context(), w)
+
+	if err != nil {
+		http.Error(w, "Could not render start page", http.StatusInternalServerError)
+	}
 }
 
 func costBasisViewModel(trades []model.Trade) CostBasisViewModel {
