@@ -31,7 +31,8 @@ func main() {
 	r.Get("/trades/{id}/edit", tradeHandler.EditForm)
 	r.Post("/trades/{id}/edit", tradeHandler.Update)
 	r.Get("/cost-basis", costBasisHandler.Index)
-	r.Get("/fif-calculation", fifHandler.Index)
+	r.Get("/fif", fifHandler.Index)
+	r.Get("/fif/start", fifHandler.Start)
 
 	http.ListenAndServe(":8080", r)
 }

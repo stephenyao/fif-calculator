@@ -1,0 +1,17 @@
+package fif
+
+import . "fif-clacultor/views"
+
+templ Start(currentPath string) {
+    @Layout("Start FIF Calculation", currentPath) {
+        @Page() {
+            @Section() {
+                @fifStartPage()
+            }
+        }
+	}
+}
+
+templ fifStartPage() {
+    <p>Start!</p>
+}
