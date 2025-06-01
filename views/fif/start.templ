@@ -1,6 +1,9 @@
 package fif
 
 import . "fif-clacultor/views"
+import . "fif-clacultor/internal/model"
+import "fmt"
+import "time"
 
 templ Start(currentPath string) {
     @Layout("Start FIF Calculation", currentPath) {
@@ -12,6 +15,31 @@ templ Start(currentPath string) {
 	}
 }
 
+templ RenderFIFHoldingQuantities(holdings []HoldingQuantity, year int) {
+    <div>
+        <h3 class="text-lg font-semibold mb-2">Holdings for Financial Year {year - 1}–{year}</h3>
+        <ul class="space-y-3">
+            for _, h := range holdings {
+                <li class="border p-4 bg-gray-50 rounded">
+                    <strong>{h.Symbol}</strong><br />
+                    Qty on 1 Apr {year - 1}: {h.QuantityStart}<br />
+                    Qty on 31 Mar {year}: {h.QuantityEnd}
+                </li>
+            }
+        </ul>
+    </div>
+}
+
 templ fifStartPage() {
-    <p>Start!</p>
+    <form hx-post="/fif/start" hx-target="#holdings-results" hx-swap="innerHTML" class="space-y-4">
+        <label for="financialYear" class="block font-medium">Financial Year Ending</label>
+        <select id="financialYear" name="financialYear" class="w-full p-2 border border-gray-300 rounded">
+            for year := 2019; year <= time.Now().Year(); year++ {
+                <option value={year}>{fmt.Sprintf("1 Apr %d – 31 Mar %d", year-1, year)}</option>
+            }
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Continue</button>
+    </form>
+
+    <div id="holdings-results" class="mt-8"></div>
 }
