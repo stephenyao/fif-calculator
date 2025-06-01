@@ -1,7 +1,7 @@
 package handler
 
 import (
-	. "fif-clacultor/internal/model"
+	"fif-clacultor/internal/service/fifservice"
 	"fif-clacultor/views/fif"
 	"net/http"
 	"strconv"
@@ -24,17 +24,7 @@ func (h *FIFHandler) StartFIF(w http.ResponseWriter, r *http.Request) {
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
 	// You’ll compute this from the Trades table
-	holdings := computeHoldingsBetween(startDate, endDate)
+	holdings := fifservice.ComputeHoldingsBetween(startDate, endDate)
 
 	fif.RenderFIFHoldingQuantities(holdings, year).Render(r.Context(), w)
-}
-
-func computeHoldingsBetween(start, end time.Time) []HoldingQuantity {
-	// Fetch trades up to and including `start`, and separately up to and including `end`
-	// Sum buy/sell quantities for each symbol to get net holding at each point
-
-	return []HoldingQuantity{
-		{Symbol: "AAPL", QuantityStart: 20, QuantityEnd: 30},
-		{Symbol: "TSLA", QuantityStart: 5, QuantityEnd: 0},
-	}
 }
