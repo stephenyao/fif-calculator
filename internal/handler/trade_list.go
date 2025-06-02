@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fif-clacultor/internal/model"
+	"fif-clacultor/internal/service/costbasisservice"
 	. "fif-clacultor/internal/viewmodel"
 	"fif-clacultor/views/trades"
 	"net/http"
@@ -30,7 +31,7 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func costBasisViewModel(trades []model.Trade) CostBasisViewModel {
-	costBasisBySymbol := model.CostBasisBySymbol(trades)
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades)
 	totalCostBasis := 0.0
 
 	for _, costBasisSymbol := range costBasisBySymbol {

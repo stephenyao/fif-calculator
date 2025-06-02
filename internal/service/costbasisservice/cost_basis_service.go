@@ -1,7 +1,8 @@
-package model
+package costbasisservice
 
 import (
 	"fif-clacultor/internal/constants"
+	. "fif-clacultor/internal/model"
 	. "fif-clacultor/internal/viewmodel"
 )
 

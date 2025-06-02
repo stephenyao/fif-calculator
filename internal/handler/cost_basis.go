@@ -3,6 +3,7 @@ package handler
 import (
 	"fif-clacultor/internal/model"
 	"fif-clacultor/internal/repository"
+	"fif-clacultor/internal/service/costbasisservice"
 	. "fif-clacultor/internal/viewmodel"
 	"fif-clacultor/views/costbasis"
 	"github.com/jmoiron/sqlx"
@@ -35,7 +36,7 @@ func (h *CostBasisHandler) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func ccostBasisViewModel(trades []model.Trade) CostBasisViewModel {
-	costBasisBySymbol := model.CostBasisBySymbol(trades)
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades)
 	totalCostBasis := 0.0
 
 	for _, costBasisSymbol := range costBasisBySymbol {
