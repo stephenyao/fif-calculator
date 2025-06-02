@@ -1,7 +1,7 @@
 package fifservice
 
 import "time"
-import . "fif-clacultor/internal/model"
+import . "fif-calculator/internal/model"
 
 func ComputeHoldingsBetween(start, end time.Time) []HoldingQuantity {
 	// Fetch trades up to and including `start`, and separately up to and including `end`

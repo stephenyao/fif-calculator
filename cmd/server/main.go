@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fif-clacultor/internal/handler"
-	"fif-clacultor/internal/repository"
+	"fif-calculator/internal/handler"
+	"fif-calculator/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jmoiron/sqlx"

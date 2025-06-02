@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fif-clacultor/internal/repository"
+	"fif-calculator/internal/repository"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 )

@@ -8,9 +8,9 @@ package trades
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "fif-clacultor/internal/model"
+import "fif-calculator/internal/model"
 import "strconv"
-import "fif-clacultor/internal/constants"
+import "fif-calculator/internal/constants"
 
 func TradeForm(trade *model.Trade, action templ.SafeURL) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

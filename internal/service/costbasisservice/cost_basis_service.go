@@ -1,9 +1,9 @@
 package costbasisservice
 
 import (
-	"fif-clacultor/internal/constants"
-	. "fif-clacultor/internal/model"
-	. "fif-clacultor/internal/viewmodel"
+	"fif-calculator/internal/constants"
+	. "fif-calculator/internal/model"
+	. "fif-calculator/internal/viewmodel"
 )
 
 func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {

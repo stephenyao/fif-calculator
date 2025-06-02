@@ -8,8 +8,8 @@ package fif
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import . "fif-clacultor/views"
-import . "fif-clacultor/internal/model"
+import . "fif-calculator/views"
+import . "fif-calculator/internal/model"
 import "fmt"
 import "time"
 

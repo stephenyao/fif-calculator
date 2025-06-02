@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fif-clacultor/internal/model"
+	"fif-calculator/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"

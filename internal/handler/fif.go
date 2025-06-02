@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fif-clacultor/views/fif"
+	"fif-calculator/views/fif"
 	"net/http"
 )
 

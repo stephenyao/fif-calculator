@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fif-clacultor/views/trades"
+	"fif-calculator/views/trades"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"

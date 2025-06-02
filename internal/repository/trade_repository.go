@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fif-clacultor/internal/model"
+	"fif-calculator/internal/model"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 )

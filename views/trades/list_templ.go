@@ -8,10 +8,10 @@ package trades
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import . "fif-clacultor/views"
-import "fif-clacultor/internal/model"
-import . "fif-clacultor/internal/viewmodel"
-import "fif-clacultor/internal/constants"
+import . "fif-calculator/views"
+import "fif-calculator/internal/model"
+import . "fif-calculator/internal/viewmodel"
+import "fif-calculator/internal/constants"
 import "strconv"
 
 func TradeList(currentPath string, trades []model.Trade, viewModel CostBasisViewModel) templ.Component {

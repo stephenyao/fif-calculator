@@ -1,4 +1,4 @@
-module fif-clacultor
+module fif-calculator
 
 go 1.24
 

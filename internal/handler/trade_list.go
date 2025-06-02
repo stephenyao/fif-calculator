@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"fif-clacultor/internal/model"
-	"fif-clacultor/internal/service/costbasisservice"
-	. "fif-clacultor/internal/viewmodel"
-	"fif-clacultor/views/trades"
+	"fif-calculator/internal/model"
+	"fif-calculator/internal/service/costbasisservice"
+	. "fif-calculator/internal/viewmodel"
+	"fif-calculator/views/trades"
 	"net/http"
 	"slices"
 )

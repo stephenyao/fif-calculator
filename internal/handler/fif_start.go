@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"fif-clacultor/internal/service/fifservice"
-	"fif-clacultor/views/fif"
+	"fif-calculator/internal/service/fifservice"
+	"fif-calculator/views/fif"
 	"net/http"
 	"strconv"
 	"time"

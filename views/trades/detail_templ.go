@@ -8,8 +8,8 @@ package trades
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "fif-clacultor/views"
-import "fif-clacultor/internal/model"
+import "fif-calculator/views"
+import "fif-calculator/internal/model"
 import "strconv"
 
 func TradeDetail(curentPath string, trade *model.Trade) templ.Component {

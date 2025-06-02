@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"fif-clacultor/internal/constants"
-	"fif-clacultor/internal/model"
+	"fif-calculator/internal/constants"
+	"fif-calculator/internal/model"
 	"net/http"
 	"strconv"
 )

@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"fif-clacultor/internal/model"
-	"fif-clacultor/internal/repository"
-	"fif-clacultor/internal/service/costbasisservice"
-	. "fif-clacultor/internal/viewmodel"
-	"fif-clacultor/views/costbasis"
+	"fif-calculator/internal/model"
+	"fif-calculator/internal/repository"
+	"fif-calculator/internal/service/costbasisservice"
+	. "fif-calculator/internal/viewmodel"
+	"fif-calculator/views/costbasis"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 )
