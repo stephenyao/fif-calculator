@@ -1,14 +1,58 @@
 package fifservice
 
-import "time"
+import (
+	"fif-calculator/internal/constants"
+	"time"
+)
 import . "fif-calculator/internal/model"
 
-func ComputeHoldingsBetween(start, end time.Time) []HoldingQuantity {
-	// Fetch trades up to and including `start`, and separately up to and including `end`
-	// Sum buy/sell quantities for each symbol to get net holding at each point
+func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]HoldingQuantity, error) {
+	quantityStart := make(map[string]float64)
+	quantityEnd := make(map[string]float64)
 
-	return []HoldingQuantity{
-		{Symbol: "AAPL", QuantityStart: 20, QuantityEnd: 30},
-		{Symbol: "TSLA", QuantityStart: 5, QuantityEnd: 0},
+	for _, trade := range trades {
+		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var delta float64
+		switch trade.Action {
+		case constants.Buy:
+			delta = trade.Quantity
+		case constants.Sell:
+			delta = -trade.Quantity
+		}
+
+		if !tradeDate.After(startDate) {
+			quantityStart[trade.Symbol] += delta
+		}
+		if !tradeDate.After(endDate) {
+			quantityEnd[trade.Symbol] += delta
+		}
 	}
+
+	symbolSet := map[string]struct{}{}
+	for _, trade := range trades {
+		symbolSet[trade.Symbol] = struct{}{}
+	}
+
+	var result []HoldingQuantity
+	for symbol := range symbolSet {
+		quantityStart := quantityStart[symbol]
+		quantityEnd := quantityEnd[symbol]
+
+		if quantityStart < 0 || quantityEnd < 0 {
+			continue
+		}
+
+		result = append(result, HoldingQuantity{
+			Symbol:        symbol,
+			QuantityStart: quantityStart,
+			QuantityEnd:   quantityEnd,
+		})
+	}
+
+	return result, nil
 }

@@ -1,6 +1,7 @@
 package fif
 
 import . "fif-calculator/views"
+import . "fif-calculator/internal/viewmodel"
 import . "fif-calculator/internal/model"
 import "fmt"
 import "time"
@@ -15,26 +16,11 @@ templ Start(currentPath string) {
 	}
 }
 
-templ RenderFIFHoldingQuantities(holdings []HoldingQuantity, year int) {
-    <div>
-        <h3 class="text-lg font-semibold mb-2">Holdings for Financial Year {year - 1}–{year}</h3>
-        <ul class="space-y-3">
-            for _, h := range holdings {
-                <li class="border p-4 bg-gray-50 rounded">
-                    <strong>{h.Symbol}</strong><br />
-                    Qty on 1 Apr {year - 1}: {h.QuantityStart}<br />
-                    Qty on 31 Mar {year}: {h.QuantityEnd}
-                </li>
-            }
-        </ul>
-    </div>
-}
-
 templ fifStartPage() {
     <form hx-post="/fif/start" hx-target="#holdings-results" hx-swap="innerHTML" class="space-y-4">
         <label for="financialYear" class="block font-medium">Financial Year Ending</label>
         <select id="financialYear" name="financialYear" class="w-full p-2 border border-gray-300 rounded">
-            for year := 2019; year <= time.Now().Year(); year++ {
+            for year := 2019; year <= time.Now().Year() + 1; year++ {
                 <option value={year}>{fmt.Sprintf("1 Apr %d – 31 Mar %d", year-1, year)}</option>
             }
         </select>
@@ -42,4 +28,107 @@ templ fifStartPage() {
     </form>
 
     <div id="holdings-results" class="mt-8"></div>
+}
+
+templ RenderFIFHoldingQuantities(holdings []HoldingQuantity, year int) {
+    <div>
+        <h3 class="text-lg font-semibold mb-4">
+            Holdings for Financial Year {year - 1}–{year}
+        </h3>
+
+        <form
+            hx-post="/fif/calculate"
+            hx-target="#fif-result"
+            hx-swap="innerHTML"
+            class="space-y-4"
+        >
+            <ul class="space-y-4">
+                for _, h := range holdings {
+                    <li class="border p-4 bg-gray-50 rounded space-y-2">
+                        <div>
+                            <strong>{h.Symbol}</strong><br />
+                            Qty on 1 Apr {year - 1}: {h.QuantityStart}<br />
+                            Qty on 31 Mar {year}: {h.QuantityEnd}
+                        </div>
+
+                        <input type="hidden" name={"symbol_" + h.Symbol} value={h.Symbol} />
+                        <input type="hidden" name={"quantity_start_" + h.Symbol} value={fmt.Sprintf("%.4f", h.QuantityStart)} />
+                        <input type="hidden" name={"quantity_end_" + h.Symbol} value={fmt.Sprintf("%.4f", h.QuantityEnd)} />
+                        <input type="hidden" name="financialYear" value={year} />
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700" for={"price-start-" + h.Symbol}>
+                                    NZD price on 1 Apr {year - 1}
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    id={"price-start-" + h.Symbol}
+                                    name={"price_start_" + h.Symbol}
+                                    class="mt-1 block w-full border rounded px-2 py-1"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700" for={"price-end-" + h.Symbol}>
+                                    NZD price on 31 Mar {year}
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    id={"price-end-" + h.Symbol}
+                                    name={"price_end_" + h.Symbol}
+                                    class="mt-1 block w-full border rounded px-2 py-1"
+                                />
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+
+            <button
+                type="submit"
+                class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+                Calculate FIF
+            </button>
+        </form>
+        <div id="fif-result" class="mt-6"></div>
+    </div>
+}
+
+templ RenderFIFResult(vm FIFCalculationViewModel) {
+    <div>
+        <h4 class="text-lg font-semibold mb-3">
+            FIF Calculation Results for {vm.Year - 1}–{vm.Year}
+        </h4>
+
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b">
+                    <th class="py-1">Symbol</th>
+                    <th class="py-1">Start Value (NZD)</th>
+                    <th class="py-1">End Value (NZD)</th>
+                    <th class="py-1">FDR (5%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                for _, r := range vm.Results {
+                    <tr class="border-t">
+                        <td>{r.Symbol}</td>
+                        <td>{fmt.Sprintf("%.2f", r.StartValue)}</td>
+                        <td>{fmt.Sprintf("%.2f", r.EndValue)}</td>
+                        <td class="font-semibold text-blue-700">{fmt.Sprintf("%.2f", r.FDRAmount)}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="mt-4 text-right font-bold text-lg">
+            Total FIF Income:
+            <span class="text-green-700">{fmt.Sprintf("%.2f", vm.TotalFDR)} NZD</span>
+        </div>
+    </div>
 }
