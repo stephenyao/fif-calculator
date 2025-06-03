@@ -1,4 +1,4 @@
-package handler
+package tradehandler
 
 import (
 	"fif-calculator/internal/constants"

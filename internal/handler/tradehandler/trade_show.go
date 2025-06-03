@@ -1,4 +1,4 @@
-package handler
+package tradehandler
 
 import (
 	"fif-calculator/views/trades"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
+func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(param)
 
@@ -16,12 +16,12 @@ func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	trade, err := h.Repo.GetByID(id)
-
+	//println(trade)
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
 	}
 
-	err = trades.UpdateTradeForm(r.URL.Path, trade).Render(r.Context(), w)
+	err = trades.TradeDetail(r.URL.Path, trade).Render(r.Context(), w)
 
 	if err != nil {
 		http.Error(w, "Could not render start page", http.StatusInternalServerError)

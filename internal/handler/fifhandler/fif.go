@@ -1,4 +1,4 @@
-package handler
+package fifhandler
 
 import (
 	"fif-calculator/internal/repository"

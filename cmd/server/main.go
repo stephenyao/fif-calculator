@@ -1,7 +1,9 @@
 package main
 
 import (
-	"fif-calculator/internal/handler"
+	"fif-calculator/internal/handler/costbasishandler"
+	"fif-calculator/internal/handler/fifhandler"
+	"fif-calculator/internal/handler/tradehandler"
 	"fif-calculator/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,9 +18,9 @@ func main() {
 
 	r := chi.NewRouter()
 
-	tradeHandler := handler.NewTradeHandler(db)
-	costBasisHandler := handler.NewCostBasisHandler(db)
-	fifHandler := handler.NewFIFHandler(db)
+	tradeHandler := tradehandler.NewTradeHandler(db)
+	costBasisHandler := costbasishandler.NewCostBasisHandler(db)
+	fifHandler := fifhandler.NewFIFHandler(db)
 
 	r.Use(middleware.StripSlashes)
 
