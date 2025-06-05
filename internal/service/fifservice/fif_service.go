@@ -56,3 +56,18 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]Hol
 
 	return result, nil
 }
+
+func ComputeFRDIncome(trades []Trade, startDate, endDate time.Time) (float64, error) {
+	holdings, err := ComputeHoldingsBetween(trades, startDate, endDate)
+
+	if err != nil {
+		return 0, err
+	}
+
+	var income float64
+	for _, holding := range holdings {
+		income += holding.QuantityEnd * 0.05
+	}
+
+	return income, nil
+}
