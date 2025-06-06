@@ -2,6 +2,7 @@ package fifservice
 
 import (
 	"fif-calculator/internal/constants"
+	"fif-calculator/internal/datastructures"
 	"time"
 )
 import . "fif-calculator/internal/model"
@@ -57,17 +58,84 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]Hol
 	return result, nil
 }
 
-func ComputeFRDIncome(trades []Trade, startDate, endDate time.Time) (float64, error) {
-	holdings, err := ComputeHoldingsBetween(trades, startDate, endDate)
-
-	if err != nil {
-		return 0, err
-	}
-
+func ComputeFRDIncome(trades []Trade, holdings []HoldingQuantity, startDate, endDate time.Time) (float64, error) {
 	var income float64
+
 	for _, holding := range holdings {
-		income += holding.QuantityEnd * 0.05
+		income += holding.QuantityStart * holding.OpeningPrice * 0.05
 	}
 
 	return income, nil
+}
+
+func calculateRealGain(tradesBySymbol map[string][]Trade, startDate, endDate time.Time) (float64, error) {
+	var realGain float64
+	for _, trades := range tradesBySymbol {
+		realGainForSymbol, err := calculateRealGainForSymbol(trades, startDate, endDate)
+		if err != nil {
+			return 0, err
+		}
+
+		realGain += realGainForSymbol
+	}
+
+	return realGain, nil
+}
+
+// Calculates the real gain for a array list of trades of the same symbol
+func calculateRealGainForSymbol(trades []Trade, startDate, endDate time.Time) (float64, error) {
+	var realGain float64
+	queue := &datastructures.Stack{}
+	for _, trade := range trades {
+
+		// find the trade with the closest start date
+		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+
+		if err != nil {
+			return 0, err
+		}
+
+		if tradeDate.Before(startDate) || tradeDate.After(endDate) {
+			continue
+		}
+
+		switch trade.Action {
+		case constants.Buy:
+			queue.Push(trade)
+		case constants.Sell:
+			quantityRemaining := trade.Quantity
+
+			for quantityRemaining > 0 {
+				lastTrade, success := queue.Pop()
+
+				if !success {
+					break
+				}
+
+				quantityToDrain := lastTrade.Quantity
+
+				isDrained := (quantityToDrain - quantityRemaining) <= 0
+
+				if !isDrained {
+					lastTrade.Quantity -= quantityRemaining
+					queue.Push(lastTrade)
+				}
+
+				quantityUsed := min(quantityRemaining, quantityToDrain)
+				realGain += quantityUsed*trade.Price - quantityUsed*lastTrade.Price
+				quantityRemaining -= quantityToDrain
+			}
+		}
+	}
+	return realGain, nil
+}
+
+func tradesBySymbol(trades []Trade) map[string][]Trade {
+	tradesBySymbol := map[string][]Trade{}
+
+	for _, trade := range trades {
+		tradesBySymbol[trade.Symbol] = append(tradesBySymbol[trade.Symbol], trade)
+	}
+
+	return tradesBySymbol
 }
