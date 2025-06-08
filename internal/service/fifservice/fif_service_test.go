@@ -48,8 +48,8 @@ func TestComputeFRDIncome(t *testing.T) {
 			{Symbol: "XYZ", QuantityStart: 10000, QuantityEnd: 13000, OpeningPrice: 20, ClosingPrice: 50},
 		}
 
-		start := time.Date(2022, time.April, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2023, time.March, 31, 0, 0, 0, 0, time.UTC)
+		start := time.Date(2021, time.April, 1, 0, 0, 0, 0, time.UTC)
+		end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
 
 		got, err := ComputeFRDIncome(trades, holdings, start, end)
 		var want float64 = 12200
@@ -93,12 +93,10 @@ func TestCalculateRealGain(t *testing.T) {
 			{0, "XYZ", "2021-12-23", 2000, 22, "USD", "buy"},
 		}
 
-		tradesBySymbol := tradesBySymbol(trades)
-
 		start := time.Date(2021, time.April, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
 
-		got, err := calculateRealGain(tradesBySymbol, start, end)
+		got, err := calculateRealGainForSymbol(trades, start, end)
 		var want float64 = 12000
 
 		if err != nil {
@@ -118,12 +116,10 @@ func TestCalculateRealGain(t *testing.T) {
 			{0, "XYZ", "2021-12-01", 7000, 25, "USD", "sell"},
 		}
 
-		tradesBySymbol := tradesBySymbol(trades)
-
 		start := time.Date(2021, time.April, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
 
-		got, err := calculateRealGain(tradesBySymbol, start, end)
+		got, err := calculateRealGainForSymbol(trades, start, end)
 		var want float64 = 19000
 
 		if err != nil {
@@ -157,7 +153,7 @@ func TestPeakDifferential(t *testing.T) {
 			t.Errorf("ComputeHoldingsBetween() error = %v", err)
 		}
 
-		got, err := peakDifferential(holdings, tradesBySymbol(trades), start, end)
+		got, err := peakDifferentialForSymbol(holdings[0], trades, start, end)
 		want := avgCost * 7000
 
 		if err != nil {
@@ -185,7 +181,7 @@ func TestPeakDifferential(t *testing.T) {
 		end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
 		holdings, err := ComputeHoldingsBetween(trades, start, end)
 
-		got, err := peakDifferential(holdings, tradesBySymbol(trades), start, end)
+		got, err := peakDifferentialForSymbol(holdings[0], trades, start, end)
 		want := avgCost * 5000
 
 		if err != nil {

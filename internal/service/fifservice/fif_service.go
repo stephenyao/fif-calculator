@@ -61,27 +61,23 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]Hol
 func ComputeFRDIncome(trades []Trade, holdings []HoldingQuantity, startDate, endDate time.Time) (float64, error) {
 	var income float64
 
+	tradesBySymbol := tradesBySymbol(trades)
+
 	for _, holding := range holdings {
 		income += holding.QuantityStart * holding.OpeningPrice * 0.05
-	}
 
-	return income, nil
-}
-
-func peakDifferential(holdings []HoldingQuantity, tradesBySymbol map[string][]Trade, startDate, endDate time.Time) (float64, error) {
-	var peakDifferential float64
-
-	for _, holding := range holdings {
-		p, err := peakDifferentialForSymbol(holding, tradesBySymbol[holding.Symbol], startDate, endDate)
+		peakDifferential, err := peakDifferentialForSymbol(holding, tradesBySymbol[holding.Symbol], startDate, endDate)
+		actualGain, err := calculateRealGainForSymbol(tradesBySymbol[holding.Symbol], startDate, endDate)
 
 		if err != nil {
 			return 0, err
 		}
 
-		peakDifferential += p
+		quickSaleAdjustment := max(0, min(peakDifferential, actualGain))
+		income += quickSaleAdjustment
 	}
 
-	return peakDifferential, nil
+	return income, nil
 }
 
 func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDate, endDate time.Time) (float64, error) {
@@ -90,6 +86,7 @@ func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDat
 	var totalBuyQuantity float64
 	var peakQuantity float64
 
+	isValid := false
 	for _, trade := range trades {
 		// find the trade with the closest start date
 		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
@@ -101,6 +98,8 @@ func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDat
 		if tradeDate.Before(startDate) || tradeDate.After(endDate) {
 			continue
 		}
+
+		isValid = true
 
 		switch trade.Action {
 		case constants.Buy:
@@ -115,6 +114,10 @@ func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDat
 		peakQuantity = max(peakQuantity, trackedQuantity)
 	}
 
+	if !isValid {
+		return 0, nil
+	}
+
 	averageCost := totalCost / totalBuyQuantity
 	peakQuantity = holding.QuantityStart + peakQuantity
 
@@ -123,24 +126,9 @@ func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDat
 
 	peakDifferential := min(peakToStart, peakToEnd)
 
-	return peakDifferential * averageCost, nil
+	return peakDifferential * averageCost * 0.05, nil
 }
 
-func calculateRealGain(tradesBySymbol map[string][]Trade, startDate, endDate time.Time) (float64, error) {
-	var realGain float64
-	for _, trades := range tradesBySymbol {
-		realGainForSymbol, err := calculateRealGainForSymbol(trades, startDate, endDate)
-		if err != nil {
-			return 0, err
-		}
-
-		realGain += realGainForSymbol
-	}
-
-	return realGain, nil
-}
-
-// Calculates the real gain for a array list of trades of the same symbol
 func calculateRealGainForSymbol(trades []Trade, startDate, endDate time.Time) (float64, error) {
 	var realGain float64
 	queue := &datastructures.Stack{}
