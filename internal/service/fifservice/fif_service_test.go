@@ -2,6 +2,7 @@ package fifservice
 
 import (
 	"fif-calculator/internal/model"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -23,16 +24,26 @@ func TestComputeFRDIncome(t *testing.T) {
 			{Symbol: "GOOG", QuantityStart: 3000, QuantityEnd: 3000, OpeningPrice: 100, ClosingPrice: 50},
 		}
 
-		got, err := ComputeFRDIncome(trades, holdings, start, end)
+		want := []model.FRDResult{
+			{
+				Symbol:              "XYZ",
+				StartValue:          200000,
+				QuickSaleAdjustment: 0,
+			}, {
+				Symbol:              "GOOG",
+				StartValue:          300000,
+				QuickSaleAdjustment: 0,
+			},
+		}
 
-		var want = 200000*0.05 + 300000*0.05
+		got, err := ComputeFRDIncome(trades, holdings, start, end)
 
 		if err != nil {
 			t.Errorf("ComputeFRDIncome() error = %v", err)
 		}
 
-		if got != want {
-			t.Errorf("got %f, want %f", got, want)
+		if reflect.DeepEqual(got, want) != true {
+			t.Errorf("got %v, want %v", got, want)
 		}
 	})
 
@@ -52,14 +63,21 @@ func TestComputeFRDIncome(t *testing.T) {
 		end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
 
 		got, err := ComputeFRDIncome(trades, holdings, start, end)
-		var want float64 = 12200
+
+		want := []model.FRDResult{
+			{
+				Symbol:              "XYZ",
+				StartValue:          200000,
+				QuickSaleAdjustment: 2200,
+			},
+		}
 
 		if err != nil {
 			t.Errorf("ComputeFRDIncome() error = %v", err)
 		}
 
-		if got != want {
-			t.Errorf("ComputeFRDIncome() go = %v, want %v", got, want)
+		if reflect.DeepEqual(got, want) != true {
+			t.Errorf("ComputeFRDIncome() got = %v, want %v", got, want)
 		}
 	})
 }
@@ -153,7 +171,7 @@ func TestPeakDifferential(t *testing.T) {
 			t.Errorf("ComputeHoldingsBetween() error = %v", err)
 		}
 
-		got, err := peakDifferentialForSymbol(holdings[0], trades, start, end)
+		got, err := peakDifferentialForSymbol(*holdings[0], trades, start, end)
 		want := avgCost * 7000
 
 		if err != nil {
@@ -181,7 +199,7 @@ func TestPeakDifferential(t *testing.T) {
 		end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
 		holdings, err := ComputeHoldingsBetween(trades, start, end)
 
-		got, err := peakDifferentialForSymbol(holdings[0], trades, start, end)
+		got, err := peakDifferentialForSymbol(*holdings[0], trades, start, end)
 		want := avgCost * 5000
 
 		if err != nil {

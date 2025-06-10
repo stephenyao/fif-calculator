@@ -58,7 +58,7 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
-	trades, err := h.Repo.GetAll()
+	trades, err := h.Repo.GetAllByAscendingDate()
 	if err != nil {
 		http.Error(w, "Failed to load trades", http.StatusInternalServerError)
 		return
@@ -78,6 +78,10 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 
 		startVal := hq.QuantityStart * priceStart
 		endVal := hq.QuantityEnd * priceEnd
+
+		hq.OpeningPrice = priceStart
+		hq.ClosingPrice = priceEnd
+
 		fdr := startVal * 0.05
 
 		totalFDR += fdr

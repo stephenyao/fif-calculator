@@ -7,7 +7,7 @@ import (
 )
 import . "fif-calculator/internal/model"
 
-func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]HoldingQuantity, error) {
+func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*HoldingQuantity, error) {
 	quantityStart := make(map[string]float64)
 	quantityEnd := make(map[string]float64)
 
@@ -39,7 +39,7 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]Hol
 		symbolSet[trade.Symbol] = struct{}{}
 	}
 
-	var result []HoldingQuantity
+	var result []*HoldingQuantity
 	for symbol := range symbolSet {
 		quantityStart := quantityStart[symbol]
 		quantityEnd := quantityEnd[symbol]
@@ -48,7 +48,7 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]Hol
 			continue
 		}
 
-		result = append(result, HoldingQuantity{
+		result = append(result, &HoldingQuantity{
 			Symbol:        symbol,
 			QuantityStart: quantityStart,
 			QuantityEnd:   quantityEnd,
@@ -58,26 +58,31 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]Hol
 	return result, nil
 }
 
-func ComputeFRDIncome(trades []Trade, holdings []HoldingQuantity, startDate, endDate time.Time) (float64, error) {
-	var income float64
+func ComputeFRDIncome(trades []Trade, holdings []HoldingQuantity, startDate, endDate time.Time) ([]FRDResult, error) {
+	var result []FRDResult
 
 	tradesBySymbol := tradesBySymbol(trades)
 
 	for _, holding := range holdings {
-		income += holding.QuantityStart * holding.OpeningPrice * 0.05
 
 		peakDifferential, err := peakDifferentialForSymbol(holding, tradesBySymbol[holding.Symbol], startDate, endDate)
 		actualGain, err := calculateRealGainForSymbol(tradesBySymbol[holding.Symbol], startDate, endDate)
 
 		if err != nil {
-			return 0, err
+			return nil, err
 		}
 
 		quickSaleAdjustment := max(0, min(peakDifferential, actualGain))
-		income += quickSaleAdjustment
+		r := FRDResult{
+			Symbol:              holding.Symbol,
+			StartValue:          holding.QuantityStart * holding.OpeningPrice,
+			QuickSaleAdjustment: quickSaleAdjustment,
+		}
+
+		result = append(result, r)
 	}
 
-	return income, nil
+	return result, nil
 }
 
 func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDate, endDate time.Time) (float64, error) {

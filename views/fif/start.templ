@@ -30,7 +30,7 @@ templ fifStartPage() {
     <div id="holdings-results" class="mt-8"></div>
 }
 
-templ RenderFIFHoldingQuantities(holdings []HoldingQuantity, year int) {
+templ RenderFIFHoldingQuantities(holdings []*HoldingQuantity, year int) {
     <div>
         <h3 class="text-lg font-semibold mb-4">
             Holdings for Financial Year {year - 1}–{year}
