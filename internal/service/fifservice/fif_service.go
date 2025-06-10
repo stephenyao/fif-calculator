@@ -58,14 +58,14 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 	return result, nil
 }
 
-func ComputeFRDIncome(trades []Trade, holdings []HoldingQuantity, startDate, endDate time.Time) ([]FRDResult, error) {
+func ComputeFRDIncome(trades []Trade, holdings []*HoldingQuantity, startDate, endDate time.Time) ([]FRDResult, error) {
 	var result []FRDResult
 
 	tradesBySymbol := tradesBySymbol(trades)
 
 	for _, holding := range holdings {
 
-		peakDifferential, err := peakDifferentialForSymbol(holding, tradesBySymbol[holding.Symbol], startDate, endDate)
+		peakDifferential, err := peakDifferentialForSymbol(*holding, tradesBySymbol[holding.Symbol], startDate, endDate)
 		actualGain, err := calculateRealGainForSymbol(tradesBySymbol[holding.Symbol], startDate, endDate)
 
 		if err != nil {

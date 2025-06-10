@@ -13,6 +13,6 @@ type FRDResult struct {
 	QuickSaleAdjustment float64
 }
 
-func (f FRDResult) TotalFRDIncome() float64 {
+func (f FRDResult) TotalFDRIncome() float64 {
 	return f.QuickSaleAdjustment + f.StartValue*0.05
 }

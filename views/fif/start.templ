@@ -110,8 +110,8 @@ templ RenderFIFResult(vm FIFCalculationViewModel) {
                 <tr class="border-b">
                     <th class="py-1">Symbol</th>
                     <th class="py-1">Start Value (NZD)</th>
-                    <th class="py-1">End Value (NZD)</th>
-                    <th class="py-1">FDR (5%)</th>
+                    <th class="py-1">Quick sale adjustment</th>
+                    <th class="py-1">FDR Income</th>
                 </tr>
             </thead>
             <tbody>
@@ -119,8 +119,8 @@ templ RenderFIFResult(vm FIFCalculationViewModel) {
                     <tr class="border-t">
                         <td>{r.Symbol}</td>
                         <td>{fmt.Sprintf("%.2f", r.StartValue)}</td>
-                        <td>{fmt.Sprintf("%.2f", r.EndValue)}</td>
-                        <td class="font-semibold text-blue-700">{fmt.Sprintf("%.2f", r.FDRAmount)}</td>
+                        <td class="font-semibold text-blue-700">{fmt.Sprintf("%.2f", r.QuickSaleAdjustment)}</td>
+                        <td class="font-semibold text-blue-700">{fmt.Sprintf("%.2f", r.TotalFDRIncome())}</td>
                     </tr>
                 }
             </tbody>

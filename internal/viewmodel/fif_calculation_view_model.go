@@ -4,6 +4,6 @@ import "fif-calculator/internal/model"
 
 type FIFCalculationViewModel struct {
 	Year     int
-	Results  []model.FIFResult
+	Results  []model.FRDResult
 	TotalFDR float64
 }

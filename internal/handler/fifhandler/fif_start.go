@@ -1,7 +1,6 @@
 package fifhandler
 
 import (
-	. "fif-calculator/internal/model"
 	"fif-calculator/internal/service/fifservice"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
@@ -18,7 +17,12 @@ func (h *FIFHandler) Start(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *FIFHandler) StartFIF(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	err := r.ParseForm()
+
+	if err != nil {
+		http.Error(w, "Could not parse start fif form", http.StatusInternalServerError)
+	}
+
 	yearStr := r.FormValue("financialYear")
 	year, _ := strconv.Atoi(yearStr)
 
@@ -66,9 +70,6 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 
 	holdings, err := fifservice.ComputeHoldingsBetween(trades, startDate, endDate)
 
-	var results []FIFResult
-	totalFDR := 0.0
-
 	for _, hq := range holdings {
 		priceStartStr := r.FormValue("price_start_" + hq.Symbol)
 		priceEndStr := r.FormValue("price_end_" + hq.Symbol)
@@ -76,22 +77,19 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 		priceStart, _ := strconv.ParseFloat(priceStartStr, 64)
 		priceEnd, _ := strconv.ParseFloat(priceEndStr, 64)
 
-		startVal := hq.QuantityStart * priceStart
-		endVal := hq.QuantityEnd * priceEnd
-
 		hq.OpeningPrice = priceStart
 		hq.ClosingPrice = priceEnd
+	}
 
-		fdr := startVal * 0.05
+	results, err := fifservice.ComputeFRDIncome(trades, holdings, startDate, endDate)
+	var totalFDR float64 = 0
 
-		totalFDR += fdr
+	for _, result := range results {
+		totalFDR += result.TotalFDRIncome()
+	}
 
-		results = append(results, FIFResult{
-			Symbol:     hq.Symbol,
-			StartValue: startVal,
-			EndValue:   endVal,
-			FDRAmount:  fdr,
-		})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	vm := FIFCalculationViewModel{
@@ -100,5 +98,9 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 		TotalFDR: totalFDR,
 	}
 
-	fif.RenderFIFResult(vm).Render(r.Context(), w)
+	err = fif.RenderFIFResult(vm).Render(r.Context(), w)
+
+	if err != nil {
+		http.Error(w, "Failed to render fif", http.StatusInternalServerError)
+	}
 }
