@@ -19,7 +19,7 @@ func TestComputeFRDIncome(t *testing.T) {
 		start := time.Date(2022, time.April, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2023, time.March, 31, 0, 0, 0, 0, time.UTC)
 
-		holdings := []model.HoldingQuantity{
+		holdings := []*model.HoldingQuantity{
 			{Symbol: "XYZ", QuantityStart: 2000, QuantityEnd: 2000, OpeningPrice: 100, ClosingPrice: 50},
 			{Symbol: "GOOG", QuantityStart: 3000, QuantityEnd: 3000, OpeningPrice: 100, ClosingPrice: 50},
 		}
@@ -55,7 +55,7 @@ func TestComputeFRDIncome(t *testing.T) {
 			{0, "XYZ", "2021-12-23", 2000, 22, "USD", "buy"},
 		}
 
-		holdings := []model.HoldingQuantity{
+		holdings := []*model.HoldingQuantity{
 			{Symbol: "XYZ", QuantityStart: 10000, QuantityEnd: 13000, OpeningPrice: 20, ClosingPrice: 50},
 		}
 
