@@ -20,8 +20,7 @@ func TestComputeCVIncome(t *testing.T) {
 
 	start := time.Date(2021, time.April, 1, 0, 0, 0, 0, time.UTC)
 	end := time.Date(2022, time.March, 31, 0, 0, 0, 0, time.UTC)
-	parameters := model.CVParameters{
-		Symbol:           "XYZ",
+	gainLoss := model.GainLossParams{
 		Dividends:        5000,
 		TaxCredits:       1000,
 		OtherGains:       0,
@@ -29,7 +28,9 @@ func TestComputeCVIncome(t *testing.T) {
 		OtherCosts:       0,
 	}
 
-	results, err := ComputeCVIncome(trades, holdings, parameters, start, end)
+	holdings[0].GainLoss = gainLoss
+
+	results, err := ComputeCVIncome(trades, holdings, start, end)
 
 	if err != nil {
 		t.Errorf("ComputeCVIncome failed: %v", err)

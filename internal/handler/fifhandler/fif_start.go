@@ -1,6 +1,7 @@
 package fifhandler
 
 import (
+	"fif-calculator/internal/model"
 	"fif-calculator/internal/service/fifservice"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
@@ -79,13 +80,24 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 
 		hq.OpeningPrice = priceStart
 		hq.ClosingPrice = priceEnd
+
+		gainLossParams, _ := getGainLossParams(hq.Symbol, r)
+
+		hq.GainLoss = gainLossParams
 	}
 
-	results, err := fifservice.ComputeFRDIncome(trades, holdings, startDate, endDate)
+	frdResults, err := fifservice.ComputeFRDIncome(trades, holdings, startDate, endDate)
 	var totalFDR float64 = 0
 
-	for _, result := range results {
+	for _, result := range frdResults {
 		totalFDR += result.TotalFDRIncome()
+	}
+
+	var totalCV float64 = 0
+	cvResults, err := fifservice.ComputeCVIncome(trades, holdings, startDate, endDate)
+
+	for _, result := range cvResults {
+		totalCV += result.TotalIncome()
 	}
 
 	if err != nil {
@@ -93,9 +105,11 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vm := FIFCalculationViewModel{
-		Year:     year,
-		Results:  results,
-		TotalFDR: totalFDR,
+		Year:       year,
+		FDRResults: frdResults,
+		TotalFDR:   totalFDR,
+		CVResults:  cvResults,
+		TotalCV:    totalCV,
 	}
 
 	err = fif.RenderFIFResult(vm).Render(r.Context(), w)
@@ -105,21 +119,28 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//func getCVParams(symbol string, r *http.Request) (model.CVParameters, error) {
-//	err := r.ParseForm()
-//
-//	if err != nil {
-//		return model.CVParameters{}, err
-//	}
-//
-//	dividends := r.FormValue("dividends-" + symbol)
-//
-//	return model.CVParameters{
-//		Symbol:           symbol,
-//		Dividends:        0,
-//		TaxCredits:       0,
-//		OtherGains:       0,
-//		ForeignIncomeTax: 0,
-//		OtherCosts:       0,
-//	}, nil
-//}
+func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, error) {
+	err := r.ParseForm()
+
+	if err != nil {
+		return model.GainLossParams{}, err
+	}
+
+	dividends, err := strconv.ParseFloat(r.FormValue("dividends_"+symbol), 64)
+	taxCredits, err := strconv.ParseFloat(r.FormValue("tax_credits"+symbol), 64)
+	otherGains, err := strconv.ParseFloat(r.FormValue("other_gains"+symbol), 64)
+	foreignIncomeTax, err := strconv.ParseFloat(r.FormValue("foreign_income_tax"+symbol), 64)
+	otherCosts, err := strconv.ParseFloat(r.FormValue("other_costs"+symbol), 64)
+
+	if err != nil {
+		return model.GainLossParams{}, err
+	}
+
+	return model.GainLossParams{
+		Dividends:        dividends,
+		TaxCredits:       taxCredits,
+		OtherGains:       otherGains,
+		ForeignIncomeTax: foreignIncomeTax,
+		OtherCosts:       otherCosts,
+	}, nil
+}

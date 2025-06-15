@@ -6,7 +6,7 @@ import (
 )
 import . "fif-calculator/internal/model"
 
-func ComputeCVIncome(trades []Trade, holdings []*HoldingQuantity, parameters CVParameters, startDate, endDate time.Time) ([]CVResult, error) {
+func ComputeCVIncome(trades []Trade, holdings []*HoldingQuantity, startDate, endDate time.Time) ([]CVResult, error) {
 	var results []CVResult
 
 	tradesBySymbol := tradesBySymbol(trades)
@@ -36,8 +36,8 @@ func ComputeCVIncome(trades []Trade, holdings []*HoldingQuantity, parameters CVP
 			}
 		}
 
-		gains := proceedsFromSales + parameters.Dividends + parameters.TaxCredits + parameters.OtherGains
-		costs := costsOfPurchases + parameters.ForeignIncomeTax + parameters.OtherCosts
+		gains := proceedsFromSales + holding.GainLoss.Dividends + holding.GainLoss.TaxCredits + holding.GainLoss.OtherGains
+		costs := costsOfPurchases + holding.GainLoss.ForeignIncomeTax + holding.GainLoss.OtherCosts
 
 		result := CVResult{
 			Symbol:       holding.Symbol,

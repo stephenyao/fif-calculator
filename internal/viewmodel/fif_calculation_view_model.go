@@ -3,7 +3,9 @@ package viewmodel
 import "fif-calculator/internal/model"
 
 type FIFCalculationViewModel struct {
-	Year     int
-	Results  []model.FRDResult
-	TotalFDR float64
+	Year       int
+	FDRResults []model.FRDResult
+	TotalFDR   float64
+	CVResults  []model.CVResult
+	TotalCV    float64
 }
