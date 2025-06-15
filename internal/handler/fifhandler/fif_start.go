@@ -104,3 +104,22 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to render fif", http.StatusInternalServerError)
 	}
 }
+
+//func getCVParams(symbol string, r *http.Request) (model.CVParameters, error) {
+//	err := r.ParseForm()
+//
+//	if err != nil {
+//		return model.CVParameters{}, err
+//	}
+//
+//	dividends := r.FormValue("dividends-" + symbol)
+//
+//	return model.CVParameters{
+//		Symbol:           symbol,
+//		Dividends:        0,
+//		TaxCredits:       0,
+//		OtherGains:       0,
+//		ForeignIncomeTax: 0,
+//		OtherCosts:       0,
+//	}, nil
+//}
