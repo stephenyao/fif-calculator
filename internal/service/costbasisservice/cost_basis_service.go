@@ -4,6 +4,7 @@ import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
 	. "fif-calculator/internal/viewmodel"
+	"sort"
 	"time"
 )
 
@@ -77,4 +78,69 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 	}
 
 	return costBasisBySymbol
+}
+
+func MaxCostBasisDuringYear(trades []Trade, startDate, endDate time.Time) float64 {
+	tradesInRange := filterAndSortTrades(trades, startDate, endDate)
+
+	var queue []Trade
+	var maxCostBasis float64
+
+	for _, trade := range tradesInRange {
+		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+		if err != nil || tradeDate.Before(startDate) || tradeDate.After(endDate) {
+			continue
+		}
+
+		switch trade.Action {
+		case constants.Buy:
+			queue = append(queue, trade)
+		case constants.Sell:
+			sellQty := trade.Quantity
+			for sellQty > 0 && len(queue) > 0 {
+				head := &queue[0]
+				if head.Quantity > sellQty {
+					head.Quantity -= sellQty
+					sellQty = 0
+				} else {
+					sellQty -= head.Quantity
+					queue = queue[1:]
+				}
+			}
+		}
+
+		// Calculate current cost basis after applying trade
+		currentCostBasis := 0.0
+		for _, buy := range queue {
+			currentCostBasis += buy.Quantity * buy.Price
+		}
+
+		if currentCostBasis > maxCostBasis {
+			maxCostBasis = currentCostBasis
+		}
+	}
+
+	return maxCostBasis
+}
+
+func filterAndSortTrades(trades []Trade, startDate, endDate time.Time) []Trade {
+	var result []Trade
+
+	for _, trade := range trades {
+		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+		if err != nil {
+			continue // skip invalid dates
+		}
+		if !tradeDate.Before(startDate) && !tradeDate.After(endDate) {
+			result = append(result, trade)
+		}
+	}
+
+	sort.Slice(result, func(i, j int) bool {
+		dateI, _ := time.Parse("2006-01-02", result[i].BuyDate)
+		dateJ, _ := time.Parse("2006-01-02", result[j].BuyDate)
+		return dateI.Before(dateJ)
+	})
+
+	return result
 }

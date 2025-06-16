@@ -211,3 +211,78 @@ func TestCostBasisBySymbol(t *testing.T) {
 		}
 	})
 }
+
+func TestMaxCostBasisDuringYear(t *testing.T) {
+	start := time.Date(2024, 4, 1, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2025, 3, 31, 0, 0, 0, 0, time.UTC)
+
+	t.Run("never exceeds 50000", func(t *testing.T) {
+		trades := []model.Trade{
+			{Symbol: "XYZ", BuyDate: "2024-04-15", Quantity: 10, Price: 1000, Action: constants.Buy}, // $10,000
+			{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 20, Price: 1000, Action: constants.Buy}, // $20,000
+			{Symbol: "XYZ", BuyDate: "2024-07-01", Quantity: 10, Price: 1000, Action: constants.Sell},
+		}
+
+		got := MaxCostBasisDuringYear(trades, start, end)
+		want := 30000.0
+		if got != want {
+			t.Errorf("got %f, want %f", got, want)
+		}
+	})
+
+	t.Run("exceeds 50000 on a single day", func(t *testing.T) {
+		trades := []model.Trade{
+			{Symbol: "XYZ", BuyDate: "2024-04-10", Quantity: 30, Price: 1000, Action: constants.Buy}, // $30,000
+			{Symbol: "XYZ", BuyDate: "2024-04-11", Quantity: 30, Price: 1000, Action: constants.Buy}, // $60,000
+			{Symbol: "XYZ", BuyDate: "2024-04-12", Quantity: 40, Price: 1000, Action: constants.Sell},
+		}
+
+		got := MaxCostBasisDuringYear(trades, start, end)
+		want := 60000.0
+		if got != want {
+			t.Errorf("got %f, want %f", got, want)
+		}
+	})
+
+	t.Run("crosses 50000 then sells down", func(t *testing.T) {
+		trades := []model.Trade{
+			{Symbol: "XYZ", BuyDate: "2024-05-01", Quantity: 60, Price: 1000, Action: constants.Buy},  // $60,000
+			{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 20, Price: 1000, Action: constants.Sell}, // $40,000
+		}
+
+		got := MaxCostBasisDuringYear(trades, start, end)
+		want := 60000.0
+		if got != want {
+			t.Errorf("got %f, want %f", got, want)
+		}
+	})
+
+	t.Run("buys and sells to hover below 50000", func(t *testing.T) {
+		trades := []model.Trade{
+			{Symbol: "XYZ", BuyDate: "2024-04-05", Quantity: 25, Price: 1000, Action: constants.Buy},  // $25,000
+			{Symbol: "XYZ", BuyDate: "2024-05-01", Quantity: 10, Price: 1000, Action: constants.Buy},  // $35,000
+			{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 5, Price: 1000, Action: constants.Sell},  // $30,000
+			{Symbol: "XYZ", BuyDate: "2024-07-01", Quantity: 15, Price: 1000, Action: constants.Buy},  // $45,000
+			{Symbol: "XYZ", BuyDate: "2024-08-01", Quantity: 10, Price: 1000, Action: constants.Sell}, // $35,000
+		}
+
+		got := MaxCostBasisDuringYear(trades, start, end)
+		want := 45000.0
+		if got != want {
+			t.Errorf("got %f, want %f", got, want)
+		}
+	})
+
+	t.Run("trades outside of date range are ignored", func(t *testing.T) {
+		trades := []model.Trade{
+			{Symbol: "XYZ", BuyDate: "2023-12-01", Quantity: 60, Price: 1000, Action: constants.Buy}, // Ignored
+			{Symbol: "XYZ", BuyDate: "2025-04-01", Quantity: 60, Price: 1000, Action: constants.Buy}, // Ignored
+		}
+
+		got := MaxCostBasisDuringYear(trades, start, end)
+		want := 0.0
+		if got != want {
+			t.Errorf("got %f, want %f", got, want)
+		}
+	})
+}
