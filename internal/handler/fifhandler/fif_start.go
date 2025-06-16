@@ -43,7 +43,11 @@ func (h *FIFHandler) StartFIF(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	fif.RenderFIFHoldingQuantities(holdings, year).Render(r.Context(), w)
+	err = fif.RenderFIFHoldingQuantities(holdings, year).Render(r.Context(), w)
+
+	if err != nil {
+		http.Error(w, "Failed to render fif", http.StatusInternalServerError)
+	}
 }
 
 func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
