@@ -11,7 +11,7 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 	quantityEnd := make(map[string]float64)
 
 	for _, trade := range trades {
-		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+		tradeDate, err := time.Parse(time.DateOnly, trade.BuyDate)
 
 		if err != nil {
 			return nil, err

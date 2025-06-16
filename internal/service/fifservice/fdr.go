@@ -43,7 +43,7 @@ func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDat
 	isValid := false
 	for _, trade := range trades {
 		// find the trade with the closest start date
-		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+		tradeDate, err := time.Parse(time.DateOnly, trade.BuyDate)
 
 		if err != nil {
 			return 0, err
@@ -89,7 +89,7 @@ func calculateRealGainForSymbol(trades []Trade, startDate, endDate time.Time) (f
 	for _, trade := range trades {
 
 		// find the trade with the closest start date
-		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+		tradeDate, err := time.Parse(time.DateOnly, trade.BuyDate)
 
 		if err != nil {
 			return 0, err

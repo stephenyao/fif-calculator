@@ -18,7 +18,7 @@ func ComputeCVIncome(trades []Trade, holdings []*HoldingQuantity, startDate, end
 		var costsOfPurchases float64 = 0
 
 		for _, trade := range tradesBySymbol[holding.Symbol] {
-			tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
+			tradeDate, err := time.Parse(time.DateOnly, trade.BuyDate)
 
 			if err != nil {
 				return nil, err
