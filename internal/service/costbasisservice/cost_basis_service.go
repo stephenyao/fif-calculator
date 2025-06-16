@@ -84,37 +84,28 @@ func MaxCostBasisDuringYear(trades []Trade, startDate, endDate time.Time) float6
 	tradesInRange := filterAndSortTrades(trades, startDate, endDate)
 
 	var queue []Trade
-	var maxCostBasis float64
+	var currentCostBasis, maxCostBasis float64
 
 	for _, trade := range tradesInRange {
-		tradeDate, err := time.Parse("2006-01-02", trade.BuyDate)
-		if err != nil || tradeDate.Before(startDate) || tradeDate.After(endDate) {
-			continue
-		}
-
 		switch trade.Action {
 		case constants.Buy:
 			queue = append(queue, trade)
+			currentCostBasis += trade.Price * trade.Quantity
 		case constants.Sell:
 			sellQty := trade.Quantity
 			for sellQty > 0 && len(queue) > 0 {
-				head := &queue[0]
-				if head.Quantity > sellQty {
-					head.Quantity -= sellQty
+				buy := &queue[0]
+				if buy.Quantity > sellQty {
+					currentCostBasis -= trade.Price * sellQty // conservative, or track exact match
+					buy.Quantity -= sellQty
 					sellQty = 0
 				} else {
-					sellQty -= head.Quantity
+					currentCostBasis -= trade.Price * buy.Quantity
+					sellQty -= buy.Quantity
 					queue = queue[1:]
 				}
 			}
 		}
-
-		// Calculate current cost basis after applying trade
-		currentCostBasis := 0.0
-		for _, buy := range queue {
-			currentCostBasis += buy.Quantity * buy.Price
-		}
-
 		if currentCostBasis > maxCostBasis {
 			maxCostBasis = currentCostBasis
 		}

@@ -7,6 +7,7 @@ import (
 	"fif-calculator/views/trades"
 	"net/http"
 	"slices"
+	"time"
 )
 
 func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +32,7 @@ func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func costBasisViewModel(trades []model.Trade) CostBasisViewModel {
-	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades)
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades, time.Now())
 	totalCostBasis := 0.0
 
 	for _, costBasisSymbol := range costBasisBySymbol {

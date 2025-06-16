@@ -35,7 +35,7 @@ func main() {
 	r.Get("/cost-basis", costBasisHandler.Index)
 	r.Get("/fif", fifHandler.Index)
 	r.Get("/fif/start", fifHandler.Start)
-	r.Post("/fif/start", fifHandler.StartFIF)
+	r.Post("/fif/start", fifHandler.HoldingsInfo)
 	r.Post("/fif/calculate", fifHandler.CalculateFIF)
 
 	http.ListenAndServe(":8080", r)

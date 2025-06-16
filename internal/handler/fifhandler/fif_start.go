@@ -2,6 +2,7 @@ package fifhandler
 
 import (
 	"fif-calculator/internal/model"
+	"fif-calculator/internal/service/costbasisservice"
 	"fif-calculator/internal/service/fifservice"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
@@ -17,7 +18,7 @@ func (h *FIFHandler) Start(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *FIFHandler) StartFIF(w http.ResponseWriter, r *http.Request) {
+func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 
 	if err != nil {
@@ -31,9 +32,14 @@ func (h *FIFHandler) StartFIF(w http.ResponseWriter, r *http.Request) {
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
 	trades, err := h.Repo.GetAll()
-
 	if err != nil {
 		http.Error(w, "Failed to fetch all trades", http.StatusInternalServerError)
+	}
+
+	maxCostBasis := costbasisservice.MaxCostBasisDuringYear(trades, startDate, endDate)
+	if maxCostBasis < 50000 {
+		fif.NoFIFApplicable().Render(r.Context(), w)
+		return
 	}
 
 	// You’ll compute this from the Trades table
