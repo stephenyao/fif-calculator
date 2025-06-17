@@ -9,6 +9,7 @@ import (
 func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*HoldingQuantity, error) {
 	quantityStart := make(map[string]float64)
 	quantityEnd := make(map[string]float64)
+	numberOfTrades := make(map[string]int)
 
 	for _, trade := range trades {
 		tradeDate, err := time.Parse(time.DateOnly, trade.BuyDate)
@@ -31,6 +32,9 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 		if !tradeDate.After(endDate) {
 			quantityEnd[trade.Symbol] += delta
 		}
+		if tradeDate.After(startDate) && tradeDate.Before(endDate) {
+			numberOfTrades[trade.Symbol]++
+		}
 	}
 
 	symbolSet := map[string]struct{}{}
@@ -42,15 +46,21 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 	for symbol := range symbolSet {
 		quantityStart := quantityStart[symbol]
 		quantityEnd := quantityEnd[symbol]
+		numberOfTrades := numberOfTrades[symbol]
 
 		if quantityStart < 0 || quantityEnd < 0 {
 			continue
 		}
 
+		if quantityStart == 0 && quantityEnd == 0 && numberOfTrades == 0 {
+			continue
+		}
+
 		result = append(result, &HoldingQuantity{
-			Symbol:        symbol,
-			QuantityStart: quantityStart,
-			QuantityEnd:   quantityEnd,
+			Symbol:         symbol,
+			QuantityStart:  quantityStart,
+			QuantityEnd:    quantityEnd,
+			NumberOfTrades: numberOfTrades,
 		})
 	}
 

@@ -42,7 +42,6 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// You’ll compute this from the Trades table
 	holdings, err := fifservice.ComputeHoldingsBetween(trades, startDate, endDate)
 
 	if err != nil {
