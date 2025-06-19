@@ -7,7 +7,7 @@ import (
 )
 import . "fif-calculator/internal/model"
 
-func ComputeFRDIncome(trades []Trade, holdings []*HoldingQuantity, startDate, endDate time.Time) ([]FRDResult, error) {
+func ComputeFRDIncome(trades []Trade, holdings []*HoldingInfo, startDate, endDate time.Time) ([]FRDResult, error) {
 	var result []FRDResult
 
 	tradesBySymbol := tradesBySymbol(trades)
@@ -34,7 +34,7 @@ func ComputeFRDIncome(trades []Trade, holdings []*HoldingQuantity, startDate, en
 	return result, nil
 }
 
-func peakDifferentialForSymbol(holding HoldingQuantity, trades []Trade, startDate, endDate time.Time) (float64, error) {
+func peakDifferentialForSymbol(holding HoldingInfo, trades []Trade, startDate, endDate time.Time) (float64, error) {
 	var trackedQuantity float64
 	var totalCost float64
 	var totalBuyQuantity float64

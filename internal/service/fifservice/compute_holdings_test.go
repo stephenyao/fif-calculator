@@ -23,7 +23,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 		cases := []struct {
 			name   string
 			trades []model.Trade
-			want   map[string]model.HoldingQuantity
+			want   map[string]model.HoldingInfo
 		}{
 			{
 				name: "only buy trades before start and end",
@@ -31,7 +31,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 					{Symbol: "XYZ", BuyDate: "2024-03-01", Quantity: 10, Action: constants.Buy},
 					{Symbol: "XYZ", BuyDate: "2024-03-15", Quantity: 5, Action: constants.Buy},
 				},
-				want: map[string]model.HoldingQuantity{
+				want: map[string]model.HoldingInfo{
 					"XYZ": {Symbol: "XYZ", QuantityStart: 15, QuantityEnd: 15, NumberOfTrades: 0},
 				},
 			},
@@ -42,7 +42,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 					{Symbol: "XYZ", BuyDate: "2024-04-10", Quantity: 5, Action: constants.Buy},
 					{Symbol: "XYZ", BuyDate: "2024-05-01", Quantity: 4, Action: constants.Sell},
 				},
-				want: map[string]model.HoldingQuantity{
+				want: map[string]model.HoldingInfo{
 					"XYZ": {Symbol: "XYZ", QuantityStart: 10, QuantityEnd: 11, NumberOfTrades: 2},
 				},
 			},
@@ -51,12 +51,12 @@ func TestComputeHoldingsBetween(t *testing.T) {
 				trades: []model.Trade{
 					{Symbol: "XYZ", BuyDate: "2024-03-01", Quantity: 5, Action: constants.Sell},
 				},
-				want: map[string]model.HoldingQuantity{},
+				want: map[string]model.HoldingInfo{},
 			},
 			{
 				name:   "empty trade list",
 				trades: []model.Trade{},
-				want:   map[string]model.HoldingQuantity{},
+				want:   map[string]model.HoldingInfo{},
 			},
 			{
 				name: "multiple symbols",
@@ -65,7 +65,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 					{Symbol: "XYZ", BuyDate: "2024-02-01", Quantity: 5, Action: constants.Buy},
 					{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 10, Action: constants.Buy},
 				},
-				want: map[string]model.HoldingQuantity{
+				want: map[string]model.HoldingInfo{
 					"ABC": {Symbol: "ABC", QuantityStart: 10, QuantityEnd: 10, NumberOfTrades: 0},
 					"XYZ": {Symbol: "XYZ", QuantityStart: 5, QuantityEnd: 15, NumberOfTrades: 1},
 				},
@@ -78,7 +78,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 					{Symbol: "XYZ", BuyDate: "2024-02-01", Quantity: 5, Action: constants.Buy},
 					{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 10, Action: constants.Buy},
 				},
-				want: map[string]model.HoldingQuantity{
+				want: map[string]model.HoldingInfo{
 					"XYZ": {Symbol: "XYZ", QuantityStart: 5, QuantityEnd: 15, NumberOfTrades: 1},
 				},
 			},
@@ -90,7 +90,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 					{Symbol: "XYZ", BuyDate: "2024-02-01", Quantity: 5, Action: constants.Buy},
 					{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 10, Action: constants.Buy},
 				},
-				want: map[string]model.HoldingQuantity{
+				want: map[string]model.HoldingInfo{
 					"ABC": {Symbol: "ABC", QuantityStart: 0, QuantityEnd: 0, NumberOfTrades: 2},
 					"XYZ": {Symbol: "XYZ", QuantityStart: 5, QuantityEnd: 15, NumberOfTrades: 1},
 				},
@@ -108,7 +108,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 					t.Fatalf("expected %d holdings, got %d", len(tt.want), len(holdings))
 				}
 
-				gotMap := make(map[string]*model.HoldingQuantity)
+				gotMap := make(map[string]*model.HoldingInfo)
 				for _, h := range holdings {
 					gotMap[h.Symbol] = h
 				}

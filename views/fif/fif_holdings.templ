@@ -3,7 +3,7 @@ package fif
 import "fmt"
 import . "fif-calculator/internal/model"
 
-templ HoldingsInputForm(holdings []*HoldingQuantity, year int) {
+templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	<form
 		hx-post="/fif/calculate"
 		hx-target="#fif-result"

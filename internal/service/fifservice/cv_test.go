@@ -14,7 +14,7 @@ func TestComputeCVIncome(t *testing.T) {
 		{0, "XYZ", "2021-12-23", 2000, 22, "USD", "buy"},
 	}
 
-	holdings := []*model.HoldingQuantity{
+	holdings := []*model.HoldingInfo{
 		{Symbol: "XYZ", QuantityStart: 10000, QuantityEnd: 13000, OpeningPrice: 10, ClosingPrice: 25},
 	}
 

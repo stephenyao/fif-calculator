@@ -6,7 +6,7 @@ import (
 )
 import . "fif-calculator/internal/model"
 
-func ComputeCVIncome(trades []Trade, holdings []*HoldingQuantity, startDate, endDate time.Time) ([]CVResult, error) {
+func ComputeCVIncome(trades []Trade, holdings []*HoldingInfo, startDate, endDate time.Time) ([]CVResult, error) {
 	var results []CVResult
 
 	tradesBySymbol := tradesBySymbol(trades)
