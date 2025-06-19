@@ -10,6 +10,8 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 	quantityStart := make(map[string]float64)
 	quantityEnd := make(map[string]float64)
 	numberOfTrades := make(map[string]int)
+	proceedsFromSales := make(map[string]float64)
+	costOfPurchases := make(map[string]float64)
 
 	for _, trade := range trades {
 		tradeDate, err := time.Parse(time.DateOnly, trade.BuyDate)
@@ -34,6 +36,12 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 		}
 		if tradeDate.After(startDate) && tradeDate.Before(endDate) {
 			numberOfTrades[trade.Symbol]++
+			switch trade.Action {
+			case constants.Sell:
+				proceedsFromSales[trade.Symbol] += trade.Price * trade.Quantity
+			case constants.Buy:
+				costOfPurchases[trade.Symbol] += trade.Price * trade.Quantity
+			}
 		}
 	}
 
@@ -47,6 +55,8 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 		quantityStart := quantityStart[symbol]
 		quantityEnd := quantityEnd[symbol]
 		numberOfTrades := numberOfTrades[symbol]
+		proceedsFromSales := proceedsFromSales[symbol]
+		costOfPurchases := costOfPurchases[symbol]
 
 		if quantityStart < 0 || quantityEnd < 0 {
 			continue
@@ -57,10 +67,12 @@ func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*Ho
 		}
 
 		result = append(result, &HoldingQuantity{
-			Symbol:         symbol,
-			QuantityStart:  quantityStart,
-			QuantityEnd:    quantityEnd,
-			NumberOfTrades: numberOfTrades,
+			Symbol:            symbol,
+			QuantityStart:     quantityStart,
+			QuantityEnd:       quantityEnd,
+			NumberOfTrades:    numberOfTrades,
+			ProceedsFromSales: proceedsFromSales,
+			CostOfPurchases:   costOfPurchases,
 		})
 	}
 

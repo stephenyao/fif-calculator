@@ -20,6 +20,11 @@ templ HoldingsInputForm(holdings []*HoldingQuantity, year int) {
 							<span class="mx-4">•</span>
 							<span>Qty on 31 Mar { year }: { h.QuantityEnd }</span>
 						</div>
+						<div class="text-sm text-gray-600 mt-1">
+							if h.NumberOfTrades > 0 {
+								<span>There were a total of { h.NumberOfTrades } trades during the year </span>
+							}
+						</div>
 					</div>
 					<input type="hidden" name={ "symbol_" + h.Symbol } value={ h.Symbol }/>
 					<input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.4f", h.QuantityStart) }/>
@@ -64,7 +69,7 @@ templ HoldingsInputForm(holdings []*HoldingQuantity, year int) {
 }
 
 templ NoFIFApplicable() {
-    <div>FIF not applicable</div>
+	<div>FIF not applicable</div>
 }
 
 templ grid() {
