@@ -22,7 +22,9 @@ templ HoldingsInputForm(holdings []*HoldingQuantity, year int) {
 						</div>
 						<div class="text-sm text-gray-600 mt-1">
 							if h.NumberOfTrades > 0 {
-								<span>There were a total of { h.NumberOfTrades } trades during the year </span>
+								<div>There were a total of { h.NumberOfTrades } trades during the period </div>
+								<div>Cost of purchases during the period: { h.CostOfPurchases } </div>
+								<div>Proceeds from sales during the period: { h.ProceedsFromSales } </div>
 							}
 						</div>
 					</div>
