@@ -23,39 +23,37 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 						<div class="text-sm text-gray-600 mt-1">
 							if h.NumberOfTrades > 0 {
 								<div>There were a total of { h.NumberOfTrades } trades during the period </div>
-								<div>Cost of purchases during the period: { h.CostOfPurchases } </div>
-								<div>Proceeds from sales during the period: { h.ProceedsFromSales } </div>
 							}
 						</div>
 					</div>
 					<input type="hidden" name={ "symbol_" + h.Symbol } value={ h.Symbol }/>
-					<input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.4f", h.QuantityStart) }/>
-					<input type="hidden" name={ "quantity_end_" + h.Symbol } value={ fmt.Sprintf("%.4f", h.QuantityEnd) }/>
+					<input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityStart) }/>
+					<input type="hidden" name={ "quantity_end_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityEnd) }/>
 					<input type="hidden" name="financialYear" value={ year }/>
 					<!-- Price Information -->
 					<div class="mb-6">
 						<h5 class="text-md font-medium text-gray-900 mb-3">Price Information</h5>
 						@grid() {
-							@input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", true)
-							@input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", true)
+							@input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", "0.00", true)
+							@input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", "0.00", true)
 						}
 					</div>
 					<!-- Income and Costs -->
 					<div class="mb-6">
 						<h5 class="text-md font-medium text-gray-900 mb-3">Income</h5>
 						@grid() {
-							@input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds-from-sales", false)
-							@input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", true)
-							@input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", true)
-							@input(h.Symbol, "Other Gains (NZD)", "other-gains", "other_gains", true)
+							@input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds-from-sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), false)
+							@input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", "0.00", true)
+							@input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", "0.00", true)
+							@input(h.Symbol, "Other Gains (NZD)", "other-gains", "other_gains", "0.00", true)
 						}
 					</div>
 					<div class="mb-3">
 						<h5 class="text-md font-medium text-gray-900 mb-3">Costs</h5>
 						@grid() {
-							@input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", false)
-							@input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", "foreign_income_tax", true)
-							@input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_cost", true)
+							@input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), false)
+							@input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", "foreign_income_tax", "0.00", true)
+							@input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_cost", "0.00", true)
 						}
 					</div>
 				</div>
@@ -82,7 +80,7 @@ templ grid() {
 	</div>
 }
 
-templ input(symbol, label, id, name string, enabled bool) {
+templ input(symbol, label, id, name string, value string, enabled bool) {
 	<div>
 		<label class="block text-sm font-medium text-gray-700 mb-1" for={ id + "-" + symbol }>
 			{ label }
@@ -96,7 +94,7 @@ templ input(symbol, label, id, name string, enabled bool) {
 				name={ name + "_" + symbol }
 				class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 				placeholder="5.00"
-				value="0.00"
+				value={value}
 			/>
 		} else {
 			<input
@@ -105,7 +103,7 @@ templ input(symbol, label, id, name string, enabled bool) {
 				id={ id + "-" + symbol }
 				name={ name + "_" + symbol }
 				class="block w-full px-3 py-2 border border-gray-300 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-				value="0.00"
+				value={value}
 				disabled
 			/>
 		}
