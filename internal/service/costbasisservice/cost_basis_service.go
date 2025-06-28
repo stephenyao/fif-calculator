@@ -80,9 +80,8 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 	return costBasisBySymbol
 }
 
-func MaxCostBasisDuringYear(trades []Trade, startDate, endDate time.Time) float64 {
-	tradesInRange := filterAndSortTrades(trades, startDate, endDate)
-
+func MaxCostBasisDuringYear(trades []Trade, endDate time.Time) float64 {
+	tradesInRange := filterAndSortTrades(trades, endDate)
 	var queue []Trade
 	var currentCostBasis, maxCostBasis float64
 
@@ -114,7 +113,7 @@ func MaxCostBasisDuringYear(trades []Trade, startDate, endDate time.Time) float6
 	return maxCostBasis
 }
 
-func filterAndSortTrades(trades []Trade, startDate, endDate time.Time) []Trade {
+func filterAndSortTrades(trades []Trade, endDate time.Time) []Trade {
 	var result []Trade
 
 	for _, trade := range trades {
@@ -122,7 +121,7 @@ func filterAndSortTrades(trades []Trade, startDate, endDate time.Time) []Trade {
 		if err != nil {
 			continue // skip invalid dates
 		}
-		if !tradeDate.Before(startDate) && !tradeDate.After(endDate) {
+		if !tradeDate.After(endDate) {
 			result = append(result, trade)
 		}
 	}

@@ -36,9 +36,10 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to fetch all trades", http.StatusInternalServerError)
 	}
 
-	maxCostBasis := costbasisservice.MaxCostBasisDuringYear(trades, startDate, endDate)
+	maxCostBasis := costbasisservice.MaxCostBasisDuringYear(trades, endDate)
+
 	if maxCostBasis < 50000 {
-		fif.NoFIFApplicable().Render(r.Context(), w)
+		err = fif.NoFIFApplicable().Render(r.Context(), w)
 		return
 	}
 
