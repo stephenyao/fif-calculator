@@ -6,6 +6,7 @@ import (
 	"fif-calculator/internal/service/fifservice"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -125,6 +126,10 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to render fif", http.StatusInternalServerError)
 	}
+}
+
+func (h *FIFHandler) SaveFIFCalculation(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Saved a fif")
 }
 
 func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, error) {

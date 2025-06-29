@@ -59,12 +59,22 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 				</div>
 			}
 		</div>
-		<div class="flex justify-center">
+		<div class="flex justify-start space-x-4">
 			<button
 				type="submit"
+				name="action"
+				value="calculate"
 				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
 			>
 				Calculate FIF
+			</button>
+			<button
+				type="submit"
+				name="action"
+				value="save"
+				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+			>
+				Save Calculation
 			</button>
 		</div>
 	</form>
@@ -94,7 +104,7 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 				name={ name + "_" + symbol }
 				class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 				placeholder="5.00"
-				value={value}
+				value={ value }
 			/>
 		} else {
 			<input
@@ -103,7 +113,7 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 				id={ id + "-" + symbol }
 				name={ name + "_" + symbol }
 				class="block w-full px-3 py-2 border border-gray-300 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-				value={value}
+				value={ value }
 				disabled
 			/>
 		}
