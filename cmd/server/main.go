@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // register sqlite3 driver
+	"log"
 	"net/http"
 )
 
@@ -36,7 +37,7 @@ func main() {
 	r.Get("/fif", fifHandler.Index)
 	r.Get("/fif/start", fifHandler.Start)
 	r.Post("/fif/start", fifHandler.HoldingsInfo)
-	r.Post("/fif/calculate", fifHandler.CalculateFIF)
+	r.Post("/fif/calculate", fifHandler.FIFFormSubmit)
 
-	http.ListenAndServe(":8080", r)
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

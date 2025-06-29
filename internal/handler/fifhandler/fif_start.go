@@ -55,13 +55,22 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
+func (h *FIFHandler) FIFFormSubmit(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		return
 	}
 
+	switch r.FormValue("action") {
+	case "calculate":
+		h.calculateFIF(w, r)
+	case "save":
+		h.saveFIFCalculation(w, r)
+	}
+}
+
+func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 	yearStr := r.FormValue("financialYear")
 	year, err := strconv.Atoi(yearStr)
 	if err != nil {
@@ -128,7 +137,7 @@ func (h *FIFHandler) CalculateFIF(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *FIFHandler) SaveFIFCalculation(w http.ResponseWriter, r *http.Request) {
+func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Saved a fif")
 }
 
