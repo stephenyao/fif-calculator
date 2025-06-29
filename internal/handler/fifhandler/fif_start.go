@@ -31,14 +31,12 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
-	trades, err := h.Repo.GetAll()
+	trades, err := h.Repo.GetAllByAscendingDate()
 	if err != nil {
 		http.Error(w, "Failed to fetch all trades", http.StatusInternalServerError)
 	}
 
-	maxCostBasis := costbasisservice.MaxCostBasisDuringYear(trades, endDate)
-
-	if maxCostBasis < 50000 {
+	if !costbasisservice.IsEligibleForFIF(trades, startDate, endDate) {
 		err = fif.NoFIFApplicable().Render(r.Context(), w)
 		return
 	}

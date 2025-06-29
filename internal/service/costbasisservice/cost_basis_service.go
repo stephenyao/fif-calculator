@@ -4,9 +4,17 @@ import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
 	. "fif-calculator/internal/viewmodel"
-	"sort"
 	"time"
 )
+
+func IsEligibleForFIF(trades []Trade, start, end time.Time) bool {
+	costBasisBySymbol := CostBasisBySymbol(trades, end)
+	totalCostBasis := totalCostBasis(costBasisBySymbol)
+	maxCostBasisForYear := MaxCostBasisDuringYear(trades, start, end)
+
+	notEligible := totalCostBasis < constants.FIFThreshold && maxCostBasisForYear < constants.FIFThreshold
+	return !notEligible
+}
 
 func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCostBasis {
 	costBasisBySymbol := make(map[string]SymbolCostBasis)
@@ -80,8 +88,17 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 	return costBasisBySymbol
 }
 
-func MaxCostBasisDuringYear(trades []Trade, endDate time.Time) float64 {
-	tradesInRange := filterAndSortTrades(trades, endDate)
+func totalCostBasis(costBasisBySymbol map[string]SymbolCostBasis) float64 {
+	var total float64 = 0
+	for _, costBasis := range costBasisBySymbol {
+		total += costBasis.CostBasis
+	}
+	return total
+}
+
+func MaxCostBasisDuringYear(trades []Trade, startDate, endDate time.Time) float64 {
+	tradesInRange := filterTrades(trades, startDate, endDate)
+
 	var queue []Trade
 	var currentCostBasis, maxCostBasis float64
 
@@ -113,7 +130,7 @@ func MaxCostBasisDuringYear(trades []Trade, endDate time.Time) float64 {
 	return maxCostBasis
 }
 
-func filterAndSortTrades(trades []Trade, endDate time.Time) []Trade {
+func filterTrades(trades []Trade, startDate, endDate time.Time) []Trade {
 	var result []Trade
 
 	for _, trade := range trades {
@@ -121,16 +138,10 @@ func filterAndSortTrades(trades []Trade, endDate time.Time) []Trade {
 		if err != nil {
 			continue // skip invalid dates
 		}
-		if !tradeDate.After(endDate) {
+		if !tradeDate.Before(startDate) && !tradeDate.After(endDate) {
 			result = append(result, trade)
 		}
 	}
-
-	sort.Slice(result, func(i, j int) bool {
-		dateI, _ := time.Parse("2006-01-02", result[i].BuyDate)
-		dateJ, _ := time.Parse("2006-01-02", result[j].BuyDate)
-		return dateI.Before(dateJ)
-	})
 
 	return result
 }

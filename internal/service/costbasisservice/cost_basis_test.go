@@ -213,6 +213,7 @@ func TestCostBasisBySymbol(t *testing.T) {
 }
 
 func TestMaxCostBasisDuringYear(t *testing.T) {
+	start := time.Date(2024, 4, 1, 0, 0, 0, 0, time.UTC)
 	end := time.Date(2025, 3, 31, 0, 0, 0, 0, time.UTC)
 
 	t.Run("never exceeds 50000", func(t *testing.T) {
@@ -222,7 +223,7 @@ func TestMaxCostBasisDuringYear(t *testing.T) {
 			{Symbol: "XYZ", BuyDate: "2024-07-01", Quantity: 10, Price: 1000, Action: constants.Sell},
 		}
 
-		got := MaxCostBasisDuringYear(trades, end)
+		got := MaxCostBasisDuringYear(trades, start, end)
 		want := 30000.0
 		if got != want {
 			t.Errorf("got %f, want %f", got, want)
@@ -236,7 +237,7 @@ func TestMaxCostBasisDuringYear(t *testing.T) {
 			{Symbol: "XYZ", BuyDate: "2024-04-12", Quantity: 40, Price: 1000, Action: constants.Sell},
 		}
 
-		got := MaxCostBasisDuringYear(trades, end)
+		got := MaxCostBasisDuringYear(trades, start, end)
 		want := 60000.0
 		if got != want {
 			t.Errorf("got %f, want %f", got, want)
@@ -249,7 +250,7 @@ func TestMaxCostBasisDuringYear(t *testing.T) {
 			{Symbol: "XYZ", BuyDate: "2024-06-01", Quantity: 20, Price: 1000, Action: constants.Sell}, // $40,000
 		}
 
-		got := MaxCostBasisDuringYear(trades, end)
+		got := MaxCostBasisDuringYear(trades, start, end)
 		want := 60000.0
 		if got != want {
 			t.Errorf("got %f, want %f", got, want)
@@ -265,7 +266,7 @@ func TestMaxCostBasisDuringYear(t *testing.T) {
 			{Symbol: "XYZ", BuyDate: "2024-08-01", Quantity: 10, Price: 1000, Action: constants.Sell}, // $35,000
 		}
 
-		got := MaxCostBasisDuringYear(trades, end)
+		got := MaxCostBasisDuringYear(trades, start, end)
 		want := 45000.0
 		if got != want {
 			t.Errorf("got %f, want %f", got, want)
@@ -278,8 +279,8 @@ func TestMaxCostBasisDuringYear(t *testing.T) {
 			{Symbol: "XYZ", BuyDate: "2025-04-01", Quantity: 60, Price: 1000, Action: constants.Buy}, // Ignored
 		}
 
-		got := MaxCostBasisDuringYear(trades, end)
-		var want float64 = 60000
+		got := MaxCostBasisDuringYear(trades, start, end)
+		want := 0.0
 		if got != want {
 			t.Errorf("got %f, want %f", got, want)
 		}
