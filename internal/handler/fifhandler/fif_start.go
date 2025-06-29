@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -138,7 +139,64 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Saved a fif")
+	year, err := strconv.Atoi(r.FormValue("financialYear"))
+	if err != nil {
+		http.Error(w, "invalid financial year", http.StatusBadRequest)
+		return
+	}
+
+	// Step 1: Gather all symbols
+	var symbols []string
+	for key := range r.Form {
+		if strings.HasPrefix(key, "symbol_") {
+			symbol := r.FormValue(key)
+			symbols = append(symbols, symbol)
+		}
+	}
+
+	// Step 2: Extract holdings
+	var holdings []*model.FIFHolding
+	for _, symbol := range symbols {
+		get := func(field string) float64 {
+			v := r.FormValue(field + "_" + symbol)
+			f, _ := strconv.ParseFloat(v, 64)
+			return f
+		}
+
+		holdings = append(holdings, &model.FIFHolding{
+			Symbol:            symbol,
+			QuantityStart:     get("quantity_start"),
+			QuantityEnd:       get("quantity_end"),
+			PriceStart:        get("price_start"),
+			PriceEnd:          get("price_end"),
+			ProceedsFromSales: get("proceeds_from_sales"),
+			Dividends:         get("dividends"),
+			TaxCredits:        get("tax_credits"),
+			OtherGains:        get("other_gains"),
+			CostOfPurchases:   get("cost_of_purchases"),
+			ForeignIncomeTax:  get("foreign_income_tax"),
+			OtherCosts:        get("other_cost"),
+		})
+	}
+
+	// Step 3: Create and save calculation
+	calc := &model.FIFCalculation{
+		UserID:        1, // Or extract from session/context
+		FinancialYear: year,
+		CalculatedAt:  time.Now(),
+	}
+
+	fmt.Printf("%+v calc\n", calc)
+	for i, h := range holdings {
+		fmt.Printf("Holding %d: %+v\n", i+1, h)
+	}
+	//if err := h.repo.CreateCalculation(calc, holdings); err != nil {
+	//	http.Error(w, "failed to save FIF calculation", http.StatusInternalServerError)
+	//	return
+	//}
+	//
+	//w.WriteHeader(http.StatusOK)
+	//fmt.Fprint(w, "Saved")
 }
 
 func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, error) {
