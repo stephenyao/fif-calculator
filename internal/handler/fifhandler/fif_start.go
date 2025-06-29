@@ -33,7 +33,7 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
-	trades, err := h.Repo.GetAllByAscendingDate()
+	trades, err := h.TradeRepository.GetAllByAscendingDate()
 	if err != nil {
 		http.Error(w, "Failed to fetch all trades", http.StatusInternalServerError)
 	}
@@ -82,7 +82,7 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
-	trades, err := h.Repo.GetAllByAscendingDate()
+	trades, err := h.TradeRepository.GetAllByAscendingDate()
 	if err != nil {
 		http.Error(w, "Failed to load trades", http.StatusInternalServerError)
 		return
@@ -187,16 +187,13 @@ func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) 
 	}
 
 	fmt.Printf("%+v calc\n", calc)
-	for i, h := range holdings {
-		fmt.Printf("Holding %d: %+v\n", i+1, h)
+
+	if err := h.FIFRepository.CreateCalculation(calc, holdings); err != nil {
+		http.Error(w, "failed to save FIF calculation", http.StatusInternalServerError)
+		return
 	}
-	//if err := h.repo.CreateCalculation(calc, holdings); err != nil {
-	//	http.Error(w, "failed to save FIF calculation", http.StatusInternalServerError)
-	//	return
-	//}
-	//
-	//w.WriteHeader(http.StatusOK)
-	//fmt.Fprint(w, "Saved")
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, error) {

@@ -8,13 +8,20 @@ import (
 )
 
 type FIFHandler struct {
-	Repo repository.TradeRepository
+	TradeRepository repository.TradeRepository
+	FIFRepository   repository.FIFRepository
 }
 
 func NewFIFHandler(db *sqlx.DB) *FIFHandler {
-	return &FIFHandler{Repo: repository.NewTradeRepository(db)}
+	return &FIFHandler{
+		TradeRepository: repository.NewTradeRepository(db),
+		FIFRepository:   repository.NewFIFRepository(db),
+	}
 }
 
 func (h *FIFHandler) Index(w http.ResponseWriter, r *http.Request) {
-	fif.Index(r.URL.Path).Render(r.Context(), w)
+	err := fif.Index(r.URL.Path).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
