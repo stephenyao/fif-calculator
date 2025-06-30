@@ -8,6 +8,7 @@ import (
 
 type FIFRepository interface {
 	CreateCalculation(calc *model.FIFCalculation, holdings []*model.FIFHolding) error
+	GetCalculationsByUser(userID int) ([]*model.FIFCalculation, error)
 }
 
 type SqlFIFRepository struct {
@@ -18,6 +19,23 @@ func NewFIFRepository(db *sqlx.DB) FIFRepository {
 	return &SqlFIFRepository{
 		DB: db,
 	}
+}
+
+func (r *SqlFIFRepository) GetCalculationsByUser(userID int) ([]*model.FIFCalculation, error) {
+	var calculations []*model.FIFCalculation
+
+	err := r.DB.Select(&calculations, `
+		SELECT id, user_id, financial_year, calculated_at
+		FROM fif_calculations
+		WHERE user_id = ?
+		ORDER BY calculated_at DESC
+	`, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return calculations, nil
 }
 
 func (r *SqlFIFRepository) CreateCalculation(calc *model.FIFCalculation, holdings []*model.FIFHolding) error {

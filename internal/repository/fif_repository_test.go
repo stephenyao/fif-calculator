@@ -10,17 +10,22 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func TestCreateCalculation(t *testing.T) {
+func setupTestDB(t *testing.T) *sqlx.DB {
+	t.Helper()
 	db := sqlx.MustConnect("sqlite3", ":memory:")
 	db.MustExec("PRAGMA foreign_keys = ON;")
 	repository.InitSchema(db)
+	return db
+}
 
+func TestCreateCalculation(t *testing.T) {
+	db := setupTestDB(t)
 	repo := repository.NewFIFRepository(db)
 
 	calc := &model.FIFCalculation{
 		UserID:        1,
 		FinancialYear: 2025,
-		CalculatedAt:  time.Now(),
+		CalculatedAt:  time.Now().UTC().Truncate(time.Second),
 	}
 
 	holdings := []*model.FIFHolding{
@@ -56,7 +61,7 @@ func TestCreateCalculation(t *testing.T) {
 
 	err := repo.CreateCalculation(calc, holdings)
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("CreateCalculation failed: %v", err)
 	}
 
 	t.Run("stores calculation and holdings", func(t *testing.T) {
@@ -98,8 +103,7 @@ func TestCreateCalculation(t *testing.T) {
 			t.Fatalf("failed to fetch calculation: %v", err)
 		}
 
-		if actualCalc.UserID != calc.UserID ||
-			actualCalc.FinancialYear != calc.FinancialYear {
+		if actualCalc.UserID != calc.UserID || actualCalc.FinancialYear != calc.FinancialYear {
 			t.Errorf("calculation mismatch: got %+v, expected %+v", actualCalc, calc)
 		}
 
@@ -135,4 +139,31 @@ func TestCreateCalculation(t *testing.T) {
 			}
 		}
 	})
+}
+
+func TestGetCalculationsByUser(t *testing.T) {
+	db := setupTestDB(t)
+	repo := repository.NewFIFRepository(db)
+
+	now := time.Now().UTC().Truncate(time.Second)
+
+	_, err := db.Exec(`INSERT INTO fif_calculations (user_id, financial_year, calculated_at) VALUES (?, ?, ?)`, 1, 2024, now)
+	if err != nil {
+		t.Fatalf("insert calc1: %v", err)
+	}
+	_, err = db.Exec(`INSERT INTO fif_calculations (user_id, financial_year, calculated_at) VALUES (?, ?, ?)`, 1, 2025, now.Add(time.Minute))
+	if err != nil {
+		t.Fatalf("insert calc2: %v", err)
+	}
+
+	calcs, err := repo.GetCalculationsByUser(1)
+	if err != nil {
+		t.Fatalf("GetCalculationsByUser failed: %v", err)
+	}
+	if len(calcs) != 2 {
+		t.Fatalf("expected 2 results, got %d", len(calcs))
+	}
+	if calcs[0].FinancialYear != 2025 || calcs[1].FinancialYear != 2024 {
+		t.Errorf("expected ordered years 2025 then 2024, got %d then %d", calcs[0].FinancialYear, calcs[1].FinancialYear)
+	}
 }
