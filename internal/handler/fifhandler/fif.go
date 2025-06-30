@@ -20,8 +20,14 @@ func NewFIFHandler(db *sqlx.DB) *FIFHandler {
 }
 
 func (h *FIFHandler) Index(w http.ResponseWriter, r *http.Request) {
-	err := fif.Index(r.URL.Path).Render(r.Context(), w)
+	calcs, err := h.FIFRepository.GetCalculationsByUser(1)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
+	err = fif.Index(r.URL.Path, calcs).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
 }
