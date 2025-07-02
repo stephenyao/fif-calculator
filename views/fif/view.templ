@@ -1,0 +1,17 @@
+package fif
+
+import . "fif-calculator/views"
+
+templ View(currentPath string) {
+    @Layout("Start FIF Calculation", currentPath) {
+        @Page() {
+            @Section() {
+                @content()
+            }
+        }
+	}
+}
+
+templ content() {
+    <div>content</div>
+}
