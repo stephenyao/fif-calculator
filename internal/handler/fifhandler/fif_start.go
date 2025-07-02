@@ -6,7 +6,6 @@ import (
 	"fif-calculator/internal/service/fifservice"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -179,14 +178,11 @@ func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) 
 		})
 	}
 
-	// Step 3: Create and save calculation
 	calc := &model.FIFCalculation{
 		UserID:        1, // Or extract from session/context
 		FinancialYear: year,
 		CalculatedAt:  time.Now(),
 	}
-
-	fmt.Printf("%+v calc\n", calc)
 
 	if err := h.FIFRepository.CreateCalculation(calc, holdings); err != nil {
 		http.Error(w, "failed to save FIF calculation", http.StatusInternalServerError)
