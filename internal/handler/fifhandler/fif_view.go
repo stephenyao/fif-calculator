@@ -51,5 +51,6 @@ func convertToHoldingInfos(fifHoldings []*model.FIFHolding) []*model.HoldingInfo
 			},
 		})
 	}
+
 	return infos
 }

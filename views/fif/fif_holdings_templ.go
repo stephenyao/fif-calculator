@@ -232,7 +232,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -240,7 +240,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -266,7 +266,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds-from-sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -274,7 +274,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", fmt.Sprintf("%.2f", h.GainLoss.Dividends), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -282,7 +282,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -290,7 +290,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = input(h.Symbol, "Other Gains (NZD)", "other-gains", "other_gains", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Other Gains (NZD)", "other-gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -316,7 +316,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -324,7 +324,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", "foreign_income_tax", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -332,7 +332,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_cost", "0.00", true).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_cost", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
