@@ -18,6 +18,97 @@ func setupTestDB(t *testing.T) *sqlx.DB {
 	return db
 }
 
+func TestGetCalculationWithHoldings(t *testing.T) {
+	db := sqlx.MustConnect("sqlite3", ":memory:")
+	db.MustExec("PRAGMA foreign_keys = ON;")
+	repository.InitSchema(db)
+
+	repo := repository.NewFIFRepository(db)
+
+	// Insert a calculation
+	calc := model.FIFCalculation{
+		UserID:        99,
+		FinancialYear: 2026,
+		CalculatedAt:  time.Now().UTC().Truncate(time.Second),
+	}
+	res, err := db.Exec(`
+		INSERT INTO fif_calculations (user_id, financial_year, calculated_at)
+		VALUES (?, ?, ?)
+	`, calc.UserID, calc.FinancialYear, calc.CalculatedAt)
+	if err != nil {
+		t.Fatalf("failed to insert calc: %v", err)
+	}
+	calcID, _ := res.LastInsertId()
+
+	// Insert holdings
+	holdings := []model.FIFHolding{
+		{
+			CalculationID:     int(calcID),
+			Symbol:            "AAPL",
+			QuantityStart:     1,
+			QuantityEnd:       2,
+			PriceStart:        3,
+			PriceEnd:          4,
+			ProceedsFromSales: 5,
+			Dividends:         6,
+			TaxCredits:        7,
+			OtherGains:        8,
+			CostOfPurchases:   9,
+			ForeignIncomeTax:  10,
+			OtherCosts:        11,
+		},
+	}
+	for _, h := range holdings {
+		_, err := db.Exec(`
+			INSERT INTO fif_holdings (
+				fif_calculation_id, symbol, quantity_start, quantity_end,
+				price_start, price_end, proceeds_from_sales, dividends,
+				tax_credits, other_gains, cost_of_purchases,
+				foreign_income_tax, other_costs
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`, h.CalculationID, h.Symbol, h.QuantityStart, h.QuantityEnd,
+			h.PriceStart, h.PriceEnd, h.ProceedsFromSales, h.Dividends,
+			h.TaxCredits, h.OtherGains, h.CostOfPurchases,
+			h.ForeignIncomeTax, h.OtherCosts)
+		if err != nil {
+			t.Fatalf("failed to insert holding: %v", err)
+		}
+	}
+
+	// Retrieve and verify
+	gotCalc, gotHoldings, err := repo.GetCalculationWithHoldings(int(calcID))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if gotCalc.UserID != calc.UserID ||
+		gotCalc.FinancialYear != calc.FinancialYear ||
+		!gotCalc.CalculatedAt.Equal(calc.CalculatedAt) {
+		t.Errorf("calculation mismatch: got %+v, want %+v", gotCalc, calc)
+	}
+
+	if len(gotHoldings) != len(holdings) {
+		t.Fatalf("expected %d holdings, got %d", len(holdings), len(gotHoldings))
+	}
+
+	want := holdings[0]
+	got := gotHoldings[0]
+	if got.Symbol != want.Symbol ||
+		got.QuantityStart != want.QuantityStart ||
+		got.QuantityEnd != want.QuantityEnd ||
+		got.PriceStart != want.PriceStart ||
+		got.PriceEnd != want.PriceEnd ||
+		got.ProceedsFromSales != want.ProceedsFromSales ||
+		got.Dividends != want.Dividends ||
+		got.TaxCredits != want.TaxCredits ||
+		got.OtherGains != want.OtherGains ||
+		got.CostOfPurchases != want.CostOfPurchases ||
+		got.ForeignIncomeTax != want.ForeignIncomeTax ||
+		got.OtherCosts != want.OtherCosts {
+		t.Errorf("holding mismatch: got %+v, want %+v", got, want)
+	}
+}
+
 func TestCreateCalculation(t *testing.T) {
 	db := setupTestDB(t)
 	repo := repository.NewFIFRepository(db)

@@ -9,6 +9,7 @@ import (
 type FIFRepository interface {
 	CreateCalculation(calc *model.FIFCalculation, holdings []*model.FIFHolding) error
 	GetCalculationsByUser(userID int) ([]*model.FIFCalculation, error)
+	GetCalculationWithHoldings(id int) (model.FIFCalculation, []*model.FIFHolding, error)
 }
 
 type SqlFIFRepository struct {
@@ -36,6 +37,33 @@ func (r *SqlFIFRepository) GetCalculationsByUser(userID int) ([]*model.FIFCalcul
 	}
 
 	return calculations, nil
+}
+
+func (r *SqlFIFRepository) GetCalculationWithHoldings(id int) (model.FIFCalculation, []*model.FIFHolding, error) {
+	var calc model.FIFCalculation
+	err := r.DB.Get(&calc, `
+		SELECT id, user_id, financial_year, calculated_at
+		FROM fif_calculations
+		WHERE id = ?
+	`, id)
+	if err != nil {
+		return model.FIFCalculation{}, nil, err
+	}
+
+	var holdings []*model.FIFHolding
+	err = r.DB.Select(&holdings, `
+		SELECT id, fif_calculation_id, symbol, quantity_start, quantity_end,
+		       price_start, price_end, proceeds_from_sales, dividends,
+		       tax_credits, other_gains, cost_of_purchases,
+		       foreign_income_tax, other_costs
+		FROM fif_holdings
+		WHERE fif_calculation_id = ?
+	`, id)
+	if err != nil {
+		return model.FIFCalculation{}, nil, err
+	}
+
+	return calc, holdings, nil
 }
 
 func (r *SqlFIFRepository) CreateCalculation(calc *model.FIFCalculation, holdings []*model.FIFHolding) error {

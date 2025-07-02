@@ -1,17 +1,15 @@
 package fif
 
+import "fif-calculator/internal/model"
+
 import . "fif-calculator/views"
 
-templ View(currentPath string) {
+templ View(currentPath string, holdings []*model.HoldingInfo, year int) {
     @Layout("Start FIF Calculation", currentPath) {
         @Page() {
             @Section() {
-                @content()
+                @RenderFIFHoldingQuantities(holdings, year)
             }
         }
 	}
-}
-
-templ content() {
-    <div>content</div>
 }
