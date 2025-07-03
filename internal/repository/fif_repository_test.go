@@ -329,7 +329,7 @@ func TestCreateOrUpdateCalculation(t *testing.T) {
 		}
 
 		var count int
-		db.Get(&count, "SELECT COUNT(*) FROM fif_holdings")
+		_ = db.Get(&count, "SELECT COUNT(*) FROM fif_holdings")
 		if count != 1 {
 			t.Errorf("expected 1 holding, got %d", count)
 		}
@@ -346,7 +346,7 @@ func TestCreateOrUpdateCalculation(t *testing.T) {
 		}
 
 		var count int
-		db.Get(&count, "SELECT COUNT(*) FROM fif_holdings")
+		_ = db.Get(&count, "SELECT COUNT(*) FROM fif_holdings")
 		if count != 2 {
 			t.Errorf("expected 2 holdings after update, got %d", count)
 		}

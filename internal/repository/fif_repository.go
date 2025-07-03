@@ -191,7 +191,7 @@ func (r *SqlFIFRepository) CreateOrUpdateCalculation(calc *model.FIFCalculation,
 	fullQuery := baseQuery + strings.Join(placeholders, ",")
 	_, err = tx.Exec(fullQuery, args...)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
