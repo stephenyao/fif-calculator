@@ -1,0 +1,13 @@
+package holdings
+
+import . "fif-calculator/views"
+
+templ HoldingsList(currentPath string) {
+    @Layout("Holdings List", currentPath) {
+        @Page() {
+            @Section() {
+                <div>Holdings</div>
+            }
+        }
+    }
+}

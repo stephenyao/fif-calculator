@@ -3,6 +3,7 @@ package main
 import (
 	"fif-calculator/internal/handler/costbasishandler"
 	"fif-calculator/internal/handler/fifhandler"
+	"fif-calculator/internal/handler/holdingshandler"
 	"fif-calculator/internal/handler/tradehandler"
 	"fif-calculator/internal/repository"
 	"github.com/go-chi/chi/v5"
@@ -22,6 +23,7 @@ func main() {
 	tradeHandler := tradehandler.NewTradeHandler(db)
 	costBasisHandler := costbasishandler.NewCostBasisHandler(db)
 	fifHandler := fifhandler.NewFIFHandler(db)
+	holdingsHandler := holdingshandler.NewHoldingsHandler(db)
 
 	r.Use(middleware.StripSlashes)
 
@@ -39,6 +41,7 @@ func main() {
 	r.Post("/fif/start", fifHandler.HoldingsInfo)
 	r.Post("/fif/calculate", fifHandler.FIFFormSubmit)
 	r.Get("/fif/view/{id}", fifHandler.View)
+	r.Get("/holdings", holdingsHandler.List)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

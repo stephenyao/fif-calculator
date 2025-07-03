@@ -6,9 +6,9 @@ import (
 )
 
 type HoldingsRepository interface {
-	CreateHolding() error
+	CreateHolding(record *model.HoldingRecord) error
 	GetHolding(id int) (*model.HoldingRecord, error)
-	AllHoldings() (*[]model.HoldingRecord, error)
+	AllHoldings() ([]*model.HoldingRecord, error)
 }
 
 type SQLHoldingsRepository struct {
