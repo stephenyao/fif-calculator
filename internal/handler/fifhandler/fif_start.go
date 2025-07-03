@@ -189,6 +189,7 @@ func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	w.Header().Set("HX-Redirect", "/fif")
 	w.WriteHeader(http.StatusOK)
 }
 
