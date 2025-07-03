@@ -184,7 +184,7 @@ func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) 
 		CalculatedAt:  time.Now(),
 	}
 
-	if err := h.FIFRepository.CreateCalculation(calc, holdings); err != nil {
+	if err := h.FIFRepository.CreateOrUpdateCalculation(calc, holdings); err != nil {
 		http.Error(w, "failed to save FIF calculation", http.StatusInternalServerError)
 		return
 	}

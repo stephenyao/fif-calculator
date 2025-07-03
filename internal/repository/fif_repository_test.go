@@ -258,3 +258,103 @@ func TestGetCalculationsByUser(t *testing.T) {
 		t.Errorf("expected ordered years 2025 then 2024, got %d then %d", calcs[0].FinancialYear, calcs[1].FinancialYear)
 	}
 }
+
+func TestCreateOrUpdateCalculation(t *testing.T) {
+	db := sqlx.MustConnect("sqlite3", ":memory:")
+	db.MustExec("PRAGMA foreign_keys = ON;")
+	repository.InitSchema(db)
+
+	repo := repository.NewFIFRepository(db)
+
+	userID := 1
+	finYear := 2025
+	calcTime := time.Now()
+
+	initialHoldings := []*model.FIFHolding{
+		{
+			Symbol:            "AAPL",
+			QuantityStart:     10,
+			QuantityEnd:       12,
+			PriceStart:        150,
+			PriceEnd:          155,
+			ProceedsFromSales: 1000,
+			Dividends:         30,
+			TaxCredits:        5,
+			OtherGains:        20,
+			CostOfPurchases:   900,
+			ForeignIncomeTax:  3,
+			OtherCosts:        2,
+		},
+	}
+
+	updatedHoldings := []*model.FIFHolding{
+		{
+			Symbol:            "AAPL",
+			QuantityStart:     20,
+			QuantityEnd:       22,
+			PriceStart:        250,
+			PriceEnd:          255,
+			ProceedsFromSales: 2000,
+			Dividends:         60,
+			TaxCredits:        10,
+			OtherGains:        40,
+			CostOfPurchases:   1800,
+			ForeignIncomeTax:  6,
+			OtherCosts:        4,
+		},
+		{
+			Symbol:            "GOOG",
+			QuantityStart:     5,
+			QuantityEnd:       6,
+			PriceStart:        3000,
+			PriceEnd:          3100,
+			ProceedsFromSales: 3000,
+			Dividends:         0,
+			TaxCredits:        0,
+			OtherGains:        0,
+			CostOfPurchases:   2500,
+			ForeignIncomeTax:  0,
+			OtherCosts:        0,
+		},
+	}
+
+	t.Run("initial insert", func(t *testing.T) {
+		err := repo.CreateOrUpdateCalculation(&model.FIFCalculation{
+			UserID:        userID,
+			FinancialYear: finYear,
+			CalculatedAt:  calcTime,
+		}, initialHoldings)
+		if err != nil {
+			t.Fatalf("failed initial insert: %v", err)
+		}
+
+		var count int
+		db.Get(&count, "SELECT COUNT(*) FROM fif_holdings")
+		if count != 1 {
+			t.Errorf("expected 1 holding, got %d", count)
+		}
+	})
+
+	t.Run("update overwrite", func(t *testing.T) {
+		err := repo.CreateOrUpdateCalculation(&model.FIFCalculation{
+			UserID:        userID,
+			FinancialYear: finYear,
+			CalculatedAt:  calcTime.Add(1 * time.Hour),
+		}, updatedHoldings)
+		if err != nil {
+			t.Fatalf("failed update insert: %v", err)
+		}
+
+		var count int
+		db.Get(&count, "SELECT COUNT(*) FROM fif_holdings")
+		if count != 2 {
+			t.Errorf("expected 2 holdings after update, got %d", count)
+		}
+
+		var symbol string
+		err = db.Get(&symbol, "SELECT symbol FROM fif_holdings WHERE symbol = 'GOOG'")
+		if err != nil {
+			t.Errorf("GOOG holding not found after update")
+		}
+	})
+}
