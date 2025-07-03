@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+func StartEndDates(year int) (time.Time, time.Time) {
+	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
+	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
+
+	return startDate, endDate
+}
+
 func ComputeHoldingsBetween(trades []Trade, startDate, endDate time.Time) ([]*HoldingInfo, error) {
 	quantityStart := make(map[string]float64)
 	quantityEnd := make(map[string]float64)

@@ -1,8 +1,7 @@
-package repository_test
+package repository
 
 import (
 	"fif-calculator/internal/model"
-	"fif-calculator/internal/repository"
 	"testing"
 	"time"
 
@@ -14,16 +13,15 @@ func setupTestDB(t *testing.T) *sqlx.DB {
 	t.Helper()
 	db := sqlx.MustConnect("sqlite3", ":memory:")
 	db.MustExec("PRAGMA foreign_keys = ON;")
-	repository.InitSchema(db)
+	InitSchema(db)
 	return db
 }
 
 func TestGetCalculationWithHoldings(t *testing.T) {
-	db := sqlx.MustConnect("sqlite3", ":memory:")
+	db := setupTestDB(t)
 	db.MustExec("PRAGMA foreign_keys = ON;")
-	repository.InitSchema(db)
 
-	repo := repository.NewFIFRepository(db)
+	repo := NewFIFRepository(db)
 
 	// Insert a calculation
 	calc := model.FIFCalculation{
@@ -111,7 +109,7 @@ func TestGetCalculationWithHoldings(t *testing.T) {
 
 func TestCreateCalculation(t *testing.T) {
 	db := setupTestDB(t)
-	repo := repository.NewFIFRepository(db)
+	repo := NewFIFRepository(db)
 
 	calc := &model.FIFCalculation{
 		UserID:        1,
@@ -234,7 +232,7 @@ func TestCreateCalculation(t *testing.T) {
 
 func TestGetCalculationsByUser(t *testing.T) {
 	db := setupTestDB(t)
-	repo := repository.NewFIFRepository(db)
+	repo := NewFIFRepository(db)
 
 	now := time.Now().UTC().Truncate(time.Second)
 
@@ -260,11 +258,9 @@ func TestGetCalculationsByUser(t *testing.T) {
 }
 
 func TestCreateOrUpdateCalculation(t *testing.T) {
-	db := sqlx.MustConnect("sqlite3", ":memory:")
-	db.MustExec("PRAGMA foreign_keys = ON;")
-	repository.InitSchema(db)
+	db := setupTestDB(t)
 
-	repo := repository.NewFIFRepository(db)
+	repo := NewFIFRepository(db)
 
 	userID := 1
 	finYear := 2025

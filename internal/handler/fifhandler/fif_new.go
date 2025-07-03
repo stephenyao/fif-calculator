@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (h *FIFHandler) Start(w http.ResponseWriter, r *http.Request) {
+func (h *FIFHandler) New(w http.ResponseWriter, r *http.Request) {
 	err := fif.Start(r.URL.Path).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Could not render start fif page", http.StatusInternalServerError)
@@ -28,9 +28,7 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 
 	yearStr := r.FormValue("financialYear")
 	year, _ := strconv.Atoi(yearStr)
-
-	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
-	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
+	startDate, endDate := fifservice.StartEndDates(year)
 
 	trades, err := h.TradeRepository.GetAllByAscendingDate()
 	if err != nil {

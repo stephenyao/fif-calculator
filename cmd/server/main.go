@@ -35,7 +35,7 @@ func main() {
 	r.Post("/trades/{id}/edit", tradeHandler.Update)
 	r.Get("/cost-basis", costBasisHandler.Index)
 	r.Get("/fif", fifHandler.Index)
-	r.Get("/fif/start", fifHandler.Start)
+	r.Get("/fif/start", fifHandler.New)
 	r.Post("/fif/start", fifHandler.HoldingsInfo)
 	r.Post("/fif/calculate", fifHandler.FIFFormSubmit)
 	r.Get("/fif/view/{id}", fifHandler.View)

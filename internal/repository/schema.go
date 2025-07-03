@@ -8,6 +8,15 @@ import (
 
 func InitSchema(db *sqlx.DB) {
 	schema := `
+	CREATE TABLE IF NOT EXISTS holdings (
+	  id INTEGER PRIMARY KEY AUTOINCREMENT,
+	  user_id INTEGER NOT NULL,
+	  name TEXT,
+	  symbol TEXT NOT NULL,
+	  currency TEXT NOT NULL,
+	  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+
 	-- Main trades table
 	CREATE TABLE IF NOT EXISTS trades (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
