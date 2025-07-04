@@ -42,6 +42,7 @@ func main() {
 	r.Post("/fif/calculate", fifHandler.FIFFormSubmit)
 	r.Get("/fif/view/{id}", fifHandler.View)
 	r.Get("/holdings", holdingsHandler.List)
+	r.Get("/holdings/new", holdingsHandler.New)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

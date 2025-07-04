@@ -1,13 +1,42 @@
 package holdings
 
+import "fif-calculator/internal/viewmodel"
+
 import . "fif-calculator/views"
 
-templ NewHolding(currentPath string) {
-    @Layout("New Holding", currentPath) {
-        @Page() {
-            @Section() {
-                <div>New Holding</div>
-            }
-        }
-    }
+templ NewHolding(currentPath string, viewModel *viewmodel.HoldingFormViewModel) {
+	@Layout("New Holding", currentPath) {
+		@Page() {
+			@Section() {
+				@content(viewModel)
+			}
+		}
+	}
+}
+
+templ content(viewModel *viewmodel.HoldingFormViewModel) {
+	<h2 class="text-2xl font-bold mb-4">New Holding</h2>
+	<a href="/holdings" class="text-blue-600 underline">← Back to Holdings</a>
+	@HoldingsForm(viewModel)
+}
+
+templ HoldingsForm(vm *viewmodel.HoldingFormViewModel) {
+	<form
+		action={ templ.SafeURL("/holdings") }
+		method="post"
+		class="space-y-4 pt-4"
+	>
+		<div>
+			@Label("name", "Name")
+			@Input("name", "name", "text", "")
+		</div>
+		<div>
+			@Label("ticker", "Ticker")
+			@Input("ticker", "ticker", "text", "")
+		</div>
+		<div>
+			@Label("currency", "Currency")
+			@CurrencySelect("currency", "currency", vm.Currencies, vm.DefaultCurrency.Code)
+		</div>
+	</form>
 }

@@ -3,11 +3,16 @@ package holdings
 import . "fif-calculator/views"
 
 templ HoldingsList(currentPath string) {
-    @Layout("Holdings List", currentPath) {
-        @Page() {
-            @Section() {
-                <div>Holdings</div>
-            }
-        }
-    }
+	@Layout("Holdings List", currentPath) {
+		@Page() {
+			@Section() {
+				<div>
+					<h2 class="text-2xl font-bold mb-4">Holdings</h2>
+					<div class="flex justify-end mb-4">
+						@Link("/holdings/new", "+ New")
+					</div>
+				</div>
+			}
+		}
+	}
 }
