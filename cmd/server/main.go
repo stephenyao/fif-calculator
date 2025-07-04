@@ -43,6 +43,7 @@ func main() {
 	r.Get("/fif/view/{id}", fifHandler.View)
 	r.Get("/holdings", holdingsHandler.List)
 	r.Get("/holdings/new", holdingsHandler.New)
+	r.Post("/holdings/new", holdingsHandler.CreateHolding)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

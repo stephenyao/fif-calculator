@@ -14,3 +14,7 @@ func (h *HoldingsHandler) New(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Could not render start page", http.StatusInternalServerError)
 	}
 }
+
+func (h *HoldingsHandler) CreateHolding(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/holdings", http.StatusFound)
+}

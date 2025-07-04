@@ -22,7 +22,7 @@ templ content(viewModel *viewmodel.HoldingFormViewModel) {
 
 templ HoldingsForm(vm *viewmodel.HoldingFormViewModel) {
 	<form
-		action={ templ.SafeURL("/holdings") }
+		action={ templ.SafeURL("/holdings/new") }
 		method="post"
 		class="space-y-4 pt-4"
 	>
@@ -37,6 +37,9 @@ templ HoldingsForm(vm *viewmodel.HoldingFormViewModel) {
 		<div>
 			@Label("currency", "Currency")
 			@CurrencySelect("currency", "currency", vm.Currencies, vm.DefaultCurrency.Code)
+		</div>
+		<div>
+            @SubmitButton("Save")
 		</div>
 	</form>
 }
