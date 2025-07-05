@@ -15,31 +15,7 @@ templ NewHolding(currentPath string, viewModel *viewmodel.HoldingFormViewModel) 
 }
 
 templ content(viewModel *viewmodel.HoldingFormViewModel) {
+    <a href="/holdings" class="text-blue-600 underline">← Back to Holdings</a>
 	<h2 class="text-2xl font-bold mb-4">New Holding</h2>
-	<a href="/holdings" class="text-blue-600 underline">← Back to Holdings</a>
-	@HoldingsForm(viewModel)
-}
-
-templ HoldingsForm(vm *viewmodel.HoldingFormViewModel) {
-	<form
-		action={ templ.SafeURL("/holdings/new") }
-		method="post"
-		class="space-y-4 pt-4"
-	>
-		<div>
-			@Label("name", "Name")
-			@Input("name", "name", "text", "")
-		</div>
-		<div>
-			@Label("ticker", "Ticker")
-			@Input("ticker", "ticker", "text", "")
-		</div>
-		<div>
-			@Label("currency", "Currency")
-			@CurrencySelect("currency", "currency", vm.Currencies, vm.DefaultCurrency.Code)
-		</div>
-		<div>
-            @SubmitButton("Save")
-		</div>
-	</form>
+	@HoldingsForm(viewModel, "/holdings/new")
 }

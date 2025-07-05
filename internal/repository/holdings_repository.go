@@ -10,6 +10,7 @@ type HoldingsRepository interface {
 	GetHolding(id int) (*model.HoldingRecord, error)
 	AllHoldings() ([]*model.HoldingRecord, error)
 	DeleteByID(id int) error
+	Update(record *model.HoldingRecord) error
 }
 
 type SQLHoldingsRepository struct {
@@ -60,5 +61,15 @@ func (r *SQLHoldingsRepository) AllHoldings() ([]*model.HoldingRecord, error) {
 
 func (r *SQLHoldingsRepository) DeleteByID(id int) error {
 	_, err := r.DB.Exec("DELETE FROM holdings WHERE id = ?", id)
+	return err
+}
+
+func (r *SQLHoldingsRepository) Update(record *model.HoldingRecord) error {
+	_, err := r.DB.Exec(`
+		UPDATE holdings
+		SET name = ?, symbol = ?, currency = ?
+		WHERE id = ? AND user_id = ?`,
+		record.Name, record.Symbol, record.Currency, record.ID, record.UserID,
+	)
 	return err
 }

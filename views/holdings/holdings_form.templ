@@ -1,0 +1,30 @@
+package holdings
+
+import (
+    . "fif-calculator/views"
+     "fif-calculator/internal/viewmodel"
+)
+
+templ HoldingsForm(vm *viewmodel.HoldingFormViewModel, action templ.SafeURL) {
+	<form
+		action={ action }
+		method="post"
+		class="space-y-4 pt-4"
+	>
+		<div>
+			@Label("name", "Name")
+			@Input("name", "name", "text", vm.Name)
+		</div>
+		<div>
+			@Label("ticker", "Ticker")
+			@Input("ticker", "ticker", "text", vm.Ticker)
+		</div>
+		<div>
+			@Label("currency", "Currency")
+			@CurrencySelect("currency", "currency", vm.Currencies, vm.DefaultCurrency.Code)
+		</div>
+		<div>
+            @SubmitButton("Save")
+		</div>
+	</form>
+}
