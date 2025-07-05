@@ -21,7 +21,7 @@ templ HoldingsForm(vm *viewmodel.HoldingFormViewModel, action templ.SafeURL) {
 		</div>
 		<div>
 			@Label("currency", "Currency")
-			@CurrencySelect("currency", "currency", vm.Currencies, vm.DefaultCurrency.Code)
+			@CurrencySelect("currency", "currency", vm.Currencies, vm.SelectedCurrency)
 		</div>
 		<div>
             @SubmitButton("Save")

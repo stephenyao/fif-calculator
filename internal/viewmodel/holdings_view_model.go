@@ -15,11 +15,12 @@ func (c Currency) DisplayValue() string {
 }
 
 type HoldingFormViewModel struct {
-	ID              string
-	Name            string
-	Ticker          string
-	Currencies      []Currency
-	DefaultCurrency Currency
+	ID               string
+	Name             string
+	Ticker           string
+	SelectedCurrency string
+	Currencies       []Currency
+	DefaultCurrency  Currency
 }
 
 var defaultCurrency = Currency{Code: "USD", Name: "US Dollar"}
@@ -51,11 +52,12 @@ func NewHoldingFormViewModelFromRecord(record *model.HoldingRecord) *HoldingForm
 	defaultCurrency := Currency{Code: "USD", Name: "US Dollar"}
 
 	return &HoldingFormViewModel{
-		ID:              strconv.Itoa(record.ID),
-		Name:            record.Name,
-		Ticker:          record.Symbol,
-		Currencies:      currencies,
-		DefaultCurrency: defaultCurrency,
+		ID:               strconv.Itoa(record.ID),
+		Name:             record.Name,
+		Ticker:           record.Symbol,
+		SelectedCurrency: record.Currency,
+		Currencies:       currencies,
+		DefaultCurrency:  defaultCurrency,
 	}
 }
 

@@ -75,7 +75,7 @@ func HoldingsForm(vm *viewmodel.HoldingFormViewModel, action templ.SafeURL) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = CurrencySelect("currency", "currency", vm.Currencies, vm.DefaultCurrency.Code).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = CurrencySelect("currency", "currency", vm.Currencies, vm.SelectedCurrency).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
