@@ -9,6 +9,7 @@ type HoldingsRepository interface {
 	CreateHolding(record *model.HoldingRecord) error
 	GetHolding(id int) (*model.HoldingRecord, error)
 	AllHoldings() ([]*model.HoldingRecord, error)
+	DeleteByID(id int) error
 }
 
 type SQLHoldingsRepository struct {
@@ -55,4 +56,9 @@ func (r *SQLHoldingsRepository) AllHoldings() ([]*model.HoldingRecord, error) {
 		return nil, err
 	}
 	return records, nil
+}
+
+func (r *SQLHoldingsRepository) DeleteByID(id int) error {
+	_, err := r.DB.Exec("DELETE FROM holdings WHERE id = ?", id)
+	return err
 }
