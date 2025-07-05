@@ -1,8 +1,10 @@
 package holdings
 
+import "fif-calculator/internal/viewmodel"
 import . "fif-calculator/views"
+import "strconv"
 
-templ HoldingsList(currentPath string) {
+templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) {
 	@Layout("Holdings List", currentPath) {
 		@Page() {
 			@Section() {
@@ -11,6 +13,36 @@ templ HoldingsList(currentPath string) {
 					<div class="flex justify-end mb-4">
 						@Link("/holdings/new", "+ New")
 					</div>
+					if len(viewModels) == 0 {
+						<p class="text-gray-600">You have no holdings yet.</p>
+					} else {
+						<table class="min-w-full bg-white border border-gray-200 rounded shadow-sm text-sm">
+							<thead class="bg-gray-100 text-gray-700">
+								<tr>
+									<th class="px-4 py-2 text-left">Name</th>
+									<th class="px-4 py-2 text-left">Symbol</th>
+									<th class="px-4 py-2 text-left">Currency</th>
+								</tr>
+							</thead>
+							<tbody>
+								<script>
+                                    function navigateToDetails(path) {
+                                      window.location.href=path
+                                    }
+                                </script>
+								for _, vm := range viewModels {
+									<tr
+									onclick={templ.JSFuncCall("navigateToDetails", "holdings/" + strconv.Itoa(vm.ID))}
+										class="border-t hover:bg-gray-50"
+									>
+										<td class="px-4 py-2">{ vm.Name }</td>
+										<td class="px-4 py-2 font-mono text-blue-700">{ vm.Symbol }</td>
+										<td class="px-4 py-2">{ vm.Currency }</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
 				</div>
 			}
 		}

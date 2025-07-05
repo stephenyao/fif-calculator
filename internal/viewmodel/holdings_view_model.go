@@ -34,3 +34,10 @@ func NewHoldingFormViewModel() *HoldingFormViewModel {
 		DefaultCurrency: defaultCurrency,
 	}
 }
+
+type HoldingViewModel struct {
+	ID       int
+	Name     string
+	Symbol   string
+	Currency string
+}

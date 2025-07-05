@@ -1,0 +1,17 @@
+package holdings
+
+import . "fif-calculator/views"
+
+templ ViewHolding(currentPath string) {
+	@Layout("New Holding", currentPath) {
+		@Page() {
+			@Section() {
+				@holdingInfo()
+			}
+		}
+	}
+}
+
+templ holdingInfo() {
+    <div>Holding info</div>
+}
