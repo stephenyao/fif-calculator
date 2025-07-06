@@ -1,6 +1,8 @@
 package holdingshandler
 
 import (
+	"database/sql"
+	"errors"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/holdings"
 	"github.com/go-chi/chi/v5"
@@ -19,7 +21,12 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	holding, err := h.Repo.GetHolding(id)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "Holding not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	vm := viewmodel.HoldingViewModel{
