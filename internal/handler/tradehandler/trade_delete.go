@@ -13,7 +13,7 @@ func (h *TradeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	err = h.Repo.DeleteByID(id)
+	err = h.TradeRepository.DeleteByID(id)
 
 	if err != nil {
 		http.Error(w, "Failed to delete trade", http.StatusInternalServerError)

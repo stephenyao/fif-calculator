@@ -33,7 +33,7 @@ func (h *TradeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		Action:   r.FormValue("action"),
 	}
 
-	if err := h.Repo.Update(&trade); err != nil {
+	if err := h.TradeRepository.Update(&trade); err != nil {
 		http.Error(w, "Failed to update trade", http.StatusInternalServerError)
 		return
 	}

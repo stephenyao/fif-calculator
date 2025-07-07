@@ -26,7 +26,7 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	symbol := r.FormValue("symbol")
 	action := r.FormValue("action")
 
-	existingTrades, err := h.Repo.GetBySymbol(symbol)
+	existingTrades, err := h.TradeRepository.GetBySymbol(symbol)
 
 	if err != nil {
 		http.Error(w, "Invalid symbol", http.StatusInternalServerError)
@@ -49,7 +49,7 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Action:   action,
 	}
 
-	if err := h.Repo.Insert(&trade); err != nil {
+	if err := h.TradeRepository.Insert(&trade); err != nil {
 		http.Error(w, "Failed to save trade", http.StatusInternalServerError)
 		return
 	}

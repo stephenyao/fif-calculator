@@ -11,7 +11,7 @@ import (
 )
 
 func (h *TradeHandler) List(w http.ResponseWriter, r *http.Request) {
-	tradeList, err := h.Repo.GetAll()
+	tradeList, err := h.TradeRepository.GetAll()
 
 	if err != nil {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)

@@ -15,7 +15,7 @@ func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	trade, err := h.Repo.GetByID(id)
+	trade, err := h.TradeRepository.GetByID(id)
 	//println(trade)
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)

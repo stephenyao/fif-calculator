@@ -48,6 +48,7 @@ func main() {
 	r.Post("/holdings/{id}/delete", holdingsHandler.Delete)
 	r.Get("/holdings/{id}/edit", holdingsHandler.EditForm)
 	r.Post("/holdings/{id}/edit", holdingsHandler.Update)
+	r.Get("/holdings/{id}/trades/new", tradeHandler.New)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

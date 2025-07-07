@@ -3,11 +3,12 @@ package trades
 import "fif-calculator/internal/model"
 import "strconv"
 import "fif-calculator/internal/constants"
+import "fif-calculator/internal/viewmodel"
 
-templ TradeForm(trade *model.Trade, action templ.SafeURL) {
+templ TradeForm(trade *model.Trade, action templ.SafeURL, vm viewmodel.TradeFormViewModel) {
     <div class="flex items-center justify-center">
         <form action={action} method="post" class="w-full max-w-xl space-y-6">
-            <h2 class="text-2xl font-bold text-gray-800">Enter New Trade</h2>
+            <h2 class="text-2xl font-bold text-gray-800">{vm.Title}</h2>
 
             <div>
               <label for="symbol" class="block mb-1 font-medium text-gray-700">Symbol</label>

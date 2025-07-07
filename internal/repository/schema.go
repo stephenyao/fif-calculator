@@ -16,19 +16,19 @@ func InitSchema(db *sqlx.DB) {
 	  currency TEXT NOT NULL,
 	  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
-
-	-- Main trades table
+	
 	CREATE TABLE IF NOT EXISTS trades (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		holding_id INTEGER NOT NULL,
 		symbol TEXT,
 		buy_date TEXT,
 		quantity REAL,
 		price REAL,
 		currency TEXT,
-		action TEXT
+		action TEXT,
+		FOREIGN KEY (holding_id) REFERENCES holdings(id) ON DELETE CASCADE
 	);
 
-	-- FIF calculations table
 	CREATE TABLE IF NOT EXISTS fif_calculations (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER NOT NULL,

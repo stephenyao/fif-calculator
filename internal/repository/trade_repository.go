@@ -28,9 +28,9 @@ func NewTradeRepository(db *sqlx.DB) TradeRepository {
 
 func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
 	_, err := r.DB.NamedExec(`
-		INSERT INTO trades (symbol, buy_date, quantity, price, currency, action)
-		VALUES (:symbol, :buy_date, :quantity, :price, :currency, :action)
-		`, &trade)
+		INSERT INTO trades (symbol, buy_date, quantity, price, currency, action, holding_id)
+		VALUES (:symbol, :buy_date, :quantity, :price, :currency, :action, :holding_id)
+	`, trade)
 	return err
 }
 
@@ -76,8 +76,8 @@ func (r *SQLTradeRepository) DeleteByID(id int) error {
 func (r *SQLTradeRepository) Update(trade *model.Trade) error {
 	_, err := r.DB.Exec(`
 		UPDATE trades 
-		SET symbol = ?, buy_date = ?, quantity = ?, price = ?, currency = ?, action = ?
+		SET symbol = ?, buy_date = ?, quantity = ?, price = ?, currency = ?, action = ?, holding_id = ?
 		WHERE id = ?
-	`, trade.Symbol, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.ID)
+	`, trade.Symbol, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.HoldingID, trade.ID)
 	return err
 }

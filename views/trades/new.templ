@@ -1,12 +1,14 @@
 package trades
 
+import "fif-calculator/internal/viewmodel"
+
 import . "fif-calculator/views"
 
-templ NewTradeForm(currentPath string) {
+templ NewTradeForm(currentPath string, vm viewmodel.TradeFormViewModel) {
     @Layout("New Trade", currentPath) {
         @Page() {
             @Section() {
-                @TradeForm(nil, "/trades")
+                @TradeForm(nil, vm.ActionURL, vm)
             }
         }
     }

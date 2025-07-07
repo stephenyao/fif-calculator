@@ -8,9 +8,11 @@ package trades
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "fif-calculator/internal/viewmodel"
+
 import . "fif-calculator/views"
 
-func NewTradeForm(currentPath string) templ.Component {
+func NewTradeForm(currentPath string, vm viewmodel.TradeFormViewModel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -67,7 +69,7 @@ func NewTradeForm(currentPath string) templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = TradeForm(nil, "/trades").Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = TradeForm(nil, vm.ActionURL, vm).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

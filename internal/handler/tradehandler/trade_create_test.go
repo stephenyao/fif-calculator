@@ -16,7 +16,7 @@ func TestTradeHandler_Create(t *testing.T) {
 		received = trade
 		return nil
 	}}
-	handler := &TradeHandler{Repo: mockRepo}
+	handler := &TradeHandler{TradeRepository: mockRepo}
 
 	req := httptest.NewRequest(http.MethodPost, "/trade/create", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")

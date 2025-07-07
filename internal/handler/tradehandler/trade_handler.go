@@ -7,11 +7,15 @@ import (
 )
 
 type TradeHandler struct {
-	Repo repository.TradeRepository
+	TradeRepository   repository.TradeRepository
+	HoldingRepository repository.HoldingsRepository
 }
 
 func NewTradeHandler(db *sqlx.DB) *TradeHandler {
-	return &TradeHandler{Repo: repository.NewTradeRepository(db)}
+	return &TradeHandler{
+		TradeRepository:   repository.NewTradeRepository(db),
+		HoldingRepository: repository.NewHoldingsRepository(db),
+	}
 }
 
 func (h *TradeHandler) Index(w http.ResponseWriter, r *http.Request) {
