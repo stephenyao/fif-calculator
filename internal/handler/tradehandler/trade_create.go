@@ -3,6 +3,7 @@ package tradehandler
 import (
 	"fif-calculator/internal/constants"
 	"fif-calculator/internal/model"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 )
@@ -25,6 +26,12 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	price, _ := strconv.ParseFloat(r.FormValue("price"), 64)
 	symbol := r.FormValue("symbol")
 	action := r.FormValue("action")
+	holdingID, err := strconv.Atoi(chi.URLParam(r, "id"))
+
+	if err != nil {
+		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
+		return
+	}
 
 	existingTrades, err := h.TradeRepository.GetBySymbol(symbol)
 
@@ -41,12 +48,13 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	trade := model.Trade{
-		Symbol:   symbol,
-		BuyDate:  r.FormValue("buyDate"),
-		Quantity: quantity,
-		Price:    price,
-		Currency: r.FormValue("currency"),
-		Action:   action,
+		Symbol:    symbol,
+		BuyDate:   r.FormValue("buyDate"),
+		Quantity:  quantity,
+		Price:     price,
+		Currency:  r.FormValue("currency"),
+		Action:    action,
+		HoldingID: holdingID,
 	}
 
 	if err := h.TradeRepository.Insert(&trade); err != nil {
