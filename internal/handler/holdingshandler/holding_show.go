@@ -62,7 +62,7 @@ func convertTradesToViewModel(trades []model.Trade) []viewmodel.TradeViewModel {
 			Price:           trade.Price,
 			Currency:        trade.Currency,
 			Action:          trade.Action,
-			URL:             "/trade/" + strconv.Itoa(trade.ID),
+			URL:             "/trades/" + strconv.Itoa(trade.ID),
 		}
 	}
 

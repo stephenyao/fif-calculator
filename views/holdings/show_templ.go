@@ -257,7 +257,7 @@ func holdingTrades(vm viewmodel.HoldingViewModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"overflow-x-auto\"><table class=\"min-w-full divide-y divide-gray-200 border border-gray-300 rounded\"><thead class=\"bg-gray-50\"><tr><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Date</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Action</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Quantity</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Price</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Currency</th></tr></thead> <tbody class=\"bg-white divide-y divide-gray-100\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"overflow-x-auto\"><table class=\"min-w-full divide-y divide-gray-200 border border-gray-300 rounded\"><thead class=\"bg-gray-50\"><tr><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Date</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Action</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Quantity</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Price</th><th class=\"px-4 py-2 text-left text-sm font-semibold text-gray-700\">Currency</th><th class=\"px-4 py-2 text-sm font-semibold text-gray-700\">Actions</th></tr></thead> <tbody class=\"bg-white divide-y divide-gray-100\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -269,7 +269,7 @@ func holdingTrades(vm viewmodel.HoldingViewModel) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(trade.TransactionDate)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 74, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 73, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -282,7 +282,7 @@ func holdingTrades(vm viewmodel.HoldingViewModel) templ.Component {
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(trade.Action)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 75, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 74, Col: 66}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -295,7 +295,7 @@ func holdingTrades(vm viewmodel.HoldingViewModel) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", trade.Quantity))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 76, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 75, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -308,7 +308,7 @@ func holdingTrades(vm viewmodel.HoldingViewModel) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", trade.Price))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 77, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 76, Col: 86}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -321,23 +321,32 @@ func holdingTrades(vm viewmodel.HoldingViewModel) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(trade.Currency)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 78, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/show.templ`, Line: 77, Col: 68}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td><td class=\"px-4 py-2 text-sm text-center\"><a href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var17 templ.SafeURL = templ.SafeURL(trade.URL)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var17)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 mx-auto\">View</a></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</tbody></table></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</tbody></table></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
