@@ -31,7 +31,7 @@ func (h *HoldingsHandler) Update(w http.ResponseWriter, r *http.Request) {
 		Currency: currency,
 	}
 
-	if err := h.Repo.Update(&record); err != nil {
+	if err := h.HoldingsRepository.Update(&record); err != nil {
 		http.Error(w, "Failed to update trade", http.StatusInternalServerError)
 		return
 	}

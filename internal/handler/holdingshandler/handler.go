@@ -8,11 +8,15 @@ import (
 )
 
 type HoldingsHandler struct {
-	Repo repository.HoldingsRepository
+	HoldingsRepository repository.HoldingsRepository
+	TradeRepository    repository.TradeRepository
 }
 
 func NewHoldingsHandler(db *sqlx.DB) *HoldingsHandler {
-	return &HoldingsHandler{Repo: repository.NewHoldingsRepository(db)}
+	return &HoldingsHandler{
+		HoldingsRepository: repository.NewHoldingsRepository(db),
+		TradeRepository:    repository.NewTradeRepository(db),
+	}
 }
 
 func convertToHoldingViewModels(records []*model.HoldingRecord) []viewmodel.HoldingViewModel {

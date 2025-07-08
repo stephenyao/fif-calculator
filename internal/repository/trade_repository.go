@@ -14,6 +14,7 @@ type TradeRepository interface {
 	GetAll() ([]model.Trade, error)
 	GetBySymbol(symbol string) ([]*model.Trade, error)
 	GetAllByAscendingDate() ([]model.Trade, error)
+	GetByHoldingID(id int) ([]model.Trade, error)
 }
 
 type SQLTradeRepository struct {
@@ -80,4 +81,18 @@ func (r *SQLTradeRepository) Update(trade *model.Trade) error {
 		WHERE id = ?
 	`, trade.Symbol, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.HoldingID, trade.ID)
 	return err
+}
+
+func (r *SQLTradeRepository) GetByHoldingID(id int) ([]model.Trade, error) {
+	var trades []model.Trade
+	err := r.DB.Select(&trades, `
+		SELECT * FROM trades 
+		WHERE holding_id = ?
+		ORDER BY buy_date ASC
+	`, id)
+
+	if err != nil {
+		return nil, err
+	}
+	return trades, nil
 }

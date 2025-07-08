@@ -6,7 +6,7 @@ import (
 )
 
 func (h *HoldingsHandler) List(w http.ResponseWriter, r *http.Request) {
-	allHoldings, err := h.Repo.AllHoldings()
+	allHoldings, err := h.HoldingsRepository.AllHoldings()
 
 	if err != nil {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)

@@ -33,7 +33,7 @@ func (h *HoldingsHandler) CreateHolding(w http.ResponseWriter, r *http.Request) 
 		Currency: currency,
 	}
 
-	err = h.Repo.CreateHolding(&holding)
+	err = h.HoldingsRepository.CreateHolding(&holding)
 
 	if err != nil {
 		http.Error(w, "Could not create holding", http.StatusInternalServerError)

@@ -13,7 +13,7 @@ func (h *HoldingsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	err = h.Repo.DeleteByID(id)
+	err = h.HoldingsRepository.DeleteByID(id)
 
 	if err != nil {
 		http.Error(w, "Failed to delete holding", http.StatusInternalServerError)

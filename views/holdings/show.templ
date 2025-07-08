@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	. "fif-calculator/views"
+	"fmt"
 )
 
 templ ViewHolding(currentPath string, vm viewmodel.HoldingViewModel) {
@@ -46,8 +47,40 @@ templ holdingInfo(vm viewmodel.HoldingViewModel) {
 }
 
 templ holdingTrades(vm viewmodel.HoldingViewModel) {
-	<div>Trades</div>
+<div>
+	<h2 class="text-2xl font-bold mb-4">Trades</h2>
+
 	<div class="flex justify-end mb-4">
 		@Link("/holdings/" + strconv.Itoa(vm.ID) + "/trades/new", "+ New Trade")
 	</div>
+
+	if len(vm.Trades) == 0 {
+		<p class="text-gray-600">No trades recorded yet.</p>
+	} else {
+		<div class="overflow-x-auto">
+			<table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded">
+				<thead class="bg-gray-50">
+					<tr>
+						<th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Date</th>
+						<th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Action</th>
+						<th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Quantity</th>
+						<th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Price</th>
+						<th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Currency</th>
+					</tr>
+				</thead>
+				<tbody class="bg-white divide-y divide-gray-100">
+					for _, trade := range vm.Trades {
+						<tr>
+							<td class="px-4 py-2 text-sm text-gray-900">{ trade.TransactionDate }</td>
+							<td class="px-4 py-2 text-sm text-gray-900">{ trade.Action }</td>
+							<td class="px-4 py-2 text-sm text-gray-900">{ fmt.Sprintf("%.2f", trade.Quantity) }</td>
+							<td class="px-4 py-2 text-sm text-gray-900">{ fmt.Sprintf("%.2f", trade.Price) }</td>
+							<td class="px-4 py-2 text-sm text-gray-900">{ trade.Currency }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+</div>
 }

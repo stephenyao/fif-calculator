@@ -16,7 +16,7 @@ func (h *HoldingsHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	holding, err := h.Repo.GetHolding(id)
+	holding, err := h.HoldingsRepository.GetHolding(id)
 	vm := viewmodel.NewHoldingFormViewModelFromRecord(holding)
 
 	if err != nil {

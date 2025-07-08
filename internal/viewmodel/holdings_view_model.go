@@ -66,4 +66,14 @@ type HoldingViewModel struct {
 	Name     string
 	Symbol   string
 	Currency string
+	Trades   []TradeViewModel
+}
+
+type TradeViewModel struct {
+	TransactionDate string
+	Quantity        float64
+	Price           float64
+	Currency        string
+	Action          string
+	URL             string
 }

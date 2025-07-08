@@ -3,6 +3,7 @@ package holdingshandler
 import (
 	"database/sql"
 	"errors"
+	"fif-calculator/internal/model"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/holdings"
 	"github.com/go-chi/chi/v5"
@@ -18,7 +19,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "id should be a number", http.StatusBadRequest)
 	}
 
-	holding, err := h.Repo.GetHolding(id)
+	holding, err := h.HoldingsRepository.GetHolding(id)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -29,11 +30,19 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	trades, err := h.TradeRepository.GetByHoldingID(id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	vm := viewmodel.HoldingViewModel{
 		ID:       id,
 		Name:     holding.Name,
 		Symbol:   holding.Symbol,
 		Currency: holding.Currency,
+		Trades:   convertTradesToViewModel(trades),
 	}
 
 	err = holdings.ViewHolding(r.URL.Path, vm).Render(r.Context(), w)
@@ -41,4 +50,21 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func convertTradesToViewModel(trades []model.Trade) []viewmodel.TradeViewModel {
+	viewTrades := make([]viewmodel.TradeViewModel, len(trades))
+
+	for i, trade := range trades {
+		viewTrades[i] = viewmodel.TradeViewModel{
+			TransactionDate: trade.BuyDate,
+			Quantity:        trade.Quantity,
+			Price:           trade.Price,
+			Currency:        trade.Currency,
+			Action:          trade.Action,
+			URL:             "/trade/" + strconv.Itoa(trade.ID),
+		}
+	}
+
+	return viewTrades
 }
