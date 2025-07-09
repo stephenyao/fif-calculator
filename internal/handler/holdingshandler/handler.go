@@ -5,6 +5,7 @@ import (
 	"fif-calculator/internal/repository"
 	"fif-calculator/internal/viewmodel"
 	"github.com/jmoiron/sqlx"
+	"net/http"
 )
 
 type HoldingsHandler struct {
@@ -30,4 +31,8 @@ func convertToHoldingViewModels(records []*model.HoldingRecord) []viewmodel.Hold
 		})
 	}
 	return viewModels
+}
+
+func (h *HoldingsHandler) Index(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/holdings", http.StatusSeeOther)
 }

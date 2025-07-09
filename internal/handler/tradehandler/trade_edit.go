@@ -9,20 +9,21 @@ import (
 )
 
 func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
-	param := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(param)
+	holdingIDParam := chi.URLParam(r, "holdingID")
+	tradeIDParam := chi.URLParam(r, "tradeID")
+	tradeID, err := strconv.Atoi(tradeIDParam)
 
 	if err != nil {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	trade, err := h.TradeRepository.GetByID(id)
+	trade, err := h.TradeRepository.GetByID(tradeID)
 
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
 	}
 
-	vm := viewmodel.CreateTradeFormViewModel("holding", "/trades/"+param+"/edit")
+	vm := viewmodel.CreateTradeFormViewModel("holding", "/holdings/"+holdingIDParam+"/trades/"+tradeIDParam+"/edit")
 
 	err = trades.UpdateTradeForm(r.URL.Path, trade, vm).Render(r.Context(), w)
 

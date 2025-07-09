@@ -42,7 +42,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		Name:     holding.Name,
 		Symbol:   holding.Symbol,
 		Currency: holding.Currency,
-		Trades:   convertTradesToViewModel(trades),
+		Trades:   convertTradesToViewModel(param, trades),
 	}
 
 	err = holdings.ViewHolding(r.URL.Path, vm).Render(r.Context(), w)
@@ -52,7 +52,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func convertTradesToViewModel(trades []model.Trade) []viewmodel.TradeViewModel {
+func convertTradesToViewModel(holdingID string, trades []model.Trade) []viewmodel.TradeViewModel {
 	viewTrades := make([]viewmodel.TradeViewModel, len(trades))
 
 	for i, trade := range trades {
@@ -62,7 +62,8 @@ func convertTradesToViewModel(trades []model.Trade) []viewmodel.TradeViewModel {
 			Price:           trade.Price,
 			Currency:        trade.Currency,
 			Action:          trade.Action,
-			URL:             "/trades/" + strconv.Itoa(trade.ID),
+			URL:             "/holdings/" + holdingID + "/trades/" + strconv.Itoa(trade.ID),
+			BackURL:         "/holdings/" + holdingID,
 		}
 	}
 

@@ -27,14 +27,10 @@ func main() {
 
 	r.Use(middleware.StripSlashes)
 
-	r.Get("/", tradeHandler.Index)
-	r.Get("/trades/new", tradeHandler.NewForm)
-	r.Get("/trades", tradeHandler.List)
+	r.Get("/", holdingsHandler.Index)
 	r.Post("/trades", tradeHandler.Create)
 	r.Get("/trades/{id}", tradeHandler.Show)
 	r.Post("/trades/{id}/delete", tradeHandler.Delete)
-	r.Get("/trades/{id}/edit", tradeHandler.EditForm)
-	r.Post("/trades/{id}/edit", tradeHandler.Update)
 	r.Get("/cost-basis", costBasisHandler.Index)
 	r.Get("/fif", fifHandler.Index)
 	r.Get("/fif/start", fifHandler.New)
@@ -50,5 +46,9 @@ func main() {
 	r.Post("/holdings/{id}/edit", holdingsHandler.Update)
 	r.Get("/holdings/{id}/trades/new", tradeHandler.New)
 	r.Post("/holdings/{id}/trades/new", tradeHandler.Create)
+	r.Get("/holdings/{holdingID}/trades/{tradeID}", tradeHandler.Show)
+	r.Get("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.EditForm)
+	r.Post("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.Update)
+
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

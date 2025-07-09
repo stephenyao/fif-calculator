@@ -16,7 +16,6 @@ type NavigationViewModel struct {
 func NewNavigationViewModel(currentPath string) *NavigationViewModel {
 	items := []NavigationItem{
 		{"Holdings", "/holdings", false},
-		{"Manage Trades", "/trades", false},
 		{"Cost Basis", "/cost-basis", false},
 		{"FIF calculation", "/fif", false},
 	}

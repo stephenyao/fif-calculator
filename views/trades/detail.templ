@@ -4,13 +4,13 @@ import "fif-calculator/views"
 import "fif-calculator/internal/model"
 import "strconv"
 
-templ TradeDetail(curentPath string, trade *model.Trade) {
+templ TradeDetail(curentPath string, trade *model.Trade, backURL string, editURL string) {
     @views.Layout("Trade detail", curentPath) {
-        @details(trade)
+        @details(trade, backURL, editURL)
     }
 }
 
-templ details(trade *model.Trade) {
+templ details(trade *model.Trade, backURL, editURL string) {
     <div class="max-w-2xl mx-auto p-6">
         <h1 class="text-2xl font-bold mb-4">Trade Details</h1>
         <table class="w-full text-left border-collapse">
@@ -42,7 +42,7 @@ templ details(trade *model.Trade) {
             </tbody>
         </table>
 
-        <a href={templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/edit")} class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <a href={templ.SafeURL(editURL)} class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Edit Trade
         </a>
 
@@ -54,7 +54,7 @@ templ details(trade *model.Trade) {
 
 
         <div class="mt-6">
-            <a href="/trades" class="text-blue-600 underline">← Back to Trade List</a>
+            <a href={templ.SafeURL(backURL)} class="text-blue-600 underline">← Back to Holding</a>
         </div>
     </div>
 }

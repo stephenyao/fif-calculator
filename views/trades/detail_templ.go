@@ -12,7 +12,7 @@ import "fif-calculator/views"
 import "fif-calculator/internal/model"
 import "strconv"
 
-func TradeDetail(curentPath string, trade *model.Trade) templ.Component {
+func TradeDetail(curentPath string, trade *model.Trade, backURL string, editURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -45,7 +45,7 @@ func TradeDetail(curentPath string, trade *model.Trade) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = details(trade).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = details(trade, backURL, editURL).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,7 +59,7 @@ func TradeDetail(curentPath string, trade *model.Trade) templ.Component {
 	})
 }
 
-func details(trade *model.Trade) templ.Component {
+func details(trade *model.Trade, backURL, editURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -162,7 +162,7 @@ func details(trade *model.Trade) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 templ.SafeURL = templ.SafeURL("/trades/" + strconv.Itoa(trade.ID) + "/edit")
+		var templ_7745c5c3_Var10 templ.SafeURL = templ.SafeURL(editURL)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var10)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -176,7 +176,16 @@ func details(trade *model.Trade) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" method=\"post\" onsubmit=\"return confirm(&#39;Are you sure you want to delete this trade?&#39;);\"><button type=\"submit\" class=\"mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700\">Delete Trade</button></form><div class=\"mt-6\"><a href=\"/trades\" class=\"text-blue-600 underline\">← Back to Trade List</a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" method=\"post\" onsubmit=\"return confirm(&#39;Are you sure you want to delete this trade?&#39;);\"><button type=\"submit\" class=\"mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700\">Delete Trade</button></form><div class=\"mt-6\"><a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 templ.SafeURL = templ.SafeURL(backURL)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var12)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"text-blue-600 underline\">← Back to Holding</a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

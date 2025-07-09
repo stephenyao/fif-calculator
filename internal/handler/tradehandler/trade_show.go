@@ -8,20 +8,22 @@ import (
 )
 
 func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
-	param := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(param)
+	holdingIDParam := chi.URLParam(r, "holdingID")
+	tradeIDParam := chi.URLParam(r, "tradeID")
+	id, err := strconv.Atoi(tradeIDParam)
 
 	if err != nil {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
 	trade, err := h.TradeRepository.GetByID(id)
-	//println(trade)
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
 	}
 
-	err = trades.TradeDetail(r.URL.Path, trade).Render(r.Context(), w)
+	backURL := "/holdings/" + holdingIDParam
+	editURL := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam + "/edit"
+	err = trades.TradeDetail(r.URL.Path, trade, backURL, editURL).Render(r.Context(), w)
 
 	if err != nil {
 		http.Error(w, "Could not render start page", http.StatusInternalServerError)

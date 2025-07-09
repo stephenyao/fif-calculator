@@ -76,4 +76,5 @@ type TradeViewModel struct {
 	Currency        string
 	Action          string
 	URL             string
+	BackURL         string
 }
