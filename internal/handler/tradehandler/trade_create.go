@@ -26,7 +26,8 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	price, _ := strconv.ParseFloat(r.FormValue("price"), 64)
 	symbol := r.FormValue("symbol")
 	action := r.FormValue("action")
-	holdingID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	holdingIDParam := chi.URLParam(r, "id")
+	holdingID, err := strconv.Atoi(holdingIDParam)
 
 	if err != nil {
 		http.Error(w, "Invalid id parameter", http.StatusBadRequest)
@@ -62,7 +63,8 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	redirect := "/holdings/" + holdingIDParam
+	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
 
 func verifyTradeIsValid(existingTrades []*model.Trade, quantity float64, action string) error {

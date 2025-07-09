@@ -23,7 +23,8 @@ func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 	backURL := "/holdings/" + holdingIDParam
 	editURL := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam + "/edit"
-	err = trades.TradeDetail(r.URL.Path, trade, backURL, editURL).Render(r.Context(), w)
+	deleteURL := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam + "/delete"
+	err = trades.TradeDetail(r.URL.Path, trade, backURL, editURL, deleteURL).Render(r.Context(), w)
 
 	if err != nil {
 		http.Error(w, "Could not render start page", http.StatusInternalServerError)

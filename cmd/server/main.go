@@ -30,7 +30,6 @@ func main() {
 	r.Get("/", holdingsHandler.Index)
 	r.Post("/trades", tradeHandler.Create)
 	r.Get("/trades/{id}", tradeHandler.Show)
-	r.Post("/trades/{id}/delete", tradeHandler.Delete)
 	r.Get("/cost-basis", costBasisHandler.Index)
 	r.Get("/fif", fifHandler.Index)
 	r.Get("/fif/start", fifHandler.New)
@@ -49,6 +48,7 @@ func main() {
 	r.Get("/holdings/{holdingID}/trades/{tradeID}", tradeHandler.Show)
 	r.Get("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.EditForm)
 	r.Post("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.Update)
+	r.Post("/holdings/{holdingID}/trades/{tradeID}/delete", tradeHandler.Delete)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
