@@ -20,7 +20,6 @@ func InitSchema(db *sqlx.DB) {
 	CREATE TABLE IF NOT EXISTS trades (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		holding_id INTEGER NOT NULL,
-		symbol TEXT,
 		buy_date TEXT,
 		quantity REAL,
 		price REAL,

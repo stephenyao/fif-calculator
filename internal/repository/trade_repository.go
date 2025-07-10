@@ -28,8 +28,8 @@ func NewTradeRepository(db *sqlx.DB) TradeRepository {
 
 func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
 	_, err := r.DB.NamedExec(`
-		INSERT INTO trades (symbol, buy_date, quantity, price, currency, action, holding_id)
-		VALUES (:symbol, :buy_date, :quantity, :price, :currency, :action, :holding_id)
+		INSERT INTO trades (buy_date, quantity, price, currency, action, holding_id)
+		VALUES (:buy_date, :quantity, :price, :currency, :action, :holding_id)
 	`, trade)
 	return err
 }
@@ -55,14 +55,14 @@ func (r *SQLTradeRepository) GetByID(id int) (*model.Trade, error) {
 	err := r.DB.Get(&trade, `
 		SELECT 
 			trades.id,
-			trades.symbol,
 			trades.buy_date,
 			trades.quantity,
 			trades.price,
 			trades.currency,
 			trades.action,
 			trades.holding_id,
-			holdings.name AS holding_name
+			holdings.name AS holding_name,
+			holdings.symbol AS symbol
 		FROM trades
 		JOIN holdings ON trades.holding_id = holdings.id
 		WHERE trades.id = ?
@@ -82,9 +82,9 @@ func (r *SQLTradeRepository) DeleteByID(id int) error {
 func (r *SQLTradeRepository) Update(trade *model.Trade) error {
 	_, err := r.DB.Exec(`
 		UPDATE trades 
-		SET symbol = ?, buy_date = ?, quantity = ?, price = ?, currency = ?, action = ?, holding_id = ?
+		SET buy_date = ?, quantity = ?, price = ?, currency = ?, action = ?, holding_id = ?
 		WHERE id = ?
-	`, trade.Symbol, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.HoldingID, trade.ID)
+	`, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.HoldingID, trade.ID)
 	return err
 }
 
@@ -93,19 +93,19 @@ func (r *SQLTradeRepository) GetByHoldingID(id int) ([]model.Trade, error) {
 	err := r.DB.Select(&trades, `
 	SELECT 
 		trades.id,
-		trades.symbol,
 		trades.buy_date,
 		trades.quantity,
 		trades.price,
 		trades.currency,
 		trades.action,
 		trades.holding_id,
-		holdings.name AS holding_name
+		holdings.name AS holding_name,
+		holdings.symbol AS symbol
 	FROM trades
 	JOIN holdings ON trades.holding_id = holdings.id
 	WHERE trades.holding_id = ?
 	ORDER BY trades.buy_date ASC
-`, id)
+	`, id)
 
 	if err != nil {
 		return nil, err

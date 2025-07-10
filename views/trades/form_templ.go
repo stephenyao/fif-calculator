@@ -56,130 +56,110 @@ func TradeForm(trade *model.Trade, action templ.SafeURL, vm viewmodel.TradeFormV
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h2><div><label for=\"symbol\" class=\"block mb-1 font-medium text-gray-700\">Symbol</label> <input id=\"symbol\" name=\"symbol\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h2><div><label for=\"buyDate\" class=\"block mb-1 font-medium text-gray-700\">Buy Date</label> <input id=\"buyDate\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(symbol(trade))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(buyDate(trade))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 17, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 16, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" type=\"text\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"buyDate\" class=\"block mb-1 font-medium text-gray-700\">Buy Date</label> <input id=\"buyDate\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" name=\"buyDate\" type=\"date\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"quantity\" class=\"block mb-1 font-medium text-gray-700\">Quantity</label> <input id=\"quantity\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(buyDate(trade))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(quantity(trade))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 24, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 23, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" name=\"buyDate\" type=\"date\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"quantity\" class=\"block mb-1 font-medium text-gray-700\">Quantity</label> <input id=\"quantity\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" name=\"quantity\" type=\"number\" step=\"any\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"price\" class=\"block mb-1 font-medium text-gray-700\">Price</label> <input id=\"price\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(quantity(trade))
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(price(trade))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 31, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 30, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" name=\"quantity\" type=\"number\" step=\"any\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"price\" class=\"block mb-1 font-medium text-gray-700\">Price</label> <input id=\"price\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" name=\"price\" type=\"number\" step=\"any\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"currency\" class=\"block mb-1 font-medium text-gray-700\">Currency</label> <input id=\"currency\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(price(trade))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(currency(trade))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 38, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 37, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" name=\"price\" type=\"number\" step=\"any\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"currency\" class=\"block mb-1 font-medium text-gray-700\">Currency</label> <input id=\"currency\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" name=\"currency\" type=\"text\" value=\"USD\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"action\" class=\"block mb-1 font-medium text-gray-700\">Action</label> <select id=\"action\" name=\"action\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"><option value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(currency(trade))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(constants.Buy)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 45, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 44, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" name=\"currency\" type=\"text\" value=\"USD\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"></div><div><label for=\"action\" class=\"block mb-1 font-medium text-gray-700\">Action</label> <select id=\"action\" name=\"action\" class=\"w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300\"><option value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isSelected(trade, constants.Buy) {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " selected")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ">Buy</option> <option value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(constants.Buy)
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(constants.Sell)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 52, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 45, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if isSelected(trade, constants.Buy) {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " selected")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ">Buy</option> <option value=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(constants.Sell)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/trades/form.templ`, Line: 53, Col: 49}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if isSelected(trade, constants.Sell) {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " selected")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " selected")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, ">Sell</option></select></div><div class=\"text-right\"><button type=\"submit\" class=\"bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition\">Save Trade</button></div></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, ">Sell</option></select></div><div class=\"text-right\"><button type=\"submit\" class=\"bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition\">Save Trade</button></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		return nil
 	})
-}
-
-func symbol(trade *model.Trade) string {
-	if trade != nil {
-		return trade.Symbol
-	}
-	return ""
 }
 
 func buyDate(trade *model.Trade) string {
