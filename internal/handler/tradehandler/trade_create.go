@@ -1,7 +1,6 @@
 package tradehandler
 
 import (
-	"fif-calculator/internal/constants"
 	"fif-calculator/internal/model"
 	"github.com/go-chi/chi/v5"
 	"net/http"
@@ -34,20 +33,6 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existingTrades, err := h.TradeRepository.GetBySymbol(symbol)
-
-	if err != nil {
-		http.Error(w, "Invalid symbol", http.StatusInternalServerError)
-		return
-	}
-
-	err = verifyTradeIsValid(existingTrades, quantity, action)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	trade := model.Trade{
 		Symbol:    symbol,
 		BuyDate:   r.FormValue("buyDate"),
@@ -65,28 +50,4 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	redirect := "/holdings/" + holdingIDParam
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
-}
-
-func verifyTradeIsValid(existingTrades []*model.Trade, quantity float64, action string) error {
-	switch action {
-	case constants.Buy:
-		return nil
-	case constants.Sell:
-		var totalQuantity float64 = 0
-		for _, trade := range existingTrades {
-			if trade.Action == constants.Buy {
-				totalQuantity += trade.Quantity
-			} else if trade.Action == constants.Sell {
-				totalQuantity -= trade.Quantity
-			}
-		}
-
-		if totalQuantity >= quantity {
-			return nil
-		} else {
-			return CreateError{message: "The quantity sold is more than the number of holdings in portfolio"}
-		}
-	default:
-		return CreateError{"Unknown trade action"} // unknown and expected case, so return false
-	}
 }

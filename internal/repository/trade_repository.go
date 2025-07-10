@@ -12,7 +12,6 @@ type TradeRepository interface {
 	DeleteByID(id int) error
 	GetByID(id int) (*model.Trade, error)
 	GetAll() ([]model.Trade, error)
-	GetBySymbol(symbol string) ([]*model.Trade, error)
 	GetAllByAscendingDate() ([]model.Trade, error)
 	GetByHoldingID(id int) ([]model.Trade, error)
 }
@@ -53,20 +52,26 @@ func (r *SQLTradeRepository) GetAllByAscendingDate() ([]model.Trade, error) {
 
 func (r *SQLTradeRepository) GetByID(id int) (*model.Trade, error) {
 	var trade model.Trade
-	err := r.DB.Get(&trade, "SELECT * FROM trades WHERE id = ?", id)
+	err := r.DB.Get(&trade, `
+		SELECT 
+			trades.id,
+			trades.symbol,
+			trades.buy_date,
+			trades.quantity,
+			trades.price,
+			trades.currency,
+			trades.action,
+			trades.holding_id,
+			holdings.name AS holding_name
+		FROM trades
+		JOIN holdings ON trades.holding_id = holdings.id
+		WHERE trades.id = ?
+	`, id)
+
 	if err != nil {
 		return nil, err
 	}
 	return &trade, nil
-}
-
-func (r *SQLTradeRepository) GetBySymbol(symbol string) ([]*model.Trade, error) {
-	var trades []*model.Trade
-	err := r.DB.Select(&trades, "SELECT * FROM trades WHERE symbol = ?", symbol)
-	if err != nil {
-		return nil, err
-	}
-	return trades, nil
 }
 
 func (r *SQLTradeRepository) DeleteByID(id int) error {
@@ -86,10 +91,21 @@ func (r *SQLTradeRepository) Update(trade *model.Trade) error {
 func (r *SQLTradeRepository) GetByHoldingID(id int) ([]model.Trade, error) {
 	var trades []model.Trade
 	err := r.DB.Select(&trades, `
-		SELECT * FROM trades 
-		WHERE holding_id = ?
-		ORDER BY buy_date ASC
-	`, id)
+	SELECT 
+		trades.id,
+		trades.symbol,
+		trades.buy_date,
+		trades.quantity,
+		trades.price,
+		trades.currency,
+		trades.action,
+		trades.holding_id,
+		holdings.name AS holding_name
+	FROM trades
+	JOIN holdings ON trades.holding_id = holdings.id
+	WHERE trades.holding_id = ?
+	ORDER BY trades.buy_date ASC
+`, id)
 
 	if err != nil {
 		return nil, err

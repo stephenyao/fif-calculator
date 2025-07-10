@@ -7,8 +7,7 @@ type TradeFormViewModel struct {
 	ActionURL templ.SafeURL
 }
 
-func CreateTradeFormViewModel(holding string, actionURL string) TradeFormViewModel {
-	title := "New Trade for " + holding
+func CreateTradeFormViewModel(title string, actionURL string) TradeFormViewModel {
 	return TradeFormViewModel{
 		Title:     title,
 		ActionURL: templ.SafeURL(actionURL),

@@ -23,7 +23,8 @@ func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
 	}
 
-	vm := viewmodel.CreateTradeFormViewModel("Edit", "/holdings/"+holdingIDParam+"/trades/"+tradeIDParam+"/edit")
+	title := "Edit trade for " + trade.HoldingName
+	vm := viewmodel.CreateTradeFormViewModel(title, "/holdings/"+holdingIDParam+"/trades/"+tradeIDParam+"/edit")
 
 	err = trades.UpdateTradeForm(r.URL.Path, trade, vm).Render(r.Context(), w)
 
