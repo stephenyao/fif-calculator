@@ -28,11 +28,9 @@ func (h *TradeHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	trade := model.Trade{
 		ID:        tradeID,
-		Symbol:    r.FormValue("symbol"),
 		BuyDate:   r.FormValue("buyDate"),
 		Quantity:  quantity,
 		Price:     price,
-		Currency:  r.FormValue("currency"),
 		Action:    r.FormValue("action"),
 		HoldingID: holdingID,
 	}

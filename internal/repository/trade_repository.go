@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fif-calculator/internal/model"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -28,8 +27,8 @@ func NewTradeRepository(db *sqlx.DB) TradeRepository {
 
 func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
 	_, err := r.DB.NamedExec(`
-		INSERT INTO trades (buy_date, quantity, price, currency, action, holding_id)
-		VALUES (:buy_date, :quantity, :price, :currency, :action, :holding_id)
+		INSERT INTO trades (buy_date, quantity, price, action, holding_id)
+		VALUES (:buy_date, :quantity, :price, :action, :holding_id)
 	`, trade)
 	return err
 }
@@ -37,16 +36,44 @@ func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
 func (r *SQLTradeRepository) GetAll() ([]model.Trade, error) {
 	var trades []model.Trade
 
-	query := fmt.Sprintf("SELECT * FROM trades ORDER BY buy_date DESC")
-	err := r.DB.Select(&trades, query)
+	err := r.DB.Select(&trades, `
+		SELECT 
+			trades.id,
+			trades.buy_date,
+			trades.quantity,
+			trades.price,
+			trades.action,
+			trades.holding_id,
+			holdings.currency AS currency,
+			holdings.name AS holding_name,
+			holdings.symbol AS symbol
+		FROM trades
+		JOIN holdings ON trades.holding_id = holdings.id
+		ORDER BY trades.buy_date DESC
+	`)
+
 	return trades, err
 }
 
 func (r *SQLTradeRepository) GetAllByAscendingDate() ([]model.Trade, error) {
 	var trades []model.Trade
 
-	query := fmt.Sprintf("SELECT * FROM trades ORDER BY buy_date ASC")
-	err := r.DB.Select(&trades, query)
+	err := r.DB.Select(&trades, `
+		SELECT 
+			trades.id,
+			trades.buy_date,
+			trades.quantity,
+			trades.price,
+			trades.action,
+			trades.holding_id,
+			holdings.currency AS currency,
+			holdings.name AS holding_name,
+			holdings.symbol AS symbol
+		FROM trades
+		JOIN holdings ON trades.holding_id = holdings.id
+		ORDER BY trades.buy_date ASC
+	`)
+
 	return trades, err
 }
 
@@ -58,9 +85,9 @@ func (r *SQLTradeRepository) GetByID(id int) (*model.Trade, error) {
 			trades.buy_date,
 			trades.quantity,
 			trades.price,
-			trades.currency,
 			trades.action,
 			trades.holding_id,
+			holdings.currency AS currency,
 			holdings.name AS holding_name,
 			holdings.symbol AS symbol
 		FROM trades
@@ -82,9 +109,9 @@ func (r *SQLTradeRepository) DeleteByID(id int) error {
 func (r *SQLTradeRepository) Update(trade *model.Trade) error {
 	_, err := r.DB.Exec(`
 		UPDATE trades 
-		SET buy_date = ?, quantity = ?, price = ?, currency = ?, action = ?, holding_id = ?
+		SET buy_date = ?, quantity = ?, price = ?, action = ?, holding_id = ?
 		WHERE id = ?
-	`, trade.BuyDate, trade.Quantity, trade.Price, trade.Currency, trade.Action, trade.HoldingID, trade.ID)
+	`, trade.BuyDate, trade.Quantity, trade.Price, trade.Action, trade.HoldingID, trade.ID)
 	return err
 }
 
@@ -96,9 +123,9 @@ func (r *SQLTradeRepository) GetByHoldingID(id int) ([]model.Trade, error) {
 		trades.buy_date,
 		trades.quantity,
 		trades.price,
-		trades.currency,
 		trades.action,
 		trades.holding_id,
+		holdings.currency AS currency,
 		holdings.name AS holding_name,
 		holdings.symbol AS symbol
 	FROM trades
