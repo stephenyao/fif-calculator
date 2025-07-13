@@ -18,6 +18,7 @@ func NewNavigationViewModel(currentPath string) *NavigationViewModel {
 		{"Holdings", "/holdings", false},
 		{"Cost Basis", "/cost-basis", false},
 		{"FIF calculation", "/fif", false},
+		{"Login", "/login", false},
 	}
 
 	for i := range items {

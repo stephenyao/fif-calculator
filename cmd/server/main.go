@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fif-calculator/internal/handler/authhandler"
 	"fif-calculator/internal/handler/costbasishandler"
 	"fif-calculator/internal/handler/fifhandler"
 	"fif-calculator/internal/handler/holdingshandler"
@@ -24,6 +25,7 @@ func main() {
 	costBasisHandler := costbasishandler.NewCostBasisHandler(db)
 	fifHandler := fifhandler.NewFIFHandler(db)
 	holdingsHandler := holdingshandler.NewHoldingsHandler(db)
+	authHandler := authhandler.NewAuthHandler()
 
 	r.Use(middleware.StripSlashes)
 
@@ -49,6 +51,7 @@ func main() {
 	r.Get("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.EditForm)
 	r.Post("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.Update)
 	r.Post("/holdings/{holdingID}/trades/{tradeID}/delete", tradeHandler.Delete)
-
+	r.Get("/login", authHandler.ShowLoginPage)
+	r.Post("/session-login", authHandler.PostLogin)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
