@@ -6,17 +6,19 @@ import (
 	"fif-calculator/views/login"
 	firebase "firebase.google.com/go/v4"
 	"fmt"
-	"google.golang.org/api/option"
 	"log"
 	"net/http"
 	"time"
 )
 
 type AuthHandler struct {
+	app *firebase.App
 }
 
-func NewAuthHandler() *AuthHandler {
-	return &AuthHandler{}
+func NewAuthHandler(app *firebase.App) *AuthHandler {
+	return &AuthHandler{
+		app: app,
+	}
 }
 
 func (h *AuthHandler) ShowLoginPage(w http.ResponseWriter, r *http.Request) {
@@ -27,18 +29,7 @@ func (h *AuthHandler) ShowLoginPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
-	app, err := firebase.NewApp(
-		context.Background(),
-		nil,
-		option.WithCredentialsFile("private_key.json"),
-	)
-	if err != nil {
-		http.Error(w, "Failed to init Firebase", http.StatusInternalServerError)
-		log.Println("Firebase init error:", err)
-		return
-	}
-
-	client, err := app.Auth(context.Background())
+	client, err := h.app.Auth(context.Background())
 	if err != nil {
 		http.Error(w, "Failed to get Firebase auth client", http.StatusInternalServerError)
 		log.Println("Firebase auth error:", err)

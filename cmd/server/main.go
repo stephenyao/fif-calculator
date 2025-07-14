@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
+	authmiddleware "fif-calculator/internal/authmiddleware"
 	"fif-calculator/internal/handler/authhandler"
 	"fif-calculator/internal/handler/costbasishandler"
 	"fif-calculator/internal/handler/fifhandler"
 	"fif-calculator/internal/handler/holdingshandler"
 	"fif-calculator/internal/handler/tradehandler"
 	"fif-calculator/internal/repository"
+	firebase "firebase.google.com/go/v4"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // register sqlite3 driver
+	"google.golang.org/api/option"
 	"log"
 	"net/http"
 )
@@ -21,13 +25,24 @@ func main() {
 
 	r := chi.NewRouter()
 
+	opt := option.WithCredentialsFile("private_key.json")
+	firebaseApp, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatalf("Failed to initialize Firebase: %v", err)
+	}
+
 	tradeHandler := tradehandler.NewTradeHandler(db)
 	costBasisHandler := costbasishandler.NewCostBasisHandler(db)
 	fifHandler := fifhandler.NewFIFHandler(db)
 	holdingsHandler := holdingshandler.NewHoldingsHandler(db)
-	authHandler := authhandler.NewAuthHandler()
+	authHandler := authhandler.NewAuthHandler(firebaseApp)
 
 	r.Use(middleware.StripSlashes)
+
+	r.Group(func(protected chi.Router) {
+		protected.Use(authmiddleware.RequireAuth(firebaseApp))
+		protected.Get("/holdings", holdingsHandler.List)
+	})
 
 	r.Get("/", holdingsHandler.Index)
 	r.Post("/trades", tradeHandler.Create)
@@ -38,7 +53,7 @@ func main() {
 	r.Post("/fif/start", fifHandler.HoldingsInfo)
 	r.Post("/fif/calculate", fifHandler.FIFFormSubmit)
 	r.Get("/fif/view/{id}", fifHandler.View)
-	r.Get("/holdings", holdingsHandler.List)
+
 	r.Get("/holdings/new", holdingsHandler.New)
 	r.Post("/holdings/new", holdingsHandler.CreateHolding)
 	r.Get("/holdings/{id}", holdingsHandler.Show)
