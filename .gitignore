@@ -2,3 +2,4 @@
 *.db
 app
 private_key.json
+.env.env

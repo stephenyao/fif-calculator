@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	authmiddleware "fif-calculator/internal/authmiddleware"
 	"fif-calculator/internal/handler/authhandler"
 	"fif-calculator/internal/handler/costbasishandler"
@@ -9,14 +10,18 @@ import (
 	"fif-calculator/internal/handler/holdingshandler"
 	"fif-calculator/internal/handler/tradehandler"
 	"fif-calculator/internal/repository"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	firebase "firebase.google.com/go/v4"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3" // register sqlite3 driver
 	"google.golang.org/api/option"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -25,10 +30,9 @@ func main() {
 
 	r := chi.NewRouter()
 
-	opt := option.WithCredentialsFile("private_key.json")
-	firebaseApp, err := firebase.NewApp(context.Background(), nil, opt)
+	firebaseApp, err := initFirebaseApp()
 	if err != nil {
-		log.Fatalf("Failed to initialize Firebase: %v", err)
+		log.Fatalf("Failed to init Firebase: %v", err)
 	}
 
 	tradeHandler := tradehandler.NewTradeHandler(db)
@@ -69,4 +73,26 @@ func main() {
 	r.Get("/login", authHandler.ShowLoginPage)
 	r.Post("/session-login", authHandler.PostLogin)
 	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func initFirebaseApp() (*firebase.App, error) {
+	// Load .env (only useful for local dev; no-op in App Platform)
+	_ = godotenv.Load()
+
+	b64 := os.Getenv("FIREBASE_KEY_B64")
+	if b64 == "" {
+		return nil, fmt.Errorf("FIREBASE_KEY_B64 is not set")
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode FIREBASE_KEY_B64: %w", err)
+	}
+
+	app, err := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(decoded))
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize Firebase App: %w", err)
+	}
+
+	return app, nil
 }
