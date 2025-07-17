@@ -5,7 +5,7 @@ import "strconv"
 import "fif-calculator/internal/constants"
 import "fif-calculator/internal/viewmodel"
 
-templ TradeForm(trade *model.Trade, action templ.SafeURL, vm viewmodel.TradeFormViewModel) {
+templ TradeForm(trade *model.Trade, action string, vm viewmodel.TradeFormViewModel) {
     <div class="flex items-center justify-center">
         <form action={action} method="post" class="w-full max-w-xl space-y-6">
             <h2 class="text-2xl font-bold text-gray-800">{vm.Title}</h2>

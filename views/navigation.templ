@@ -8,7 +8,7 @@ templ NavigationMenu(viewModel *NavigationViewModel) {
             for _, item := range viewModel.Items {
                 <li class="flex-shrink-0">
                     <a
-                        href={templ.SafeURL(item.URL)}
+                        href={item.URL}
                         class={
                             "block font-medium w-full text-left py-2 px-4 rounded-lg transition-all duration-200 ease-in-out " +
                             className(item.IsActive)
