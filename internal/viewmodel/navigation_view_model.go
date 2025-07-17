@@ -1,6 +1,9 @@
 package viewmodel
 
-import "strings"
+import (
+	"context"
+	"strings"
+)
 
 type NavigationItem struct {
 	Title    string
@@ -13,12 +16,19 @@ type NavigationViewModel struct {
 	CurrentPath string
 }
 
-func NewNavigationViewModel(currentPath string) *NavigationViewModel {
+func NewNavigationViewModel(currentPath string, ctx context.Context) *NavigationViewModel {
 	items := []NavigationItem{
 		{"Holdings", "/holdings", false},
 		{"Cost Basis", "/cost-basis", false},
 		{"FIF calculation", "/fif", false},
-		{"Login", "/login", false},
+	}
+
+	_, ok := ctx.Value("uid").(string)
+
+	if !ok {
+		items = append(items, NavigationItem{"Login", "/login", false})
+	} else {
+		items = append(items, NavigationItem{"Logout", "/logout", false})
 	}
 
 	for i := range items {

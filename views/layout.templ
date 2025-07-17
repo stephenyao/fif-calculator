@@ -13,7 +13,7 @@ templ Layout(title string, currentPath string) {
 			<title>{ title }</title>
 		</head>
 		<body class="bg-gray-100 text-gray-900">
-			@NavigationMenu(NewNavigationViewModel(currentPath))
+			@NavigationMenu(NewNavigationViewModel(currentPath, ctx))
 			{ children... }
 		</body>
 	</html>
