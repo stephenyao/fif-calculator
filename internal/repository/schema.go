@@ -10,7 +10,7 @@ func InitSchema(db *sqlx.DB) {
 	schema := `
 	CREATE TABLE IF NOT EXISTS holdings (
 	  id INTEGER PRIMARY KEY AUTOINCREMENT,
-	  user_id INTEGER NOT NULL,
+	  user_id TEXT NOT NULL,
 	  name TEXT,
 	  symbol TEXT NOT NULL,
 	  currency TEXT NOT NULL,

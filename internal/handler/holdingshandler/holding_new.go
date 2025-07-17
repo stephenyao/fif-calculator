@@ -26,8 +26,10 @@ func (h *HoldingsHandler) CreateHolding(w http.ResponseWriter, r *http.Request) 
 	name := r.FormValue("name")
 	ticker := r.FormValue("ticker")
 	currency := r.FormValue("currency")
+	userId := r.Context().Value("uid").(string)
 
 	holding := model.HoldingRecord{
+		UserID:   userId,
 		Name:     name,
 		Symbol:   ticker,
 		Currency: currency,

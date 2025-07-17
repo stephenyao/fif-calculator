@@ -24,6 +24,7 @@ func RequireAuth(client *auth.Client) func(http.Handler) http.Handler {
 
 			// Verify session cookie (not ID token)
 			token, err := client.VerifySessionCookie(r.Context(), cookie.Value)
+
 			if err != nil {
 				log.Println("Invalid session cookie:", err)
 				http.Redirect(w, r, "/login", http.StatusFound)
