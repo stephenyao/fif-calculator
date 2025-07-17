@@ -31,6 +31,8 @@ func main() {
 	r := chi.NewRouter()
 
 	firebaseApp, err := initFirebaseApp()
+	globalAuthClient, _ := firebaseApp.Auth(context.Background())
+
 	if err != nil {
 		log.Fatalf("Failed to init Firebase: %v", err)
 	}
@@ -44,7 +46,7 @@ func main() {
 	r.Use(middleware.StripSlashes)
 
 	r.Group(func(protected chi.Router) {
-		protected.Use(authmiddleware.RequireAuth(firebaseApp))
+		protected.Use(authmiddleware.RequireAuth(globalAuthClient))
 		protected.Get("/holdings", holdingsHandler.List)
 		protected.Get("/", holdingsHandler.Index)
 
@@ -78,7 +80,7 @@ func main() {
 func initFirebaseApp() (*firebase.App, error) {
 	// Load .env (only useful for local dev; no-op in App Platform)
 	_ = godotenv.Load()
-
+	fmt.Println("INITILIASING FIREBASE APP")
 	b64 := os.Getenv("FIREBASE_KEY_B64")
 	if b64 == "" {
 		return nil, fmt.Errorf("FIREBASE_KEY_B64 is not set")
