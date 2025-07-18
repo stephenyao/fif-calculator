@@ -7,7 +7,10 @@ templ ShowAccount(currentPath string) {
 		@Page() {
 			@Section() {
 				<h1>Account Details</h1>
-				<button>Logout</button>
+				
+				<form action="/logout" method="POST">
+                    @SubmitButton("Logout")
+				</form>
 			}
 		}
 	}

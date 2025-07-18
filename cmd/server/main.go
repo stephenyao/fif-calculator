@@ -74,6 +74,7 @@ func main() {
 		protected.Post("/holdings/{holdingID}/trades/{tradeID}/delete", tradeHandler.Delete)
 
 		protected.Get("/account", accountHandler.Show)
+		protected.Post("/logout", accounthandler.Logout)
 	})
 
 	r.Get("/login", authHandler.ShowLoginPage)

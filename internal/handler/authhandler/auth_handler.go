@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fif-calculator/views/login"
 	firebase "firebase.google.com/go/v4"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -48,7 +47,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Verify the ID token before creating a session cookie
 	idToken := body.Token
-	verifiedToken, err := client.VerifyIDToken(r.Context(), idToken)
+	_, err = client.VerifyIDToken(r.Context(), idToken)
 	if err != nil {
 		http.Error(w, "Invalid ID token", http.StatusUnauthorized)
 		log.Println("Token verify error:", err)
@@ -81,8 +80,5 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
-
-	fmt.Println("Logged in!")
-
-	fmt.Fprintf(w, "Logged in as UID: %s", verifiedToken.UID)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
