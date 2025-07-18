@@ -52,8 +52,6 @@ func main() {
 		protected.Get("/holdings", holdingsHandler.List)
 		protected.Get("/", holdingsHandler.Index)
 
-		protected.Post("/trades", tradeHandler.Create)
-		protected.Get("/trades/{id}", tradeHandler.Show)
 		protected.Get("/cost-basis", costBasisHandler.Index)
 		protected.Get("/fif", fifHandler.Index)
 		protected.Get("/fif/start", fifHandler.New)
