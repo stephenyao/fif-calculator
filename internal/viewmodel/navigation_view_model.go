@@ -28,7 +28,7 @@ func NewNavigationViewModel(currentPath string, ctx context.Context) *Navigation
 	if !ok {
 		items = append(items, NavigationItem{"Login", "/login", false})
 	} else {
-		items = append(items, NavigationItem{"Logout", "/logout", false})
+		items = append(items, NavigationItem{"Account", "/account", false})
 	}
 
 	for i := range items {

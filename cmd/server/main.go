@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	authmiddleware "fif-calculator/internal/authmiddleware"
+	"fif-calculator/internal/handler/accounthandler"
 	"fif-calculator/internal/handler/authhandler"
 	"fif-calculator/internal/handler/costbasishandler"
 	"fif-calculator/internal/handler/fifhandler"
@@ -42,6 +43,7 @@ func main() {
 	fifHandler := fifhandler.NewFIFHandler(db)
 	holdingsHandler := holdingshandler.NewHoldingsHandler(db)
 	authHandler := authhandler.NewAuthHandler(firebaseApp)
+	accountHandler := accounthandler.NewAccountHandler()
 
 	r.Use(middleware.StripSlashes)
 
@@ -70,6 +72,8 @@ func main() {
 		protected.Get("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.EditForm)
 		protected.Post("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.Update)
 		protected.Post("/holdings/{holdingID}/trades/{tradeID}/delete", tradeHandler.Delete)
+
+		protected.Get("/account", accountHandler.Show)
 	})
 
 	r.Get("/login", authHandler.ShowLoginPage)

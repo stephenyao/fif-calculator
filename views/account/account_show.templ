@@ -1,0 +1,14 @@
+package account
+
+import . "fif-calculator/views"
+
+templ ShowAccount(currentPath string) {
+	@Layout("Account", currentPath) {
+		@Page() {
+			@Section() {
+				<h1>Account Details</h1>
+				<button>Logout</button>
+			}
+		}
+	}
+}

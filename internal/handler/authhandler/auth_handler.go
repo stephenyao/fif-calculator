@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -63,15 +64,25 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
+	isLocal := os.Getenv("ENV") == "local"
+
+	cookie := &http.Cookie{
 		Name:     "session",
 		Value:    sessionCookie,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-		MaxAge:   int(expiresIn.Seconds()),
-	})
+		SameSite: http.SameSiteLaxMode,
+		Secure:   false, // Safari allows this on localhost
+	}
+
+	if !isLocal {
+		cookie.SameSite = http.SameSiteNoneMode
+		cookie.Secure = true
+	}
+
+	http.SetCookie(w, cookie)
+
+	fmt.Println("Logged in!")
 
 	fmt.Fprintf(w, "Logged in as UID: %s", verifiedToken.UID)
 }
