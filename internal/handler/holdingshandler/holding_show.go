@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fif-calculator/internal/model"
+	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/holdings"
 	"github.com/go-chi/chi/v5"
@@ -19,7 +20,14 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "id should be a number", http.StatusBadRequest)
 	}
 
-	holding, err := h.HoldingsRepository.GetHolding(id)
+	userId, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	holding, err := h.HoldingsRepository.GetHolding(id, userId)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

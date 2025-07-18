@@ -7,9 +7,9 @@ import (
 
 type HoldingsRepository interface {
 	CreateHolding(record *model.HoldingRecord) error
-	GetHolding(id int) (*model.HoldingRecord, error)
-	AllHoldings() ([]*model.HoldingRecord, error)
-	DeleteByID(id int) error
+	GetHolding(id int, userID string) (*model.HoldingRecord, error)
+	AllHoldings(userID string) ([]*model.HoldingRecord, error)
+	DeleteByID(id int, userID string) error
 	Update(record *model.HoldingRecord) error
 }
 
@@ -41,26 +41,26 @@ func (r *SQLHoldingsRepository) CreateHolding(record *model.HoldingRecord) error
 	return nil
 }
 
-func (r *SQLHoldingsRepository) GetHolding(id int) (*model.HoldingRecord, error) {
+func (r *SQLHoldingsRepository) GetHolding(id int, userID string) (*model.HoldingRecord, error) {
 	var record model.HoldingRecord
-	err := r.DB.Get(&record, `SELECT * FROM holdings WHERE id=?`, id)
+	err := r.DB.Get(&record, `SELECT * FROM holdings WHERE id=? AND user_id=?`, id, userID)
 	if err != nil {
 		return nil, err
 	}
 	return &record, nil
 }
 
-func (r *SQLHoldingsRepository) AllHoldings() ([]*model.HoldingRecord, error) {
+func (r *SQLHoldingsRepository) AllHoldings(userID string) ([]*model.HoldingRecord, error) {
 	var records []*model.HoldingRecord
-	err := r.DB.Select(&records, `SELECT * FROM holdings ORDER BY created_at DESC`)
+	err := r.DB.Select(&records, `SELECT * FROM holdings WHERE user_id=? ORDER BY created_at DESC`, userID)
 	if err != nil {
 		return nil, err
 	}
 	return records, nil
 }
 
-func (r *SQLHoldingsRepository) DeleteByID(id int) error {
-	_, err := r.DB.Exec("DELETE FROM holdings WHERE id = ?", id)
+func (r *SQLHoldingsRepository) DeleteByID(id int, userID string) error {
+	_, err := r.DB.Exec("DELETE FROM holdings WHERE id = ? AND user_id = ?", id, userID)
 	return err
 }
 

@@ -1,6 +1,7 @@
 package holdingshandler
 
 import (
+	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/holdings"
 	"github.com/go-chi/chi/v5"
@@ -14,9 +15,17 @@ func (h *HoldingsHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
+		return
 	}
 
-	holding, err := h.HoldingsRepository.GetHolding(id)
+	userId, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	holding, err := h.HoldingsRepository.GetHolding(id, userId)
 	vm := viewmodel.NewHoldingFormViewModelFromRecord(holding)
 
 	if err != nil {

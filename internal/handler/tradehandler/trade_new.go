@@ -3,6 +3,7 @@ package tradehandler
 import (
 	"database/sql"
 	"errors"
+	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/trades"
 	"github.com/go-chi/chi/v5"
@@ -18,7 +19,14 @@ func (h *TradeHandler) New(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	holding, err := h.HoldingRepository.GetHolding(id)
+	userId, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	holding, err := h.HoldingRepository.GetHolding(id, userId)
 	actionURL := "/holdings/" + strconv.Itoa(id) + "/trades/new"
 	title := "New trade for " + holding.Name
 	vm := viewmodel.CreateTradeFormViewModel(title, actionURL)

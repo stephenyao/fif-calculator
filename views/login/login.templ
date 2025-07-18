@@ -29,6 +29,9 @@ templ Login(currentPath string) {
           const auth = getAuth(app);
 
           const provider = new GoogleAuthProvider();
+          provider.setCustomParameters({
+            prompt: 'select_account'
+          });
 
          document.querySelector('#signin').onclick = async () => {
              try {
@@ -43,7 +46,8 @@ templ Login(currentPath string) {
                  },
                  body: JSON.stringify({ token: idToken })
                });
-
+                // ✅ Manually redirect after successful login
+                window.location.href = "/";
              } catch (err) {
                console.error("Login error:", err);
              }

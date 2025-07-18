@@ -1,7 +1,9 @@
 package holdingshandler
 
 import (
+	"errors"
 	"fif-calculator/internal/model"
+	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/holdings"
 	"net/http"
@@ -26,7 +28,12 @@ func (h *HoldingsHandler) CreateHolding(w http.ResponseWriter, r *http.Request) 
 	name := r.FormValue("name")
 	ticker := r.FormValue("ticker")
 	currency := r.FormValue("currency")
-	userId := r.Context().Value("uid").(string)
+	userId, err := utils.GetUID(r.Context())
+
+	if errors.Is(err, utils.UIDError{}) {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	holding := model.HoldingRecord{
 		UserID:   userId,
@@ -38,7 +45,8 @@ func (h *HoldingsHandler) CreateHolding(w http.ResponseWriter, r *http.Request) 
 	err = h.HoldingsRepository.CreateHolding(&holding)
 
 	if err != nil {
-		http.Error(w, "Could not create holding", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, "/holdings", http.StatusFound)
