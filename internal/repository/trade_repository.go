@@ -11,7 +11,7 @@ type TradeRepository interface {
 	DeleteByID(id int, userID string) error
 	GetByID(id int, userID string) (*model.Trade, error)
 	GetAllByAscendingDate(userID string) ([]model.Trade, error)
-	GetByHoldingID(id int) ([]model.Trade, error)
+	GetByHoldingID(id int, userID string) ([]model.Trade, error)
 }
 
 type SQLTradeRepository struct {
@@ -119,24 +119,25 @@ func (r *SQLTradeRepository) Update(userID string, trade *model.Trade) error {
 	return err
 }
 
-func (r *SQLTradeRepository) GetByHoldingID(id int) ([]model.Trade, error) {
+func (r *SQLTradeRepository) GetByHoldingID(holdingID int, userID string) ([]model.Trade, error) {
 	var trades []model.Trade
 	err := r.DB.Select(&trades, `
-	SELECT 
-		trades.id,
-		trades.buy_date,
-		trades.quantity,
-		trades.price,
-		trades.action,
-		trades.holding_id,
-		holdings.currency AS currency,
-		holdings.name AS holding_name,
-		holdings.symbol AS symbol
-	FROM trades
-	JOIN holdings ON trades.holding_id = holdings.id
-	WHERE trades.holding_id = ?
-	ORDER BY trades.buy_date ASC
-	`, id)
+		SELECT 
+			trades.id,
+			trades.buy_date,
+			trades.quantity,
+			trades.price,
+			trades.action,
+			trades.holding_id,
+			holdings.currency AS currency,
+			holdings.name AS holding_name,
+			holdings.symbol AS symbol
+		FROM trades
+		JOIN holdings ON trades.holding_id = holdings.id
+		WHERE trades.holding_id = ?
+		  AND holdings.user_id = ?
+		ORDER BY trades.buy_date ASC
+	`, holdingID, userID)
 
 	if err != nil {
 		return nil, err

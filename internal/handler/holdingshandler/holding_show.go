@@ -38,7 +38,14 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	trades, err := h.TradeRepository.GetByHoldingID(id)
+	uid, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	trades, err := h.TradeRepository.GetByHoldingID(id, uid)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
