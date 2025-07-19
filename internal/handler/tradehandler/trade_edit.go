@@ -1,6 +1,7 @@
 package tradehandler
 
 import (
+	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/trades"
 	"github.com/go-chi/chi/v5"
@@ -15,12 +16,21 @@ func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
+		return
 	}
 
-	trade, err := h.TradeRepository.GetByID(tradeID)
+	uid, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	trade, err := h.TradeRepository.GetByID(tradeID, uid)
 
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
+		return
 	}
 
 	title := "Edit trade for " + trade.HoldingName
@@ -30,5 +40,6 @@ func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Could not render start page", http.StatusInternalServerError)
+		return
 	}
 }

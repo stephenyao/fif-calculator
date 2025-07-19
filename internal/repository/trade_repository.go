@@ -7,9 +7,9 @@ import (
 
 type TradeRepository interface {
 	Insert(userID string, trade *model.Trade) error
-	Update(trade *model.Trade) error
+	Update(userID string, trade *model.Trade) error
 	DeleteByID(id int) error
-	GetByID(id int) (*model.Trade, error)
+	GetByID(id int, userID string) (*model.Trade, error)
 	GetAllByAscendingDate(userID string) ([]model.Trade, error)
 	GetByHoldingID(id int) ([]model.Trade, error)
 }
@@ -65,7 +65,7 @@ func (r *SQLTradeRepository) GetAllByAscendingDate(userID string) ([]model.Trade
 	return trades, err
 }
 
-func (r *SQLTradeRepository) GetByID(id int) (*model.Trade, error) {
+func (r *SQLTradeRepository) GetByID(id int, userID string) (*model.Trade, error) {
 	var trade model.Trade
 	err := r.DB.Get(&trade, `
 		SELECT 
@@ -80,8 +80,8 @@ func (r *SQLTradeRepository) GetByID(id int) (*model.Trade, error) {
 			holdings.symbol AS symbol
 		FROM trades
 		JOIN holdings ON trades.holding_id = holdings.id
-		WHERE trades.id = ?
-	`, id)
+		WHERE trades.id = ? AND holdings.user_id = ?
+	`, id, userID)
 
 	if err != nil {
 		return nil, err
@@ -94,12 +94,22 @@ func (r *SQLTradeRepository) DeleteByID(id int) error {
 	return err
 }
 
-func (r *SQLTradeRepository) Update(trade *model.Trade) error {
+func (r *SQLTradeRepository) Update(userID string, trade *model.Trade) error {
 	_, err := r.DB.Exec(`
 		UPDATE trades 
-		SET buy_date = ?, quantity = ?, price = ?, action = ?, holding_id = ?
+		SET buy_date = ?, quantity = ?, price = ?, action = ?
 		WHERE id = ?
-	`, trade.BuyDate, trade.Quantity, trade.Price, trade.Action, trade.HoldingID, trade.ID)
+		  AND holding_id IN (
+			  SELECT id FROM holdings WHERE user_id = ?
+		  )
+	`,
+		trade.BuyDate,
+		trade.Quantity,
+		trade.Price,
+		trade.Action,
+		trade.ID,
+		userID,
+	)
 	return err
 }
 

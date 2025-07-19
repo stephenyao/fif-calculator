@@ -2,6 +2,7 @@ package tradehandler
 
 import (
 	"fif-calculator/internal/model"
+	"fif-calculator/internal/utils"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
@@ -35,7 +36,14 @@ func (h *TradeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		HoldingID: holdingID,
 	}
 
-	if err := h.TradeRepository.Update(&trade); err != nil {
+	uid, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := h.TradeRepository.Update(uid, &trade); err != nil {
 		http.Error(w, "Failed to update trade", http.StatusInternalServerError)
 		return
 	}

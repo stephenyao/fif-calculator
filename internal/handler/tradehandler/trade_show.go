@@ -1,6 +1,7 @@
 package tradehandler
 
 import (
+	"fif-calculator/internal/utils"
 	"fif-calculator/views/trades"
 	"github.com/go-chi/chi/v5"
 	"net/http"
@@ -16,9 +17,17 @@ func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	trade, err := h.TradeRepository.GetByID(id)
+	uid, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	trade, err := h.TradeRepository.GetByID(id, uid)
 	if err != nil {
 		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
+		return
 	}
 
 	backURL := "/holdings/" + holdingIDParam
