@@ -4,6 +4,7 @@ import (
 	"fif-calculator/internal/model"
 	"fif-calculator/internal/repository"
 	"fif-calculator/internal/service/costbasisservice"
+	"fif-calculator/internal/utils"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/costbasis"
 	"github.com/jmoiron/sqlx"
@@ -22,7 +23,14 @@ func NewCostBasisHandler(db *sqlx.DB) *CostBasisHandler {
 }
 
 func (h *CostBasisHandler) Index(w http.ResponseWriter, r *http.Request) {
-	tradeList, err := h.Repo.GetAllByAscendingDate()
+	userID, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tradeList, err := h.Repo.GetAllByAscendingDate(userID)
 	if err != nil {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
 	}

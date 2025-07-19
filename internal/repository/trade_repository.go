@@ -11,7 +11,7 @@ type TradeRepository interface {
 	DeleteByID(id int) error
 	GetByID(id int) (*model.Trade, error)
 	GetAll() ([]model.Trade, error)
-	GetAllByAscendingDate() ([]model.Trade, error)
+	GetAllByAscendingDate(userID string) ([]model.Trade, error)
 	GetByHoldingID(id int) ([]model.Trade, error)
 }
 
@@ -55,7 +55,7 @@ func (r *SQLTradeRepository) GetAll() ([]model.Trade, error) {
 	return trades, err
 }
 
-func (r *SQLTradeRepository) GetAllByAscendingDate() ([]model.Trade, error) {
+func (r *SQLTradeRepository) GetAllByAscendingDate(userID string) ([]model.Trade, error) {
 	var trades []model.Trade
 
 	err := r.DB.Select(&trades, `
@@ -71,8 +71,9 @@ func (r *SQLTradeRepository) GetAllByAscendingDate() ([]model.Trade, error) {
 			holdings.symbol AS symbol
 		FROM trades
 		JOIN holdings ON trades.holding_id = holdings.id
+		WHERE holdings.user_id = ?
 		ORDER BY trades.buy_date ASC
-	`)
+	`, userID)
 
 	return trades, err
 }

@@ -4,6 +4,7 @@ import (
 	"fif-calculator/internal/model"
 	"fif-calculator/internal/service/costbasisservice"
 	"fif-calculator/internal/service/fifservice"
+	"fif-calculator/internal/utils"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
 	"net/http"
@@ -30,7 +31,14 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 	year, _ := strconv.Atoi(yearStr)
 	startDate, endDate := fifservice.StartEndDates(year)
 
-	trades, err := h.TradeRepository.GetAllByAscendingDate()
+	userID, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	trades, err := h.TradeRepository.GetAllByAscendingDate(userID)
 	if err != nil {
 		http.Error(w, "Failed to fetch all trades", http.StatusInternalServerError)
 	}
@@ -69,6 +77,13 @@ func (h *FIFHandler) FIFFormSubmit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	yearStr := r.FormValue("financialYear")
 	year, err := strconv.Atoi(yearStr)
 	if err != nil {
@@ -79,7 +94,7 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 	startDate := time.Date(year-1, 4, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(year, 3, 31, 0, 0, 0, 0, time.UTC)
 
-	trades, err := h.TradeRepository.GetAllByAscendingDate()
+	trades, err := h.TradeRepository.GetAllByAscendingDate(userID)
 	if err != nil {
 		http.Error(w, "Failed to load trades", http.StatusInternalServerError)
 		return
