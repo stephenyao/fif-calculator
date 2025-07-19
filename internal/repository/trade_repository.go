@@ -10,7 +10,6 @@ type TradeRepository interface {
 	Update(trade *model.Trade) error
 	DeleteByID(id int) error
 	GetByID(id int) (*model.Trade, error)
-	GetAll() ([]model.Trade, error)
 	GetAllByAscendingDate(userID string) ([]model.Trade, error)
 	GetByHoldingID(id int) ([]model.Trade, error)
 }
@@ -31,28 +30,6 @@ func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
 		VALUES (:buy_date, :quantity, :price, :action, :holding_id)
 	`, trade)
 	return err
-}
-
-func (r *SQLTradeRepository) GetAll() ([]model.Trade, error) {
-	var trades []model.Trade
-
-	err := r.DB.Select(&trades, `
-		SELECT 
-			trades.id,
-			trades.buy_date,
-			trades.quantity,
-			trades.price,
-			trades.action,
-			trades.holding_id,
-			holdings.currency AS currency,
-			holdings.name AS holding_name,
-			holdings.symbol AS symbol
-		FROM trades
-		JOIN holdings ON trades.holding_id = holdings.id
-		ORDER BY trades.buy_date DESC
-	`)
-
-	return trades, err
 }
 
 func (r *SQLTradeRepository) GetAllByAscendingDate(userID string) ([]model.Trade, error) {
