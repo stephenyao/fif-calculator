@@ -8,7 +8,7 @@ import (
 type TradeRepository interface {
 	Insert(userID string, trade *model.Trade) error
 	Update(userID string, trade *model.Trade) error
-	DeleteByID(id int) error
+	DeleteByID(id int, userID string) error
 	GetByID(id int, userID string) (*model.Trade, error)
 	GetAllByAscendingDate(userID string) ([]model.Trade, error)
 	GetByHoldingID(id int) ([]model.Trade, error)
@@ -80,7 +80,7 @@ func (r *SQLTradeRepository) GetByID(id int, userID string) (*model.Trade, error
 			holdings.symbol AS symbol
 		FROM trades
 		JOIN holdings ON trades.holding_id = holdings.id
-		WHERE trades.id = ? AND holdings.user_id = ?
+		WHERE trades.id = ?
 	`, id, userID)
 
 	if err != nil {
@@ -89,8 +89,14 @@ func (r *SQLTradeRepository) GetByID(id int, userID string) (*model.Trade, error
 	return &trade, nil
 }
 
-func (r *SQLTradeRepository) DeleteByID(id int) error {
-	_, err := r.DB.Exec("DELETE FROM trades WHERE id = ?", id)
+func (r *SQLTradeRepository) DeleteByID(tradeID int, userID string) error {
+	_, err := r.DB.Exec(`
+		DELETE FROM trades
+		WHERE id = ?
+		AND holding_id IN (
+			SELECT id FROM holdings WHERE user_id = ?
+		)
+	`, tradeID, userID)
 	return err
 }
 

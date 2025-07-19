@@ -1,6 +1,7 @@
 package tradehandler
 
 import (
+	"fif-calculator/internal/utils"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
@@ -14,7 +15,14 @@ func (h *TradeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not a valid ID", http.StatusInternalServerError)
 	}
 
-	err = h.TradeRepository.DeleteByID(tradeID)
+	uid, err := utils.GetUID(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.TradeRepository.DeleteByID(tradeID, uid)
 
 	if err != nil {
 		http.Error(w, "Failed to delete trade", http.StatusInternalServerError)
