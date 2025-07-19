@@ -6,7 +6,7 @@ import (
 )
 
 type TradeRepository interface {
-	Insert(trade *model.Trade) error
+	Insert(userID string, trade *model.Trade) error
 	Update(trade *model.Trade) error
 	DeleteByID(id int) error
 	GetByID(id int) (*model.Trade, error)
@@ -24,14 +24,24 @@ func NewTradeRepository(db *sqlx.DB) TradeRepository {
 	}
 }
 
-func (r *SQLTradeRepository) Insert(trade *model.Trade) error {
-	_, err := r.DB.NamedExec(`
+func (r *SQLTradeRepository) Insert(userID string, trade *model.Trade) error {
+	// Use an INSERT ... SELECT pattern to ensure the holding belongs to the user
+	_, err := r.DB.Exec(`
 		INSERT INTO trades (buy_date, quantity, price, action, holding_id)
-		VALUES (:buy_date, :quantity, :price, :action, :holding_id)
-	`, trade)
+		SELECT ?, ?, ?, ?, h.id
+		FROM holdings h
+		WHERE h.id = ? AND h.user_id = ?
+	`,
+		trade.BuyDate,
+		trade.Quantity,
+		trade.Price,
+		trade.Action,
+		trade.HoldingID,
+		userID,
+	)
+
 	return err
 }
-
 func (r *SQLTradeRepository) GetAllByAscendingDate(userID string) ([]model.Trade, error) {
 	var trades []model.Trade
 
