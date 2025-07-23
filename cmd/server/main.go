@@ -57,7 +57,6 @@ func main() {
 		protected.Get("/fif/start", fifHandler.New)
 		protected.Post("/fif/start", fifHandler.HoldingsInfo)
 		protected.Post("/fif/calculate", fifHandler.FIFFormSubmit)
-		protected.Get("/fif/view/{id}", fifHandler.View)
 		protected.Get("/holdings/new", holdingsHandler.New)
 		protected.Post("/holdings/new", holdingsHandler.CreateHolding)
 		protected.Get("/holdings/{id}", holdingsHandler.Show)

@@ -9,7 +9,6 @@ import (
 	"fif-calculator/views/fif"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -67,13 +66,7 @@ func (h *FIFHandler) FIFFormSubmit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		return
 	}
-
-	switch r.FormValue("action") {
-	case "calculate":
-		h.calculateFIF(w, r)
-	case "save":
-		h.saveFIFCalculation(w, r)
-	}
+	h.calculateFIF(w, r)
 }
 
 func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
@@ -148,62 +141,6 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to render fif", http.StatusInternalServerError)
 	}
-}
-
-func (h *FIFHandler) saveFIFCalculation(w http.ResponseWriter, r *http.Request) {
-	year, err := strconv.Atoi(r.FormValue("financialYear"))
-	if err != nil {
-		http.Error(w, "invalid financial year", http.StatusBadRequest)
-		return
-	}
-
-	// Step 1: Gather all symbols
-	var symbols []string
-	for key := range r.Form {
-		if strings.HasPrefix(key, "symbol_") {
-			symbol := r.FormValue(key)
-			symbols = append(symbols, symbol)
-		}
-	}
-
-	// Step 2: Extract holdings
-	var holdings []*model.FIFHolding
-	for _, symbol := range symbols {
-		get := func(field string) float64 {
-			v := r.FormValue(field + "_" + symbol)
-			f, _ := strconv.ParseFloat(v, 64)
-			return f
-		}
-
-		holdings = append(holdings, &model.FIFHolding{
-			Symbol:            symbol,
-			QuantityStart:     get("quantity_start"),
-			QuantityEnd:       get("quantity_end"),
-			PriceStart:        get("price_start"),
-			PriceEnd:          get("price_end"),
-			ProceedsFromSales: get("proceeds_from_sales"),
-			Dividends:         get("dividends"),
-			TaxCredits:        get("tax_credits"),
-			OtherGains:        get("other_gains"),
-			CostOfPurchases:   get("cost_of_purchases"),
-			ForeignIncomeTax:  get("foreign_income_tax"),
-			OtherCosts:        get("other_cost"),
-		})
-	}
-
-	calc := &model.FIFCalculation{
-		UserID:        1, // Or extract from session/context
-		FinancialYear: year,
-		CalculatedAt:  time.Now(),
-	}
-
-	if err := h.FIFRepository.CreateOrUpdateCalculation(calc, holdings); err != nil {
-		http.Error(w, "failed to save FIF calculation", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("HX-Redirect", "/fif")
-	w.WriteHeader(http.StatusOK)
 }
 
 func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, error) {

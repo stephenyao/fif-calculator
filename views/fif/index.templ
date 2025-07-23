@@ -1,47 +1,21 @@
 package fif
 
-import "fmt"
-
 import . "fif-calculator/views"
-import . "fif-calculator/internal/model"
 
-templ Index(currentPath string, calcs []*FIFCalculation) {
+templ Index(currentPath string) {
 	@Layout("FIF", currentPath) {
 		@Page() {
 			@Section() {
-				@startNew(calcs)
-			}
-			@Section() {
-				@fIfCalculationsList(calcs)
+				@startNew()
 			}
 		}
 	}
 }
 
-templ startNew(calcs []*FIFCalculation) {
+templ startNew() {
 	<div class="flex items-center justify-between">
 		<p>Start a new FIF calculation</p>
 		@Link("/fif/start", "New calculation")
 	</div>
 }
 
-templ fIfCalculationsList(calcs []*FIFCalculation) {
-	<div class="space-y-4">
-		<h2 class="text-xl font-semibold text-gray-800">Saved FIF Calculations</h2>
-		for _, calc := range calcs {
-			<div class="p-4 border rounded-md bg-white shadow-sm">
-				<div class="text-sm text-gray-600">
-					Year: { calc.FinancialYear }
-					<br/>
-					Saved at: { calc.CalculatedAt.Format("2006-01-02 15:04") }
-				</div>
-				<div class="mt-2">
-					<a
-						href={ templ.SafeURL("/fif/view/" + fmt.Sprint(calc.ID)) }
-						class="text-blue-600 hover:underline text-sm font-medium"
-					>View Details</a>
-				</div>
-			</div>
-		}
-	</div>
-}
