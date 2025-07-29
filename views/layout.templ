@@ -8,11 +8,17 @@ templ Layout(title string, currentPath string) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
 			<script src="https://cdn.tailwindcss.com"></script>
+			<style>
+            	.font-inter {
+            		font-family: 'Inter', sans-serif;
+            	}
+            </style>
 			<script src="https://unpkg.com/htmx.org@1.9.2"></script>
 			<title>{ title }</title>
 		</head>
-		<body class="bg-gray-100 text-gray-900">
+		<body class="bg-gray-100 text-gray-900 font-inter">
 			@NavigationMenu(NewNavigationViewModel(currentPath, ctx))
 			{ children... }
 		</body>

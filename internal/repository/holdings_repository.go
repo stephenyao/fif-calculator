@@ -3,6 +3,7 @@ package repository
 import (
 	"fif-calculator/internal/model"
 	"github.com/jmoiron/sqlx"
+	"strings"
 )
 
 type HoldingsRepository interface {
@@ -24,6 +25,9 @@ func NewHoldingsRepository(db *sqlx.DB) *SQLHoldingsRepository {
 }
 
 func (r *SQLHoldingsRepository) CreateHolding(record *model.HoldingRecord) error {
+	// Uppercase the symbol as the ticker is not typically lower case
+	record.Symbol = strings.ToUpper(record.Symbol)
+
 	result, err := r.DB.Exec(`
 		INSERT INTO holdings (user_id, name, symbol, currency)
 		VALUES (?, ?, ?, ?)`,
@@ -65,6 +69,7 @@ func (r *SQLHoldingsRepository) DeleteByID(id int, userID string) error {
 }
 
 func (r *SQLHoldingsRepository) Update(record *model.HoldingRecord) error {
+	// Uppercase the symbol as the ticker is not typically lower case
 	_, err := r.DB.Exec(`
 		UPDATE holdings
 		SET name = ?, symbol = ?, currency = ?

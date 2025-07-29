@@ -82,7 +82,6 @@ func main() {
 func initFirebaseApp() (*firebase.App, error) {
 	// Load .env (only useful for local dev; no-op in App Platform)
 	_ = godotenv.Load()
-	fmt.Println("INITILIASING FIREBASE APP")
 	b64 := os.Getenv("FIREBASE_KEY_B64")
 	if b64 == "" {
 		return nil, fmt.Errorf("FIREBASE_KEY_B64 is not set")
