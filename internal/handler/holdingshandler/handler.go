@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"net/http"
+	"strconv"
 )
 
 type HoldingsHandler struct {
@@ -26,11 +27,12 @@ func convertToHoldingViewModels(records []*model.HoldingRecord, costBasisBySymbo
 	for _, r := range records {
 		costBasis := costBasisBySymbol[r.Symbol]
 		viewModels = append(viewModels, viewmodel.HoldingViewModel{
-			ID:        r.ID,
-			Name:      r.Name,
-			Symbol:    r.Symbol,
-			CostBasis: fmt.Sprintf("%.2f NZD", costBasis.CostBasisNZD),
-			Currency:  r.Currency,
+			ID:              r.ID,
+			Name:            r.Name,
+			Symbol:          r.Symbol,
+			CostBasis:       fmt.Sprintf("$%.2f", costBasis.CostBasisNZD),
+			CurrentQuantity: strconv.FormatFloat(costBasis.CurrentQuantity, 'f', -1, 64),
+			Currency:        r.Currency,
 		})
 	}
 	return viewModels

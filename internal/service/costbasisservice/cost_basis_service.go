@@ -4,7 +4,6 @@ import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
 	. "fif-calculator/internal/viewmodel"
-	"fmt"
 	"time"
 )
 
@@ -70,16 +69,16 @@ func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {
 		for _, buyTrade := range queue {
 			costBasisFXForSymbol += buyTrade.Price * buyTrade.Quantity
 			costBasisNZDForSymbol += buyTrade.Price * buyTrade.Quantity * buyTrade.ExchangeRate
-			fmt.Printf("buy price: %f, quantity: %f, exchangeRate: %f", buyTrade.Price, buyTrade.Quantity, buyTrade.ExchangeRate)
 		}
 		overSold := totalSold > totalBought
 		costBasisBySymbol[symbol] =
 			SymbolCostBasis{
-				CostBasisFX:  costBasisFXForSymbol,
-				CostBasisNZD: costBasisNZDForSymbol,
-				TotalBought:  totalBought,
-				TotalSold:    totalSold,
-				Oversold:     overSold,
+				CostBasisFX:     costBasisFXForSymbol,
+				CostBasisNZD:    costBasisNZDForSymbol,
+				TotalBought:     totalBought,
+				TotalSold:       totalSold,
+				CurrentQuantity: max(totalBought-totalSold, 0),
+				Oversold:        overSold,
 			}
 	}
 

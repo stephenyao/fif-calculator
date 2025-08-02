@@ -91,7 +91,7 @@ func HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) t
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<table class=\"min-w-full w-full text-sm\"><thead class=\"border-b border-gray-100 text-left text-gray-800 tracking-wide font-semibold\"><tr><th class=\"px-4 py-3\">Name</th><th class=\"px-4 py-3\">Symbol</th><th class=\"px-4 py-3\">Base Currency</th><th class=\"px-4 py-3\">Cost Basis</th><th class=\"px-4 py-3\"></th></tr></thead> <tbody><script>\n                                    function navigateToDetails(path) {\n                                      window.location.href=path\n                                    }\n                                </script>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"block md:hidden divide-y divide-gray-200\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -100,7 +100,7 @@ func HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) t
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<tr onclick=\"")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div onclick=\"")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -109,69 +109,170 @@ func HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) t
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"border-t hover:bg-gray-50\"><td class=\"px-4 py-3\">")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"py-4 px-4 text-sm text-gray-800 hover:cursor-pointer\"><!-- Top row: Name + Chevron --><div class=\"flex justify-between items-center mb-2\"><div class=\"font-semibold text-base\">")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var6 string
 							templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(vm.Name)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 44, Col: 41}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 29, Col: 74}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</td><td class=\"px-4 py-3\">")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><svg class=\"w-4 h-4 text-gray-400\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div><!-- Two-column data layout --><div class=\"grid grid-cols-2 gap-x-6\"><!-- Left column --><div class=\"space-y-2\"><div><div class=\"text-gray-500 font-medium\">Symbol</div><div>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var7 string
 							templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(vm.Symbol)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 45, Col: 43}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 49, Col: 46}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</td><td class=\"px-4 py-3\">")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div><div><div class=\"text-gray-500 font-medium\">Currency</div><div>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var8 string
 							templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(vm.Currency)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 46, Col: 45}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 53, Col: 48}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</td><td class=\"px-4 py-3\">")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div></div><!-- Right column --><div class=\"space-y-2\"><div><div class=\"text-gray-500 font-medium\">Quantity</div><div>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var9 string
-							templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CostBasis)
+							templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CurrentQuantity)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 47, Col: 46}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 61, Col: 55}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</td><td class=\"px-4 py-3\"><div class=\"flex justify-end\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div></td></tr>")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div><div><div class=\"text-gray-500 font-medium\">Cost (NZD)</div><div>")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var10 string
+							templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CostBasis)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 65, Col: 49}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></div></div></div>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</tbody></table>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"hidden md:block\"><table class=\"min-w-full w-full text-sm\"><thead class=\"border-b border-gray-100 text-left text-gray-800 tracking-wide font-semibold\"><tr><th class=\"px-4 py-3\">Name</th><th class=\"px-4 py-3\">Symbol</th><th class=\"px-4 py-3\">Base Currency</th><th class=\"px-4 py-3\">Quantity</th><th class=\"px-4 py-3\">Cost (NZD)</th><th class=\"px-4 py-3\"></th></tr></thead> <tbody><script>\n                                    function navigateToDetails(path) {\n                                      window.location.href=path\n                                    }\n                                </script>")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						for _, vm := range viewModels {
+							templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<tr onclick=\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var11 templ.ComponentScript = templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID))
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11.Call)
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" class=\"border-t hover:bg-gray-50\"><td class=\"px-4 py-3\">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var12 string
+							templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(vm.Name)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 97, Col: 42}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</td><td class=\"px-4 py-3\">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var13 string
+							templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(vm.Symbol)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 98, Col: 44}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</td><td class=\"px-4 py-3\">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var14 string
+							templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(vm.Currency)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 99, Col: 46}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td><td class=\"px-4 py-3\">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var15 string
+							templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CurrentQuantity)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 100, Col: 53}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td class=\"px-4 py-3\">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var16 string
+							templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CostBasis)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/holdings/list.templ`, Line: 101, Col: 47}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</td><td class=\"px-4 py-3\"><div class=\"flex justify-end\"><svg class=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div></td></tr>")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</tbody></table></div>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

@@ -62,12 +62,13 @@ func NewHoldingFormViewModelFromRecord(record *model.HoldingRecord) *HoldingForm
 }
 
 type HoldingViewModel struct {
-	ID        int
-	Name      string
-	Symbol    string
-	Currency  string
-	CostBasis string
-	Trades    []TradeViewModel
+	ID              int
+	Name            string
+	Symbol          string
+	Currency        string
+	CostBasis       string
+	CurrentQuantity string
+	Trades          []TradeViewModel
 }
 
 type TradeViewModel struct {
