@@ -78,6 +78,7 @@ func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {
 				TotalBought:     totalBought,
 				TotalSold:       totalSold,
 				CurrentQuantity: max(totalBought-totalSold, 0),
+				TotalTrades:     len(trades),
 				Oversold:        overSold,
 			}
 	}

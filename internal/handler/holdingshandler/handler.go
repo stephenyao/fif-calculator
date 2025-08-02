@@ -32,6 +32,7 @@ func convertToHoldingViewModels(records []*model.HoldingRecord, costBasisBySymbo
 			Symbol:          r.Symbol,
 			CostBasis:       fmt.Sprintf("$%.2f", costBasis.CostBasisNZD),
 			CurrentQuantity: strconv.FormatFloat(costBasis.CurrentQuantity, 'f', -1, 64),
+			TotalTrades:     fmt.Sprintf("%d", costBasis.TotalTrades),
 			Currency:        r.Currency,
 		})
 	}

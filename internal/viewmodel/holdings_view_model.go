@@ -68,6 +68,7 @@ type HoldingViewModel struct {
 	Currency        string
 	CostBasis       string
 	CurrentQuantity string
+	TotalTrades     string
 	Trades          []TradeViewModel
 }
 

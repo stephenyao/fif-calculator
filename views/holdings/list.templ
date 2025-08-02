@@ -13,7 +13,6 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 					@Link("/holdings/new", "+ New")
 				</div>
 			</div>
-
 			@Section() {
 				<div>
 					if len(viewModels) == 0 {
@@ -35,7 +34,7 @@ templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 				<tr>
 					<th class="px-4 py-3">Name</th>
 					<th class="px-4 py-3">Symbol</th>
-					<th class="px-4 py-3">Base Currency</th>
+					<th class="px-4 py-3">Total Trades</th>
 					<th class="px-4 py-3">Quantity</th>
 					<th class="px-4 py-3">Cost (NZD)</th>
 					<th class="px-4 py-3"></th>
@@ -54,13 +53,13 @@ templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 					>
 						<td class="px-4 py-3">{ vm.Name }</td>
 						<td class="px-4 py-3">{ vm.Symbol }</td>
-						<td class="px-4 py-3">{ vm.Currency }</td>
+						<td class="px-4 py-3">{ vm.TotalTrades }</td>
 						<td class="px-4 py-3">{ vm.CurrentQuantity }</td>
 						<td class="px-4 py-3">{ vm.CostBasis }</td>
 						<td class="px-4 py-3">
 							<div class="flex justify-end">
 								<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+									<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
 								</svg>
 							</div>
 						</td>
@@ -75,16 +74,15 @@ templ HoldingsCards(viewModels []viewmodel.HoldingViewModel) {
 	<div class="block md:hidden divide-y divide-gray-200">
 		for _, vm := range viewModels {
 			<div
-				onclick={templ.JSFuncCall("navigateToDetails", "holdings/" + strconv.Itoa(vm.ID))}
+				onclick={ templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) }
 				class="py-4 px-4 text-sm text-gray-800 hover:cursor-pointer hover:bg-gray-50"
 			>
 				<div class="flex justify-between items-center mb-2">
 					<div class="font-semibold text-base">{ vm.Name }</div>
 					<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
 					</svg>
 				</div>
-
 				<div class="grid grid-cols-2 gap-x-6">
 					<div class="space-y-2">
 						<div>
@@ -92,15 +90,14 @@ templ HoldingsCards(viewModels []viewmodel.HoldingViewModel) {
 							<div>{ vm.Symbol }</div>
 						</div>
 						<div>
-							<div class="text-gray-500 font-medium">Currency</div>
-							<div>{ vm.Currency }</div>
-						</div>
-					</div>
-
-					<div class="space-y-2">
-						<div>
 							<div class="text-gray-500 font-medium">Quantity</div>
 							<div>{ vm.CurrentQuantity }</div>
+						</div>
+					</div>
+					<div class="space-y-2">
+						<div>
+							<div class="text-gray-500 font-medium">Total Trades</div>
+							<div>{ vm.TotalTrades }</div>
 						</div>
 						<div>
 							<div class="text-gray-500 font-medium">Cost (NZD)</div>

@@ -9,6 +9,7 @@ type SymbolCostBasis struct {
 	TotalSold       float64
 	Oversold        bool
 	CurrentQuantity float64
+	TotalTrades     int
 	UntilDate       time.Time
 }
 
