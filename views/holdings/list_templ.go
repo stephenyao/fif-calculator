@@ -57,7 +57,7 @@ func HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) t
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex justify-between w-full\"><h2 class=\"text-2xl font-bold mb-4\">Holdings</h2><div class=\"flex justify-end mb-4\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex justify-between w-full\"><h2 class=\"text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100\">Holdings</h2><div class=\"flex justify-end mb-4\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -86,7 +86,7 @@ func HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) t
 						return templ_7745c5c3_Err
 					}
 					if len(viewModels) == 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p class=\"text-gray-600\">You have no holdings yet.</p>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p class=\"text-gray-600 dark:text-gray-400\">You have no holdings yet.</p>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -151,7 +151,7 @@ func HoldingsTable(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"hidden md:block\"><table class=\"min-w-full w-full text-sm\"><thead class=\"border-b border-gray-100 text-left text-gray-800 tracking-wide font-semibold\"><tr><th class=\"px-4 py-3\">Name</th><th class=\"px-4 py-3\">Symbol</th><th class=\"px-4 py-3\">Total Trades</th><th class=\"px-4 py-3\">Quantity</th><th class=\"px-4 py-3\">Cost (NZD)</th><th class=\"px-4 py-3\"></th></tr></thead> <tbody><script>\n\t\t\t\t\tfunction navigateToDetails(path) {\n\t\t\t\t\t\twindow.location.href = path\n\t\t\t\t\t}\n\t\t\t\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"hidden md:block\"><table class=\"min-w-full w-full text-sm text-gray-900 dark:text-gray-100\"><thead class=\"border-b border-gray-100 dark:border-gray-700 text-left text-gray-800 dark:text-gray-200 tracking-wide font-semibold\"><tr><th class=\"px-4 py-3\">Name</th><th class=\"px-4 py-3\">Symbol</th><th class=\"px-4 py-3\">Total Trades</th><th class=\"px-4 py-3\">Quantity</th><th class=\"px-4 py-3\">Cost (NZD)</th><th class=\"px-4 py-3\"></th></tr></thead> <tbody><script>\n\t\t\t\t\tfunction navigateToDetails(path) {\n\t\t\t\t\t\twindow.location.href = path\n\t\t\t\t\t}\n\t\t\t\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -169,7 +169,7 @@ func HoldingsTable(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"border-t hover:bg-gray-50\"><td class=\"px-4 py-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"cursor-pointer border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900\"><td class=\"px-4 py-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -234,7 +234,7 @@ func HoldingsTable(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</td><td class=\"px-4 py-3\"><div class=\"flex justify-end\"><svg class=\"w-5 h-5 text-gray-400\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div></td></tr>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</td><td class=\"px-4 py-3\"><div class=\"flex justify-end\"><svg class=\"w-5 h-5 text-gray-400 dark:text-gray-500\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -268,7 +268,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"block md:hidden divide-y divide-gray-200\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"block md:hidden divide-y divide-gray-200 dark:divide-gray-700\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -286,7 +286,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"py-4 px-4 text-sm text-gray-800 hover:cursor-pointer hover:bg-gray-50\"><div class=\"flex justify-between items-center mb-2\"><div class=\"font-semibold text-base\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"py-4 px-4 text-sm text-gray-800 dark:text-gray-100 hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800\"><div class=\"flex justify-between items-center mb-2\"><div class=\"font-semibold text-base\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -299,7 +299,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><svg class=\"w-4 h-4 text-gray-400\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div><div class=\"grid grid-cols-2 gap-x-6\"><div class=\"space-y-2\"><div><div class=\"text-gray-500 font-medium\">Symbol</div><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><svg class=\"w-4 h-4 text-gray-400 dark:text-gray-500\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div><div class=\"grid-cols-2 gap-x-6 gap-y-2\"><div class=\"space-y-2\"><div><div class=\"text-gray-500 dark:text-gray-400 font-medium\">Symbol</div><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -312,7 +312,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><div><div class=\"text-gray-500 font-medium\">Quantity</div><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><div><div class=\"text-gray-500 dark:text-gray-400 font-medium\">Quantity</div><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -325,7 +325,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div></div><div class=\"space-y-2\"><div><div class=\"text-gray-500 font-medium\">Total Trades</div><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div></div><div class=\"space-y-2\"><div><div class=\"text-gray-500 dark:text-gray-400 font-medium\">Total Trades</div><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -338,7 +338,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div><div><div class=\"text-gray-500 font-medium\">Cost (NZD)</div><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div><div><div class=\"text-gray-500 dark:text-gray-400 font-medium\">Cost (NZD)</div><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

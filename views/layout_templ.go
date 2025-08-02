@@ -31,7 +31,7 @@ func Layout(title string, currentPath string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"https://fonts.googleapis.com/css2?family=Inter&display=swap\" rel=\"stylesheet\"><script src=\"https://cdn.tailwindcss.com\"></script><style>\n            \t.font-inter {\n            \t\tfont-family: 'Inter', sans-serif;\n            \t}\n            </style><script src=\"https://unpkg.com/htmx.org@1.9.2\"></script><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"https://fonts.googleapis.com/css2?family=Inter&display=swap\" rel=\"stylesheet\"><script src=\"https://cdn.tailwindcss.com\"></script><style>\n            \t.font-inter {\n            \t\tfont-family: 'Inter', sans-serif;\n            \t}\n            </style><script src=\"https://unpkg.com/htmx.org@1.9.2\"></script><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

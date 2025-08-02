@@ -8,7 +8,7 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 	@Layout("Holdings List", currentPath) {
 		@Page() {
 			<div class="flex justify-between w-full">
-				<h2 class="text-2xl font-bold mb-4">Holdings</h2>
+				<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Holdings</h2>
 				<div class="flex justify-end mb-4">
 					@Link("/holdings/new", "+ New")
 				</div>
@@ -16,7 +16,7 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 			@Section() {
 				<div>
 					if len(viewModels) == 0 {
-						<p class="text-gray-600">You have no holdings yet.</p>
+						<p class="text-gray-600 dark:text-gray-400">You have no holdings yet.</p>
 					} else {
 						@HoldingsCards(viewModels)
 						@HoldingsTable(viewModels)
@@ -29,8 +29,8 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 
 templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 	<div class="hidden md:block">
-		<table class="min-w-full w-full text-sm">
-			<thead class="border-b border-gray-100 text-left text-gray-800 tracking-wide font-semibold">
+		<table class="min-w-full w-full text-sm text-gray-900 dark:text-gray-100">
+			<thead class="border-b border-gray-100 dark:border-gray-700 text-left text-gray-800 dark:text-gray-200 tracking-wide font-semibold">
 				<tr>
 					<th class="px-4 py-3">Name</th>
 					<th class="px-4 py-3">Symbol</th>
@@ -49,7 +49,7 @@ templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 				for _, vm := range viewModels {
 					<tr
 						onclick={ templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) }
-						class="border-t hover:bg-gray-50"
+						class="cursor-pointer border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
 					>
 						<td class="px-4 py-3">{ vm.Name }</td>
 						<td class="px-4 py-3">{ vm.Symbol }</td>
@@ -58,7 +58,7 @@ templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 						<td class="px-4 py-3">{ vm.CostBasis }</td>
 						<td class="px-4 py-3">
 							<div class="flex justify-end">
-								<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+								<svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
 								</svg>
 							</div>
@@ -71,36 +71,36 @@ templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 }
 
 templ HoldingsCards(viewModels []viewmodel.HoldingViewModel) {
-	<div class="block md:hidden divide-y divide-gray-200">
+	<div class="block md:hidden divide-y divide-gray-200 dark:divide-gray-700">
 		for _, vm := range viewModels {
 			<div
 				onclick={ templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) }
-				class="py-4 px-4 text-sm text-gray-800 hover:cursor-pointer hover:bg-gray-50"
+				class="py-4 px-4 text-sm text-gray-800 dark:text-gray-100 hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
 			>
 				<div class="flex justify-between items-center mb-2">
 					<div class="font-semibold text-base">{ vm.Name }</div>
-					<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+					<svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
 					</svg>
 				</div>
-				<div class="grid grid-cols-2 gap-x-6">
+				<div class="grid-cols-2 gap-x-6 gap-y-2">
 					<div class="space-y-2">
 						<div>
-							<div class="text-gray-500 font-medium">Symbol</div>
+							<div class="text-gray-500 dark:text-gray-400 font-medium">Symbol</div>
 							<div>{ vm.Symbol }</div>
 						</div>
 						<div>
-							<div class="text-gray-500 font-medium">Quantity</div>
+							<div class="text-gray-500 dark:text-gray-400 font-medium">Quantity</div>
 							<div>{ vm.CurrentQuantity }</div>
 						</div>
 					</div>
 					<div class="space-y-2">
 						<div>
-							<div class="text-gray-500 font-medium">Total Trades</div>
+							<div class="text-gray-500 dark:text-gray-400 font-medium">Total Trades</div>
 							<div>{ vm.TotalTrades }</div>
 						</div>
 						<div>
-							<div class="text-gray-500 font-medium">Cost (NZD)</div>
+							<div class="text-gray-500 dark:text-gray-400 font-medium">Cost (NZD)</div>
 							<div>{ vm.CostBasis }</div>
 						</div>
 					</div>
