@@ -23,7 +23,7 @@ func InitSchema(db *sqlx.DB) {
 		buy_date TEXT,
 		quantity REAL,
 		price REAL,
-		currency TEXT,
+		exchange_rate REAL,
 		action TEXT,
 		FOREIGN KEY (holding_id) REFERENCES holdings(id) ON DELETE CASCADE
 	);

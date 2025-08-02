@@ -27,14 +27,15 @@ func NewTradeRepository(db *sqlx.DB) TradeRepository {
 func (r *SQLTradeRepository) Insert(userID string, trade *model.Trade) error {
 	// Use an INSERT ... SELECT pattern to ensure the holding belongs to the user
 	_, err := r.DB.Exec(`
-		INSERT INTO trades (buy_date, quantity, price, action, holding_id)
-		SELECT ?, ?, ?, ?, h.id
+		INSERT INTO trades (buy_date, quantity, price, exchange_rate, action, holding_id)
+		SELECT ?, ?, ?, ?, ?, h.id
 		FROM holdings h
 		WHERE h.id = ? AND h.user_id = ?
 	`,
 		trade.BuyDate,
 		trade.Quantity,
 		trade.Price,
+		trade.ExchangeRate,
 		trade.Action,
 		trade.HoldingID,
 		userID,
@@ -42,6 +43,7 @@ func (r *SQLTradeRepository) Insert(userID string, trade *model.Trade) error {
 
 	return err
 }
+
 func (r *SQLTradeRepository) GetAllByAscendingDate(userID string) ([]model.Trade, error) {
 	var trades []model.Trade
 
@@ -51,7 +53,8 @@ func (r *SQLTradeRepository) GetAllByAscendingDate(userID string) ([]model.Trade
 			trades.buy_date,
 			trades.quantity,
 			trades.price,
-			trades.action,
+			trades.exchange_rate,
+			trades.action,			
 			trades.holding_id,
 			holdings.currency AS currency,
 			holdings.name AS holding_name,
@@ -73,14 +76,15 @@ func (r *SQLTradeRepository) GetByID(id int, userID string) (*model.Trade, error
 			trades.buy_date,
 			trades.quantity,
 			trades.price,
-			trades.action,
+			trades.exchange_rate,
+			trades.action,			
 			trades.holding_id,
 			holdings.currency AS currency,
 			holdings.name AS holding_name,
 			holdings.symbol AS symbol
 		FROM trades
 		JOIN holdings ON trades.holding_id = holdings.id
-		WHERE trades.id = ?
+		WHERE trades.id = ? AND holdings.user_id = ?
 	`, id, userID)
 
 	if err != nil {
@@ -103,7 +107,7 @@ func (r *SQLTradeRepository) DeleteByID(tradeID int, userID string) error {
 func (r *SQLTradeRepository) Update(userID string, trade *model.Trade) error {
 	_, err := r.DB.Exec(`
 		UPDATE trades 
-		SET buy_date = ?, quantity = ?, price = ?, action = ?
+		SET buy_date = ?, quantity = ?, price = ?,  exchange_rate = ?, action = ?
 		WHERE id = ?
 		  AND holding_id IN (
 			  SELECT id FROM holdings WHERE user_id = ?
@@ -112,6 +116,7 @@ func (r *SQLTradeRepository) Update(userID string, trade *model.Trade) error {
 		trade.BuyDate,
 		trade.Quantity,
 		trade.Price,
+		trade.ExchangeRate,
 		trade.Action,
 		trade.ID,
 		userID,

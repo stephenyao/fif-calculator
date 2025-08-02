@@ -32,6 +32,13 @@ templ TradeForm(trade *model.Trade, action string, vm viewmodel.TradeFormViewMod
             </div>
 
             <div>
+              <label for="rate" class="block mb-1 font-medium text-gray-700">Exchange Rate</label>
+              <input id="rate"
+                value={exchangeRate(trade)}
+                name="rate" type="number" step="any" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
+            </div>
+
+            <div>
                 <label for="action" class="block mb-1 font-medium text-gray-700">Action</label>
                 <select id="action" name="action" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
                     <option value={constants.Buy} selected?={isSelected(trade, constants.Buy)}>Buy</option>
@@ -44,6 +51,13 @@ templ TradeForm(trade *model.Trade, action string, vm viewmodel.TradeFormViewMod
             </div>
         </form>
     </div>
+}
+
+func exchangeRate(trade *model.Trade) string {
+    if trade != nil {
+        return strconv.FormatFloat(trade.ExchangeRate, 'f', -1, 64)
+    }
+    return ""
 }
 
 func buyDate(trade *model.Trade) string {

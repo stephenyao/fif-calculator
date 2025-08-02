@@ -26,7 +26,7 @@ func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 	trade, err := h.TradeRepository.GetByID(id, uid)
 	if err != nil {
-		http.Error(w, "Failed to get trade", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

@@ -38,6 +38,10 @@ templ details(trade *model.Trade, backURL, editURL, deleteURL string) {
 					<th class="py-2 pr-4 text-gray-500">Currency</th>
 					<td class="py-2">{ trade.Currency }</td>
 				</tr>
+			    <tr>
+					<th class="py-2 pr-4 text-gray-500">Exchange rate</th>
+					<td class="py-2">{ trade.ExchangeRate }</td>
+				</tr>
 				<tr>
 					<th class="py-2 pr-4 text-gray-500">Action</th>
 					<td class="py-2">{ trade.Action }</td>

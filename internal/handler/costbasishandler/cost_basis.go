@@ -9,7 +9,6 @@ import (
 	"fif-calculator/views/costbasis"
 	"github.com/jmoiron/sqlx"
 	"net/http"
-	"time"
 )
 
 type CostBasisHandler struct {
@@ -33,6 +32,7 @@ func (h *CostBasisHandler) Index(w http.ResponseWriter, r *http.Request) {
 	tradeList, err := h.Repo.GetAllByAscendingDate(userID)
 	if err != nil {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
+		return
 	}
 
 	viewModel := ccostBasisViewModel(tradeList)
@@ -45,11 +45,11 @@ func (h *CostBasisHandler) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func ccostBasisViewModel(trades []model.Trade) CostBasisViewModel {
-	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades, time.Now())
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades)
 	totalCostBasis := 0.0
 
 	for _, costBasisSymbol := range costBasisBySymbol {
-		totalCostBasis += costBasisSymbol.CostBasis
+		totalCostBasis += costBasisSymbol.CostBasisFX
 	}
 
 	isValidForFIF := totalCostBasis >= 50000

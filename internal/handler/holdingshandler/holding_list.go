@@ -1,6 +1,7 @@
 package holdingshandler
 
 import (
+	"fif-calculator/internal/service/costbasisservice"
 	"fif-calculator/internal/utils"
 	"fif-calculator/views/holdings"
 	"net/http"
@@ -18,9 +19,19 @@ func (h *HoldingsHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
+		return
 	}
 
-	viewModels := convertToHoldingViewModels(allHoldings)
+	allTrades, err := h.TradeRepository.GetAllByAscendingDate(userId)
+
+	if err != nil {
+		http.Error(w, "Failed to get trades", http.StatusInternalServerError)
+		return
+	}
+
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(allTrades)
+
+	viewModels := convertToHoldingViewModels(allHoldings, costBasisBySymbol)
 
 	err = holdings.HoldingsList(r.URL.Path, viewModels).Render(r.Context(), w)
 

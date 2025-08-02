@@ -26,14 +26,16 @@ func (h *TradeHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	quantity, _ := strconv.ParseFloat(r.FormValue("quantity"), 64)
 	price, _ := strconv.ParseFloat(r.FormValue("price"), 64)
+	rate, _ := strconv.ParseFloat(r.FormValue("rate"), 64)
 
 	trade := model.Trade{
-		ID:        tradeID,
-		BuyDate:   r.FormValue("buyDate"),
-		Quantity:  quantity,
-		Price:     price,
-		Action:    r.FormValue("action"),
-		HoldingID: holdingID,
+		ID:           tradeID,
+		BuyDate:      r.FormValue("buyDate"),
+		Quantity:     quantity,
+		Price:        price,
+		ExchangeRate: rate,
+		Action:       r.FormValue("action"),
+		HoldingID:    holdingID,
 	}
 
 	uid, err := utils.GetUID(r.Context())

@@ -4,6 +4,7 @@ import (
 	"fif-calculator/internal/model"
 	"fif-calculator/internal/repository"
 	"fif-calculator/internal/viewmodel"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 )
@@ -20,14 +21,16 @@ func NewHoldingsHandler(db *sqlx.DB) *HoldingsHandler {
 	}
 }
 
-func convertToHoldingViewModels(records []*model.HoldingRecord) []viewmodel.HoldingViewModel {
+func convertToHoldingViewModels(records []*model.HoldingRecord, costBasisBySymbol map[string]viewmodel.SymbolCostBasis) []viewmodel.HoldingViewModel {
 	var viewModels []viewmodel.HoldingViewModel
 	for _, r := range records {
+		costBasis := costBasisBySymbol[r.Symbol]
 		viewModels = append(viewModels, viewmodel.HoldingViewModel{
-			ID:       r.ID,
-			Name:     r.Name,
-			Symbol:   r.Symbol,
-			Currency: r.Currency,
+			ID:        r.ID,
+			Name:      r.Name,
+			Symbol:    r.Symbol,
+			CostBasis: fmt.Sprintf("%.2f NZD", costBasis.CostBasisNZD),
+			Currency:  r.Currency,
 		})
 	}
 	return viewModels

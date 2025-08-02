@@ -24,6 +24,7 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	quantity, _ := strconv.ParseFloat(r.FormValue("quantity"), 64)
 	price, _ := strconv.ParseFloat(r.FormValue("price"), 64)
+	rate, _ := strconv.ParseFloat(r.FormValue("rate"), 64)
 	action := r.FormValue("action")
 	holdingIDParam := chi.URLParam(r, "id")
 	holdingID, err := strconv.Atoi(holdingIDParam)
@@ -34,11 +35,12 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	trade := model.Trade{
-		BuyDate:   r.FormValue("buyDate"),
-		Quantity:  quantity,
-		Price:     price,
-		Action:    action,
-		HoldingID: holdingID,
+		BuyDate:      r.FormValue("buyDate"),
+		Quantity:     quantity,
+		Price:        price,
+		ExchangeRate: rate,
+		Action:       action,
+		HoldingID:    holdingID,
 	}
 
 	userID, err := utils.GetUID(r.Context())

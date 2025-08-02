@@ -1,13 +1,18 @@
 package model
 
 type Trade struct {
-	ID          int     `db:"id"`
-	Symbol      string  `db:"symbol"`
-	BuyDate     string  `db:"buy_date"`
-	Quantity    float64 `db:"quantity"`
-	Price       float64 `db:"price"`
-	Currency    string  `db:"currency"`
-	Action      string  `db:"action"`
-	HoldingID   int     `db:"holding_id"`
-	HoldingName string  `db:"holding_name"`
+	ID           int     `db:"id"`
+	BuyDate      string  `db:"buy_date"`
+	Quantity     float64 `db:"quantity"`
+	Price        float64 `db:"price"`
+	ExchangeRate float64 `db:"exchange_rate"`
+	Action       string  `db:"action"`
+	HoldingID    int     `db:"holding_id"`
+	Currency     string  `db:"currency"`
+	HoldingName  string  `db:"holding_name"`
+	Symbol       string  `db:"symbol"`
+}
+
+func (t Trade) PriceInNZD() float64 {
+	return t.Price * t.ExchangeRate
 }

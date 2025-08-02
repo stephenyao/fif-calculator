@@ -4,11 +4,12 @@ import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
 	. "fif-calculator/internal/viewmodel"
+	"fmt"
 	"time"
 )
 
 func IsEligibleForFIF(trades []Trade, start, end time.Time) bool {
-	costBasisBySymbol := CostBasisBySymbol(trades, end)
+	costBasisBySymbol := CostBasisBySymbol(trades)
 	totalCostBasis := totalCostBasis(costBasisBySymbol)
 	maxCostBasisForYear := MaxCostBasisDuringYear(trades, start, end)
 
@@ -16,7 +17,7 @@ func IsEligibleForFIF(trades []Trade, start, end time.Time) bool {
 	return !notEligible
 }
 
-func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCostBasis {
+func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {
 	costBasisBySymbol := make(map[string]SymbolCostBasis)
 
 	// Build up a map of trades by symbol so they can be iterated through
@@ -33,12 +34,6 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 		var totalBought, totalSold float64
 
 		for _, trade := range trades {
-			tradeDate, _ := time.Parse(time.DateOnly, trade.BuyDate)
-
-			if tradeDate.After(untilDate) {
-				break
-			}
-
 			switch trade.Action {
 			case constants.Buy:
 				queue = append(queue, trade)
@@ -70,18 +65,21 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 			}
 		}
 
-		var costBasisForSymbol float64
+		var costBasisFXForSymbol float64
+		var costBasisNZDForSymbol float64
 		for _, buyTrade := range queue {
-			costBasisForSymbol += buyTrade.Price * buyTrade.Quantity
+			costBasisFXForSymbol += buyTrade.Price * buyTrade.Quantity
+			costBasisNZDForSymbol += buyTrade.Price * buyTrade.Quantity * buyTrade.ExchangeRate
+			fmt.Printf("buy price: %f, quantity: %f, exchangeRate: %f", buyTrade.Price, buyTrade.Quantity, buyTrade.ExchangeRate)
 		}
 		overSold := totalSold > totalBought
 		costBasisBySymbol[symbol] =
 			SymbolCostBasis{
-				CostBasis:   costBasisForSymbol,
-				TotalBought: totalBought,
-				TotalSold:   totalSold,
-				Oversold:    overSold,
-				UntilDate:   untilDate,
+				CostBasisFX:  costBasisFXForSymbol,
+				CostBasisNZD: costBasisNZDForSymbol,
+				TotalBought:  totalBought,
+				TotalSold:    totalSold,
+				Oversold:     overSold,
 			}
 	}
 
@@ -91,7 +89,7 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 func totalCostBasis(costBasisBySymbol map[string]SymbolCostBasis) float64 {
 	var total float64 = 0
 	for _, costBasis := range costBasisBySymbol {
-		total += costBasis.CostBasis
+		total += costBasis.CostBasisFX
 	}
 	return total
 }
