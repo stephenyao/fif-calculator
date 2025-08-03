@@ -299,7 +299,7 @@ func HoldingsCards(viewModels []viewmodel.HoldingViewModel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><svg class=\"w-4 h-4 text-gray-400 dark:text-gray-500\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div><div class=\"grid-cols-2 gap-x-6 gap-y-2\"><div class=\"space-y-2\"><div><div class=\"text-gray-500 dark:text-gray-400 font-medium\">Symbol</div><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><svg class=\"w-4 h-4 text-gray-400 dark:text-gray-500\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"></path></svg></div><div class=\"grid grid-cols-2 gap-x-6 gap-y-2\"><div class=\"space-y-2\"><div><div class=\"text-gray-500 dark:text-gray-400 font-medium\">Symbol</div><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
