@@ -31,7 +31,7 @@ func NavigationMenu(viewModel *NavigationViewModel) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"bg-white shadow-md p-4 border-b border-gray-200 flex flex-row overflow-x-auto\"><ul class=\"flex flex-row justify-center space-x-4 max-w-4xl w-full mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"bg-white dark:bg-gray-900 shadow-md p-4 border-b border-gray-200 dark:border-gray-700 flex flex-row overflow-x-auto\"><ul class=\"flex flex-row justify-center space-x-4 max-w-4xl w-full mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -102,7 +102,7 @@ func className(isActive bool) string {
 	if isActive {
 		return "bg-blue-600 text-white shadow-md"
 	} else {
-		return "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+		return "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600"
 	}
 }
 
