@@ -1,0 +1,42 @@
+package views
+
+templ TableList() {
+	<table class="min-w-full w-full text-sm text-gray-900 dark:text-gray-100">
+		{ children... }
+	</table>
+}
+
+templ THead() {
+	<thead class="border-b border-gray-100 dark:border-gray-700 text-left text-gray-800 dark:text-gray-200 tracking-wide font-semibold">
+		<tr>
+			{ children... }
+		</tr>
+	</thead>
+}
+
+templ TH(title string) {
+	<th class="px-4 py-3">{ title }</th>
+}
+
+templ TD(content string) {
+	<td class="px-4 py-3">{ content }</td>
+}
+
+templ TDChevron() {
+	<td class="px-4 py-3">
+		<div class="flex justify-end">
+			<svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+			</svg>
+		</div>
+	</td>
+}
+
+templ TR(fnName string, fnParam string) {
+	<tr
+		onclick={ templ.JSFuncCall(fnName, fnParam) }
+		class="cursor-pointer border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
+	>
+		{ children... }
+	</tr>
+}

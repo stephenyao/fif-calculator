@@ -8,7 +8,7 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 	@Layout("Holdings List", currentPath) {
 		@Page() {
 			<div class="flex justify-between w-full">
-				<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Holdings</h2>
+				@H2("Holdings")
 				<div class="flex justify-end mb-4">
 					@Link("/holdings/new", "+ New")
 				</div>
@@ -29,44 +29,34 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 
 templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 	<div class="hidden md:block">
-		<table class="min-w-full w-full text-sm text-gray-900 dark:text-gray-100">
-			<thead class="border-b border-gray-100 dark:border-gray-700 text-left text-gray-800 dark:text-gray-200 tracking-wide font-semibold">
-				<tr>
-					<th class="px-4 py-3">Name</th>
-					<th class="px-4 py-3">Symbol</th>
-					<th class="px-4 py-3">Total Trades</th>
-					<th class="px-4 py-3">Quantity</th>
-					<th class="px-4 py-3">Cost (NZD)</th>
-					<th class="px-4 py-3"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<script>
-					function navigateToDetails(path) {
-						window.location.href = path
-					}
-				</script>
-				for _, vm := range viewModels {
-					<tr
-						onclick={ templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) }
-						class="cursor-pointer border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
-					>
-						<td class="px-4 py-3">{ vm.Name }</td>
-						<td class="px-4 py-3">{ vm.Symbol }</td>
-						<td class="px-4 py-3">{ vm.TotalTrades }</td>
-						<td class="px-4 py-3">{ vm.CurrentQuantity }</td>
-						<td class="px-4 py-3">{ vm.CostBasis }</td>
-						<td class="px-4 py-3">
-							<div class="flex justify-end">
-								<svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
-								</svg>
-							</div>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
+	    @TableList() {
+	        @THead() {
+	            @TH("Name")
+	            @TH("Symbol")
+	            @TH("Total Trades")
+	            @TH("Quantity")
+	            @TH("Cost (NZD)")
+	            @TH("")
+	        }
+
+	        <tbody>
+	            <script>
+                    function navigateToDetails(path) {
+                        window.location.href = path
+                    }
+                </script>
+                for _, vm := range viewModels {
+                    @TR("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) {
+                        @TD(vm.Name)
+                        @TD(vm.Symbol)
+                        @TD(vm.TotalTrades)
+                        @TD(vm.CurrentQuantity)
+                        @TD(vm.CostBasis)
+                        @TDChevron()
+                    }
+                }
+	        </tbody>
+	    }
 	</div>
 }
 
