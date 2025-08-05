@@ -22,6 +22,12 @@ templ TD(content string) {
 	<td class="px-4 py-3">{ content }</td>
 }
 
+templ TDChild() {
+    <td class="px-4 py-3">
+        { children... }
+    </td>
+}
+
 templ TDChevron() {
 	<td class="px-4 py-3">
 		<div class="flex justify-end">
