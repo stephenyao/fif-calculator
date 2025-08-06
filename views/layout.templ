@@ -18,7 +18,7 @@ templ Layout(title string, currentPath string) {
 			<script src="https://unpkg.com/htmx.org@1.9.2"></script>
 			<title>{ title }</title>
 		</head>
-		<body class="bg-gray-100 text-gray-900 font-inter">
+		<body class="bg-gray-100 text-gray-900 dark:text-gray-100 font-inter">
 			@NavigationMenu(NewNavigationViewModel(currentPath, ctx))
 			{ children... }
 		</body>

@@ -5,3 +5,12 @@ templ Link(path string, title string) {
         {title}
     </a>
 }
+
+templ DestructButton(title string) {
+    <button
+        type="submit"
+        class="inline-block bg-red-600 text-white font-medium py-2 px-4 rounded hover:bg-red-700 transition"
+    >
+        {title}
+    </button>
+}

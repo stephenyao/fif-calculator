@@ -29,34 +29,33 @@ templ HoldingsList(currentPath string, viewModels []viewmodel.HoldingViewModel) 
 
 templ HoldingsTable(viewModels []viewmodel.HoldingViewModel) {
 	<div class="hidden md:block">
-	    @TableList() {
-	        @THead() {
-	            @TH("Name")
-	            @TH("Symbol")
-	            @TH("Total Trades")
-	            @TH("Quantity")
-	            @TH("Cost (NZD)")
-	            @TH("")
-	        }
-
-	        <tbody>
-	            <script>
+		@TableList() {
+			@THead() {
+				@TH("Name")
+				@TH("Symbol")
+				@TH("Total Trades")
+				@TH("Quantity")
+				@TH("Cost (NZD)")
+				@TH("")
+			}
+			<tbody>
+				<script>
                     function navigateToDetails(path) {
                         window.location.href = path
                     }
                 </script>
-                for _, vm := range viewModels {
-                    @TR("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) {
-                        @TD(vm.Name)
-                        @TD(vm.Symbol)
-                        @TD(vm.TotalTrades)
-                        @TD(vm.CurrentQuantity)
-                        @TD(vm.CostBasis)
-                        @TDChevron()
-                    }
-                }
-	        </tbody>
-	    }
+				for _, vm := range viewModels {
+					@TR("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) {
+						@TD(vm.Name)
+						@TD(vm.Symbol)
+						@TD(vm.TotalTrades)
+						@TD(vm.CurrentQuantity)
+						@TD(vm.CostBasis)
+						@TDChevron()
+					}
+				}
+			</tbody>
+		}
 	</div>
 }
 
@@ -65,7 +64,7 @@ templ HoldingsCards(viewModels []viewmodel.HoldingViewModel) {
 		for _, vm := range viewModels {
 			<div
 				onclick={ templ.JSFuncCall("navigateToDetails", "holdings/"+strconv.Itoa(vm.ID)) }
-				class="py-4 px-4 text-sm text-gray-800 dark:text-gray-100 hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+				class="py-4 px-4 text-sm hover:cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
 			>
 				<div class="flex justify-between items-center mb-2">
 					<div class="font-semibold text-base">{ vm.Name }</div>
@@ -73,26 +72,14 @@ templ HoldingsCards(viewModels []viewmodel.HoldingViewModel) {
 						<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
 					</svg>
 				</div>
-				<div class="grid grid-cols-2 gap-x-6 gap-y-2">
+				<div class="grid grid-cols-2 gap-x-6 gap-y-4">
 					<div class="space-y-2">
-						<div>
-							<div class="text-gray-500 dark:text-gray-400 font-medium">Symbol</div>
-							<div>{ vm.Symbol }</div>
-						</div>
-						<div>
-							<div class="text-gray-500 dark:text-gray-400 font-medium">Quantity</div>
-							<div>{ vm.CurrentQuantity }</div>
-						</div>
+						@VPairedLabel("Symbol", vm.Symbol)
+						@VPairedLabel("Quantity", vm.CurrentQuantity)
 					</div>
 					<div class="space-y-2">
-						<div>
-							<div class="text-gray-500 dark:text-gray-400 font-medium">Total Trades</div>
-							<div>{ vm.TotalTrades }</div>
-						</div>
-						<div>
-							<div class="text-gray-500 dark:text-gray-400 font-medium">Cost (NZD)</div>
-							<div>{ vm.CostBasis }</div>
-						</div>
+						@VPairedLabel("Total Trades", vm.TotalTrades)
+						@VPairedLabel("Cost (NZD)", vm.CostBasis)
 					</div>
 				</div>
 			</div>

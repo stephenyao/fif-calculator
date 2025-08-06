@@ -3,3 +3,10 @@ package views
 templ H2(t string) {
 	<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">{ t }</h2>
 }
+
+templ VPairedLabel(title string, content string) {
+	<div>
+		<div class="text-gray-500 dark:text-gray-400 font-medium">{title}</div>
+		<div>{ content }</div>
+	</div>
+}
