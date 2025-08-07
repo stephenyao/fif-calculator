@@ -70,6 +70,7 @@ type HoldingViewModel struct {
 	CurrentQuantity string
 	TotalTrades     string
 	Trades          []TradeViewModel
+	PageInfo        PageInfo
 }
 
 type TradeViewModel struct {
@@ -80,4 +81,9 @@ type TradeViewModel struct {
 	Action          string
 	URL             string
 	BackURL         string
+}
+
+type PageInfo struct {
+	TotalPages  int
+	CurrentPage int
 }

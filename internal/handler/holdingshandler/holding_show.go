@@ -17,9 +17,16 @@ import (
 func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(param)
+	pageLimit := 10
 
 	if err != nil {
 		http.Error(w, "id should be a number", http.StatusBadRequest)
+	}
+
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+
+	if err != nil {
+		page = 0
 	}
 
 	userId, err := utils.GetUID(r.Context())
@@ -48,13 +55,15 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	trades, err := h.TradeRepository.GetByHoldingID(id, uid)
-	paginatedTrades, _, err := h.TradeRepository.GetByHoldingIDPaginated(id, 10, 0, uid)
+	paginatedTrades, _, err := h.TradeRepository.GetByHoldingIDPaginated(id, pageLimit, page, uid)
 	costBasis := costbasisservice.CostBasisBySymbol(trades)[holding.Symbol]
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	totalPages := (len(trades) + pageLimit - 1) / pageLimit
 
 	vm := viewmodel.HoldingViewModel{
 		ID:              id,
@@ -65,6 +74,10 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		CurrentQuantity: strconv.FormatFloat(costBasis.CurrentQuantity, 'f', -1, 64),
 		Trades:          convertTradesToViewModel(param, paginatedTrades),
 		CostBasis:       fmt.Sprintf("$%.2f", costBasis.CostBasisNZD),
+		PageInfo: viewmodel.PageInfo{
+			TotalPages:  totalPages,
+			CurrentPage: page,
+		},
 	}
 
 	err = holdings.ViewHolding(r.URL.Path, vm).Render(r.Context(), w)
