@@ -132,8 +132,9 @@ func (r *SQLTradeRepository) GetByHoldingID(holdingID int, userID string) ([]mod
 			trades.buy_date,
 			trades.quantity,
 			trades.price,
+			trades.exchange_rate,
 			trades.action,
-			trades.holding_id,
+			trades.holding_id,			
 			holdings.currency AS currency,
 			holdings.name AS holding_name,
 			holdings.symbol AS symbol

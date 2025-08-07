@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fif-calculator/internal/model"
+	"fif-calculator/internal/service/costbasisservice"
 	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/holdings"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
@@ -47,17 +49,22 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 	trades, err := h.TradeRepository.GetByHoldingID(id, uid)
 
+	costBasis := costbasisservice.CostBasisBySymbol(trades)[holding.Symbol]
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	vm := viewmodel.HoldingViewModel{
-		ID:       id,
-		Name:     holding.Name,
-		Symbol:   holding.Symbol,
-		Currency: holding.Currency,
-		Trades:   convertTradesToViewModel(param, trades),
+		ID:              id,
+		Name:            holding.Name,
+		Symbol:          holding.Symbol,
+		Currency:        holding.Currency,
+		TotalTrades:     fmt.Sprintf("%d", costBasis.TotalTrades),
+		CurrentQuantity: strconv.FormatFloat(costBasis.CurrentQuantity, 'f', -1, 64),
+		Trades:          convertTradesToViewModel(param, trades),
+		CostBasis:       fmt.Sprintf("$%.2f", costBasis.CostBasisNZD),
 	}
 
 	err = holdings.ViewHolding(r.URL.Path, vm).Render(r.Context(), w)
