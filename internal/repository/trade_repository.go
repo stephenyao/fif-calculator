@@ -12,6 +12,7 @@ type TradeRepository interface {
 	GetByID(id int, userID string) (*model.Trade, error)
 	GetAllByAscendingDate(userID string) ([]model.Trade, error)
 	GetByHoldingID(id int, userID string) ([]model.Trade, error)
+	GetByHoldingIDPaginated(holdingID, limit, offset int, userID string) ([]model.Trade, int, error)
 }
 
 type SQLTradeRepository struct {
@@ -149,4 +150,40 @@ func (r *SQLTradeRepository) GetByHoldingID(holdingID int, userID string) ([]mod
 		return nil, err
 	}
 	return trades, nil
+}
+
+func (r *SQLTradeRepository) GetByHoldingIDPaginated(holdingID, limit, offset int, userID string) ([]model.Trade, int, error) {
+	var trades []model.Trade
+
+	err := r.DB.Select(&trades, `
+		SELECT 
+			trades.id,
+			trades.buy_date,
+			trades.quantity,
+			trades.price,
+			trades.exchange_rate,
+			trades.action,
+			trades.holding_id,
+			holdings.currency AS currency,
+			holdings.name AS holding_name,
+			holdings.symbol AS symbol
+		FROM trades
+		JOIN holdings ON trades.holding_id = holdings.id
+		WHERE trades.holding_id = ? AND holdings.user_id = ?
+		ORDER BY trades.buy_date DESC
+		LIMIT ? OFFSET ?
+	`, holdingID, userID, limit, offset)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Get total count of trades for pagination
+	var total int
+	err = r.DB.Get(&total, `SELECT COUNT(*) FROM trades WHERE holding_id = ?`, holdingID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return trades, total, nil
 }
