@@ -8,7 +8,7 @@ templ TableList() {
 	</table>
 }
 
-templ PaginatedTableList(currentPage int, totalPages int) {
+templ PaginatedTableList(currentPage, totalPages, start, end int) {
 	<div class="w-full">
 		<table class="min-w-full w-full text-sm text-gray-900 dark:text-gray-100">
 			{ children... }
@@ -16,7 +16,7 @@ templ PaginatedTableList(currentPage int, totalPages int) {
 
 		<div class="mt-4 flex justify-center items-center gap-2 text-sm">
 			<a href="#" class="px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800">←</a>
-			for i := currentPage; i < 3; i++ {
+			for i := start; i <= end; i++ {
 			    <a href={"?page="+ strconv.Itoa(i)} class="px-3 py-1 rounded border hover:bg-gray-100 dark:hover:bg-gray-800">{i+1}</a>
 			}
 			<a href="#" class="px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800">→</a>

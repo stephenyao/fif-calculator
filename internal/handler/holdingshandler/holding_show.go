@@ -17,7 +17,7 @@ import (
 func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(param)
-	pageLimit := 10
+	pageLimit := 25
 
 	if err != nil {
 		http.Error(w, "id should be a number", http.StatusBadRequest)
@@ -64,6 +64,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	totalPages := (len(trades) + pageLimit - 1) / pageLimit
+	startPage, endPage := calculateStartEndPageIndices(page, totalPages)
 
 	vm := viewmodel.HoldingViewModel{
 		ID:              id,
@@ -77,6 +78,8 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		PageInfo: viewmodel.PageInfo{
 			TotalPages:  totalPages,
 			CurrentPage: page,
+			StartPage:   startPage,
+			EndPage:     endPage,
 		},
 	}
 
@@ -85,6 +88,22 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func calculateStartEndPageIndices(currentPage int, totalPages int) (int, int) {
+	offset := 2
+	start := currentPage - offset
+	end := currentPage + offset
+
+	if start < 0 {
+		start = 0
+	}
+
+	if end > totalPages-1 {
+		end = totalPages - 1
+	}
+
+	return start, end
 }
 
 func convertTradesToViewModel(holdingID string, trades []model.Trade) []viewmodel.TradeViewModel {

@@ -69,7 +69,7 @@ templ holdingTrades(vm viewmodel.HoldingViewModel) {
 				<p class="text-gray-600">No trades recorded yet.</p>
 			} else {
 				<div class="overflow-x-auto">
-					@PaginatedTableList(vm.PageInfo.CurrentPage, vm.PageInfo.TotalPages) {
+					@PaginatedTableList(vm.PageInfo.CurrentPage, vm.PageInfo.TotalPages, vm.PageInfo.StartPage, vm.PageInfo.EndPage) {
 						@THead() {
 							@TH("Date")
 							@TH("Action")
