@@ -17,7 +17,7 @@ import (
 func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(param)
-	pageLimit := 25
+	pageLimit := 5
 
 	if err != nil {
 		http.Error(w, "id should be a number", http.StatusBadRequest)
@@ -76,10 +76,12 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		Trades:          convertTradesToViewModel(param, paginatedTrades),
 		CostBasis:       fmt.Sprintf("$%.2f", costBasis.CostBasisNZD),
 		PageInfo: viewmodel.PageInfo{
-			TotalPages:  totalPages,
-			CurrentPage: page,
-			StartPage:   startPage,
-			EndPage:     endPage,
+			TotalPages:   totalPages,
+			CurrentPage:  page,
+			StartPage:    startPage,
+			EndPage:      endPage,
+			PreviousPage: max(page-1, 0),
+			NextPage:     min(page+1, totalPages-1),
 		},
 	}
 

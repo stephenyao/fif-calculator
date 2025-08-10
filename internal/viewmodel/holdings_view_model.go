@@ -84,8 +84,10 @@ type TradeViewModel struct {
 }
 
 type PageInfo struct {
-	TotalPages  int
-	CurrentPage int
-	StartPage   int
-	EndPage     int
+	TotalPages   int
+	CurrentPage  int
+	StartPage    int
+	EndPage      int
+	PreviousPage int
+	NextPage     int
 }
