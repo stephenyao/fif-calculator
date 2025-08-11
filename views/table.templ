@@ -33,11 +33,11 @@ templ THead() {
 }
 
 templ TH(title string) {
-	<th class="px-4 py-3">{ title }</th>
+	<th class="px-4 py-3 w-[120px]">{ title }</th>
 }
 
 templ TD(content string) {
-	<td class="px-4 py-3">{ content }</td>
+	<td class="px-4 py-3 w-[120px] whitespace-nowrap">{ content }</td>
 }
 
 templ TDChild() {
