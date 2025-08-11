@@ -60,6 +60,7 @@ func main() {
 		protected.Get("/holdings/new", holdingsHandler.New)
 		protected.Post("/holdings/new", holdingsHandler.CreateHolding)
 		protected.Get("/holdings/{id}", holdingsHandler.Show)
+		protected.Get("/holdings/{id}/trades", holdingsHandler.GetHoldingTrades)
 		protected.Post("/holdings/{id}/delete", holdingsHandler.Delete)
 		protected.Get("/holdings/{id}/edit", holdingsHandler.EditForm)
 		protected.Post("/holdings/{id}/edit", holdingsHandler.Update)

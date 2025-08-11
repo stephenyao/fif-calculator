@@ -73,6 +73,12 @@ type HoldingViewModel struct {
 	PageInfo        PageInfo
 }
 
+type TradesViewModel struct {
+	HoldingID int
+	Trades    []TradeViewModel
+	PageInfo  PageInfo
+}
+
 type TradeViewModel struct {
 	TransactionDate string
 	Quantity        float64

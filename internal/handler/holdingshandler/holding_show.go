@@ -66,7 +66,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	totalPages := (len(trades) + pageLimit - 1) / pageLimit
 	startPage, endPage := calculateStartEndPageIndices(page, totalPages)
 
-	vm := viewmodel.HoldingViewModel{
+	holdingVm := viewmodel.HoldingViewModel{
 		ID:              id,
 		Name:            holding.Name,
 		Symbol:          holding.Symbol,
@@ -85,11 +85,68 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	err = holdings.ViewHolding(r.URL.Path, vm).Render(r.Context(), w)
+	tradesVm := viewmodel.TradesViewModel{
+		HoldingID: id,
+		Trades:    convertTradesToViewModel(param, paginatedTrades),
+		PageInfo: viewmodel.PageInfo{
+			TotalPages:   totalPages,
+			CurrentPage:  page,
+			StartPage:    startPage,
+			EndPage:      endPage,
+			PreviousPage: max(page-1, 0),
+			NextPage:     min(page+1, totalPages-1),
+		},
+	}
+
+	err = holdings.ViewHolding(r.URL.Path, holdingVm, tradesVm).Render(r.Context(), w)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (h *HoldingsHandler) GetHoldingTrades(w http.ResponseWriter, r *http.Request) {
+	// Parse params
+	uid, _ := utils.GetUID(r.Context())
+	idStr := chi.URLParam(r, "id")
+	id, _ := strconv.Atoi(idStr)
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	pageLimit := 5
+
+	trades, _ := h.TradeRepository.GetByHoldingID(id, uid)
+	paginatedTrades, _, err := h.TradeRepository.GetByHoldingIDPaginated(id, pageLimit, page, uid)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	totalPages := (len(trades) + pageLimit - 1) / pageLimit
+	startPage, endPage := calculateStartEndPageIndices(page, totalPages)
+
+	vm := viewmodel.TradesViewModel{
+		HoldingID: id,
+		Trades:    convertTradesToViewModel(idStr, paginatedTrades),
+		PageInfo: viewmodel.PageInfo{
+			TotalPages:   totalPages,
+			CurrentPage:  page,
+			StartPage:    startPage,
+			EndPage:      endPage,
+			PreviousPage: max(page-1, 0),
+			NextPage:     min(page+1, totalPages-1),
+		},
+	}
+
+	// If this is an htmx request, return ONLY the panel
+	if r.Header.Get("HX-Request") == "true" {
+		if err := holdings.TradesPanel(vm).Render(r.Context(), w); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+	//
+	// Otherwise render the full page
+	// Non-HTMX: redirect to the holding details page
+	http.Redirect(w, r, "/holdings/"+idStr, http.StatusSeeOther)
 }
 
 func calculateStartEndPageIndices(currentPage int, totalPages int) (int, int) {
