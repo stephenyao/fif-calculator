@@ -106,41 +106,59 @@ templ TradesPanel(vm viewmodel.TradesViewModel) {
 	</div>
 }
 
-
 templ paginatedTrades(vm viewmodel.TradesViewModel) {
 	<div class="w-full">
 		<table class="min-w-full w-full text-sm text-gray-900 dark:text-gray-100">
 			{ children... }
 		</table>
-
-		<div class="mt-4 flex justify-center items-center gap-2 text-sm">
-			<a
-				hx-get={"/holdings/"+strconv.Itoa(vm.HoldingID)+"/trades?page="+strconv.Itoa(vm.PageInfo.PreviousPage)}
-				hx-push-url="true"
-				class="px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800">←</a>
-
-			// Pages
-			for i := vm.PageInfo.StartPage; i <= vm.PageInfo.EndPage; i++ {
+		if vm.PageInfo.TotalPages > 1 {
+			<div class="mt-4 flex justify-center items-center gap-2 text-sm">
 				<a
-					hx-get={"/holdings/"+strconv.Itoa(vm.HoldingID)+"/trades?page="+strconv.Itoa(i)}
+					hx-get={ "/holdings/" + strconv.Itoa(vm.HoldingID) + "/trades?page=" + strconv.Itoa(vm.PageInfo.PreviousPage) }
 					hx-push-url="true"
-					class={classForPageSelector(i, vm.PageInfo.CurrentPage)}
-				>{ i+1 }</a>
-			}
-
-			// Next
-			<a
-				hx-get={"/holdings/"+strconv.Itoa(vm.HoldingID)+"/trades?page="+strconv.Itoa(vm.PageInfo.NextPage)}
-				hx-push-url="true"
-				class="px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800">→</a>
-		</div>
+					class={classForPrevNavigation(vm.PageInfo.CurrentPage)}
+				>←</a>
+				for i := vm.PageInfo.StartPage; i <= vm.PageInfo.EndPage; i++ {
+					<a
+						hx-get={ "/holdings/" + strconv.Itoa(vm.HoldingID) + "/trades?page=" + strconv.Itoa(i) }
+						hx-push-url="true"
+						class={ classForPageSelector(i, vm.PageInfo.CurrentPage) }
+					>{ i+1 }</a>
+				}
+				<a
+					hx-get={ "/holdings/" + strconv.Itoa(vm.HoldingID) + "/trades?page=" + strconv.Itoa(vm.PageInfo.NextPage) }
+					hx-push-url="true"
+					class={classForNextNavigation(vm.PageInfo.CurrentPage, vm.PageInfo.TotalPages)}
+				>→</a>
+			</div>
+		}
 	</div>
 }
 
 func classForPageSelector(page, currentPage int) string {
-    if page == currentPage {
-        return "px-3 py-1 rounded border bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
-    } else {
-        return "px-3 py-1 rounded border hover:bg-gray-100 dark:hover:bg-gray-800"
+	if page == currentPage {
+		return "px-3 py-1 rounded border bg-blue-600 text-white border-blue-600 hover:bg-blue-700 select-none pointer-events-none"
+	} else {
+		return "px-3 py-1 rounded border hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer select-none"
+	}
+}
+
+func classForPrevNavigation(currentPage int) string {
+    class := "px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer select-none "
+
+    if currentPage == 0 {
+        class += "pointer-events-none"
     }
+
+    return class
+}
+
+func classForNextNavigation(currentPage, totalPages int) string {
+    class := "px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer select-none "
+
+    if currentPage == totalPages - 1 {
+        class += "pointer-events-none"
+    }
+
+    return class
 }
