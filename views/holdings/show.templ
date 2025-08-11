@@ -124,7 +124,7 @@ templ paginatedTrades(vm viewmodel.TradesViewModel) {
 				<a
 					hx-get={"/holdings/"+strconv.Itoa(vm.HoldingID)+"/trades?page="+strconv.Itoa(i)}
 					hx-push-url="true"
-					class="px-3 py-1 rounded border hover:bg-gray-100 dark:hover:bg-gray-800"
+					class={classForPageSelector(i, vm.PageInfo.CurrentPage)}
 				>{ i+1 }</a>
 			}
 
@@ -135,4 +135,12 @@ templ paginatedTrades(vm viewmodel.TradesViewModel) {
 				class="px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-800">→</a>
 		</div>
 	</div>
+}
+
+func classForPageSelector(page, currentPage int) string {
+    if page == currentPage {
+        return "px-3 py-1 rounded border bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+    } else {
+        return "px-3 py-1 rounded border hover:bg-gray-100 dark:hover:bg-gray-800"
+    }
 }
