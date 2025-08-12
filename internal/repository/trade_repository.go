@@ -13,6 +13,7 @@ type TradeRepository interface {
 	GetAllByAscendingDate(userID string) ([]model.Trade, error)
 	GetByHoldingID(id int, userID string) ([]model.Trade, error)
 	GetByHoldingIDPaginated(holdingID, limit, offset int, userID string) ([]model.Trade, int, error)
+	CountTrades(holdingID int, userID string) (int, error)
 }
 
 type SQLTradeRepository struct {
@@ -150,6 +151,16 @@ func (r *SQLTradeRepository) GetByHoldingID(holdingID int, userID string) ([]mod
 		return nil, err
 	}
 	return trades, nil
+}
+
+func (r *SQLTradeRepository) CountTrades(holdingID int, userID string) (int, error) {
+	var total int
+	err := r.DB.Get(&total, `
+		SELECT COUNT(*)
+		FROM trades t
+		JOIN holdings h ON t.holding_id = h.id
+		WHERE t.holding_id = ? AND h.user_id = ?`, holdingID, userID)
+	return total, err
 }
 
 func (r *SQLTradeRepository) GetByHoldingIDPaginated(holdingID, limit, offset int, userID string) ([]model.Trade, int, error) {

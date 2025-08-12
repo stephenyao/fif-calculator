@@ -69,8 +69,6 @@ type HoldingViewModel struct {
 	CostBasis       string
 	CurrentQuantity string
 	TotalTrades     string
-	Trades          []TradeViewModel
-	PageInfo        PageInfo
 }
 
 type TradesViewModel struct {

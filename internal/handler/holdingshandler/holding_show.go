@@ -14,10 +14,11 @@ import (
 	"strconv"
 )
 
+const pageLimit = 10
+
 func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(param)
-	pageLimit := 5
 
 	if err != nil {
 		http.Error(w, "id should be a number", http.StatusBadRequest)
@@ -73,16 +74,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		Currency:        holding.Currency,
 		TotalTrades:     fmt.Sprintf("%d", costBasis.TotalTrades),
 		CurrentQuantity: strconv.FormatFloat(costBasis.CurrentQuantity, 'f', -1, 64),
-		Trades:          convertTradesToViewModel(param, paginatedTrades),
 		CostBasis:       fmt.Sprintf("$%.2f", costBasis.CostBasisNZD),
-		PageInfo: viewmodel.PageInfo{
-			TotalPages:   totalPages,
-			CurrentPage:  page,
-			StartPage:    startPage,
-			EndPage:      endPage,
-			PreviousPage: max(page-1, 0),
-			NextPage:     min(page+1, totalPages-1),
-		},
 	}
 
 	tradesVm := viewmodel.TradesViewModel{
@@ -107,20 +99,19 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 func (h *HoldingsHandler) GetHoldingTrades(w http.ResponseWriter, r *http.Request) {
 	// Parse params
-	uid, _ := utils.GetUID(r.Context())
+	uid, err := utils.GetUID(r.Context())
 	idStr := chi.URLParam(r, "id")
-	id, _ := strconv.Atoi(idStr)
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	pageLimit := 5
+	id, err := strconv.Atoi(idStr)
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 
-	trades, _ := h.TradeRepository.GetByHoldingID(id, uid)
+	count, err := h.TradeRepository.CountTrades(id, uid)
 	paginatedTrades, _, err := h.TradeRepository.GetByHoldingIDPaginated(id, pageLimit, page, uid)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	totalPages := (len(trades) + pageLimit - 1) / pageLimit
+	totalPages := (count + pageLimit - 1) / pageLimit
 	startPage, endPage := calculateStartEndPageIndices(page, totalPages)
 
 	vm := viewmodel.TradesViewModel{
