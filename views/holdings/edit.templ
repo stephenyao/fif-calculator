@@ -5,17 +5,18 @@ import "fif-calculator/internal/viewmodel"
 import . "fif-calculator/views"
 
 templ EditHolding(currentPath string, viewModel *viewmodel.HoldingFormViewModel) {
-	@Layout("New Holding", currentPath) {
+	@Layout("Edit Holding", currentPath) {
 		@Page() {
+			<div class="mb-4 flex flex-col space-y-4">
+				<a href={"/holdings/" + viewModel.ID} class="text-blue-600 underline">
+					← Back to {viewModel.Name}
+				</a>
+				<h2 class="text-2xl font-bold mb-4">Edit Holding</h2>
+			</div>
 			@Section() {
-				@edit(viewModel)
+				@HoldingsForm(viewModel, templ.SafeURL("/holdings/"+viewModel.ID+"/edit"))
 			}
 		}
 	}
 }
 
-templ edit(vm *viewmodel.HoldingFormViewModel) {
-	<h2 class="text-2xl font-bold mb-4">Edit Holding</h2>
-	<a href="/holdings" class="text-blue-600 underline">← Back to Holdings</a>
-	@HoldingsForm(vm,  templ.SafeURL("/holdings/" + vm.ID + "/edit"))
-}
