@@ -7,15 +7,15 @@ import . "fif-calculator/views"
 templ NewHolding(currentPath string, viewModel *viewmodel.HoldingFormViewModel) {
 	@Layout("New Holding", currentPath) {
 		@Page() {
+			<div class="mb-4 flex flex-col space-y-4">
+				<a href="/holdings" class="text-blue-600 underline">
+					← Back to Holdings
+				</a>
+				<h2 class="text-2xl font-bold mb-4">New Holding</h2>
+			</div>
 			@Section() {
-				@content(viewModel)
+				@HoldingsForm(viewModel, "/holdings/new")
 			}
 		}
 	}
-}
-
-templ content(viewModel *viewmodel.HoldingFormViewModel) {
-    <a href="/holdings" class="text-blue-600 underline">← Back to Holdings</a>
-	<h2 class="text-2xl font-bold mb-4">New Holding</h2>
-	@HoldingsForm(viewModel, "/holdings/new")
 }
