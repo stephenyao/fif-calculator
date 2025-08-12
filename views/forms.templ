@@ -1,11 +1,10 @@
 package views
 
 import "fif-calculator/internal/viewmodel"
-
 templ Label(target, content string) {
 	<label
 		for={ target }
-		class="block mb-1 font-medium text-gray-700a"
+		class="block mb-1 font-medium text-gray-700 dark:text-gray-200"
 	>{ content }</label>
 }
 
@@ -15,7 +14,14 @@ templ Input(id, name, inputType, value string) {
 		value={ value }
 		name={ name }
 		type={ inputType }
-		class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+		class="w-full rounded px-3 py-2 shadow-sm
+		       border border-gray-300 bg-white text-gray-900
+		       placeholder:text-gray-400
+		       focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+		       transition-colors
+		       dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100
+		       dark:placeholder:text-gray-500
+		       dark:focus:ring-blue-400/30 dark:focus:border-blue-400"
 	/>
 }
 
@@ -23,7 +29,12 @@ templ CurrencySelect(id, name string, currencies []viewmodel.Currency, selected 
 	<select
 		id={ id }
 		name={ name }
-		class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+		class="w-full rounded px-3 py-2 shadow-sm
+		       border border-gray-300 bg-white text-gray-900
+		       focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+		       transition-colors
+		       dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100
+		       dark:focus:ring-blue-400/30 dark:focus:border-blue-400"
 	>
 		for _, currency := range currencies {
 			if currency.Code == selected {
@@ -38,7 +49,10 @@ templ CurrencySelect(id, name string, currencies []viewmodel.Currency, selected 
 templ SubmitButton(text string) {
 	<button
 		type="submit"
-		class="bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition"
+		class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded
+		       focus:outline-none focus:ring-2 focus:ring-blue-500/40
+		       transition-colors
+		       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400/40"
 	>
 		{text}
 	</button>
