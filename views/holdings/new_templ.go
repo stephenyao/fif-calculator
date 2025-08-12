@@ -57,7 +57,15 @@ func NewHolding(currentPath string, viewModel *viewmodel.HoldingFormViewModel) t
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-4 flex flex-col space-y-4\"><a href=\"/holdings\" class=\"text-blue-600 underline\">← Back to Holdings</a><h2 class=\"text-2xl font-bold mb-4\">New Holding</h2></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-4 flex flex-col space-y-4\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = BackLink("/holdings", "Holdings").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<h2 class=\"text-2xl font-bold mb-4\">New Holding</h2></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

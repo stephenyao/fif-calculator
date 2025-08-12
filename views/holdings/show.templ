@@ -19,9 +19,7 @@ templ ViewHolding(currentPath string, holdingsVm viewmodel.HoldingViewModel, tra
 
 templ holdingInfo(vm viewmodel.HoldingViewModel) {
 	<div class="mb-4">
-		<a href="/holdings" class="text-blue-600 underline">
-			← Back to Holdings
-		</a>
+        @BackLink("/holdings", "Holdings")
 	</div>
 	<div class="flex justify-between items-center mb-4">
 		@H2("Holding Information")

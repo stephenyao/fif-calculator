@@ -6,7 +6,13 @@ templ H2(t string) {
 
 templ VPairedLabel(title string, content string) {
 	<div>
-		<div class="text-gray-500 dark:text-gray-400 font-medium">{title}</div>
+		<div class="text-gray-500 dark:text-gray-400 font-medium">{ title }</div>
 		<div>{ content }</div>
 	</div>
+}
+
+templ BackLink(link, t string) {
+	<a href={ link } class="text-blue-600 underline">
+		← Back to {t}
+	</a>
 }
