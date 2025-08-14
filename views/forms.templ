@@ -46,6 +46,27 @@ templ CurrencySelect(id, name string, currencies []viewmodel.Currency, selected 
 	</select>
 }
 
+templ Select(id, name string, options viewmodel.SelectOptions, selected string) {
+    <select
+        name={name}
+        id={id}
+        class="w-full rounded px-3 py-2 shadow-sm
+        		       border border-gray-300 bg-white text-gray-900
+        		       focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+        		       transition-colors
+        		       dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100
+        		       dark:focus:ring-blue-400/30 dark:focus:border-blue-400"
+    >
+        for _, opt := range options.Options {
+            if opt.Value == selected {
+                <option value={ opt.Value } selected>{ opt.Display }</option>
+            } else {
+                <option value={ opt.Value }>{ opt.Display }</option>
+            }
+        }
+    </select>
+}
+
 templ SubmitButton(text string) {
 	<button
 		type="submit"

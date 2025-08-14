@@ -35,7 +35,7 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	trade := model.Trade{
-		BuyDate:      r.FormValue("buyDate"),
+		BuyDate:      r.FormValue("date"),
 		Quantity:     quantity,
 		Price:        price,
 		ExchangeRate: rate,
