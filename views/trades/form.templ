@@ -6,34 +6,35 @@ import "fif-calculator/internal/viewmodel"
 import . "fif-calculator/views"
 
 templ TradeForm(trade *model.Trade, action string, vm viewmodel.TradeFormViewModel) {
-	<div class="flex items-center justify-center">
-		<form action={ action } method="post" class="w-full max-w-xl space-y-6">
-			<h2 class="text-2xl font-bold text-gray-800">{ vm.Title }</h2>
-			<div>
-				@Label("date", "Date")
-				@Input("date", "date", "date", buyDate(trade))
-			</div>
-			<div>
-				@Label("quantity", "Quantity")
-				@Input("quantity", "quantity", "text", quantity(trade))
-			</div>
-			<div>
-				@Label("price", "Price")
-				@Input("price", "price", "text", price(trade))
-			</div>
-			<div>
-				@Label("rate", "Exchange Rate")
-				@Input("rate", "rate", "text", exchangeRate(trade))
-			</div>
-			<div>
-				@Label("action", "Action")
-				@Select("action", "action", vm.Actions, vm.SelectAction)
-			</div>
-			<div class="text-right">
-				<button type="submit" class="bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition">Save Trade</button>
-			</div>
-		</form>
-	</div>
+	<form
+		action={ action }
+		method="post"
+		class="space-y-4"
+	>
+		<div>
+			@Label("date", "Date")
+			@Input("date", "date", "date", buyDate(trade))
+		</div>
+		<div>
+			@Label("quantity", "Quantity")
+			@Input("quantity", "quantity", "text", quantity(trade))
+		</div>
+		<div>
+			@Label("price", "Price")
+			@Input("price", "price", "text", price(trade))
+		</div>
+		<div>
+			@Label("rate", "Exchange Rate")
+			@Input("rate", "rate", "text", exchangeRate(trade))
+		</div>
+		<div>
+			@Label("action", "Action")
+			@Select("action", "action", vm.Actions, vm.SelectAction)
+		</div>
+		<div class="text-right">
+			<button type="submit" class="bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition">Save Trade</button>
+		</div>
+	</form>
 }
 
 func exchangeRate(trade *model.Trade) string {

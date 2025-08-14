@@ -7,9 +7,10 @@ type TradeFormViewModel struct {
 	ActionURL    string
 	Actions      SelectOptions
 	SelectAction string
+	BackLink     string
 }
 
-func CreateTradeFormViewModel(title, actionURL, selectedAction string) TradeFormViewModel {
+func CreateTradeFormViewModel(title, actionURL, selectedAction, backLink string) TradeFormViewModel {
 	return TradeFormViewModel{
 		Title:     title,
 		ActionURL: actionURL,
@@ -26,5 +27,6 @@ func CreateTradeFormViewModel(title, actionURL, selectedAction string) TradeForm
 			},
 		},
 		SelectAction: selectedAction,
+		BackLink:     backLink,
 	}
 }

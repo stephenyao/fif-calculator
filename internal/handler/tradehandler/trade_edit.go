@@ -34,8 +34,14 @@ func (h *TradeHandler) EditForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	title := "Edit trade for " + trade.HoldingName
+	backLink := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam
+	actionLink := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam + "/edit"
 	vm := viewmodel.CreateTradeFormViewModel(
-		title, "/holdings/"+holdingIDParam+"/trades/"+tradeIDParam+"/edit", trade.Action)
+		title,
+		actionLink,
+		trade.Action,
+		backLink,
+	)
 
 	err = trades.UpdateTradeForm(r.URL.Path, trade, vm).Render(r.Context(), w)
 

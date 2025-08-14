@@ -5,11 +5,15 @@ import "fif-calculator/internal/model"
 import "fif-calculator/internal/viewmodel"
 
 templ UpdateTradeForm(currentPath string, trade *model.Trade, vm viewmodel.TradeFormViewModel) {
-    @Layout("Update Trade", currentPath) {
-         @Page() {
-            @Section() {
-                 @TradeForm(trade, vm.ActionURL, vm)
-            }
-        }
-    }
+	@Layout("Update Trade", currentPath) {
+		@Page() {
+			<div class="mb-4 flex flex-col space-y-4">
+				@BackLink(vm.BackLink, "Trade")
+				<h2 class="text-2xl font-bold mb-4">{ vm.Title }</h2>
+			</div>
+			@Section() {
+				@TradeForm(trade, vm.ActionURL, vm)
+			}
+		}
+	}
 }

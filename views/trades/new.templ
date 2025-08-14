@@ -1,15 +1,18 @@
 package trades
 
 import "fif-calculator/internal/viewmodel"
-
 import . "fif-calculator/views"
 
 templ NewTradeForm(currentPath string, vm viewmodel.TradeFormViewModel) {
-    @Layout("New Trade", currentPath) {
-        @Page() {
-            @Section() {
-                @TradeForm(nil, vm.ActionURL, vm)
-            }
-        }
-    }
+	@Layout("New Trade", currentPath) {
+		@Page() {
+			<div class="mb-4 flex flex-col space-y-4">
+				@BackLink(vm.BackLink, "Holdings")
+				<h2 class="text-2xl font-bold mb-4">{ vm.Title }</h2>
+			</div>
+			@Section() {
+				@TradeForm(nil, vm.ActionURL, vm)
+			}
+		}
+	}
 }

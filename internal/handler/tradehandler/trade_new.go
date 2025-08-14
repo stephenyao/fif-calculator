@@ -28,8 +28,9 @@ func (h *TradeHandler) New(w http.ResponseWriter, r *http.Request) {
 
 	holding, err := h.HoldingRepository.GetHolding(id, userId)
 	actionURL := "/holdings/" + strconv.Itoa(id) + "/trades/new"
+	backLink := "/holdings/" + strconv.Itoa(id)
 	title := "New trade for " + holding.Name
-	vm := viewmodel.CreateTradeFormViewModel(title, actionURL, "")
+	vm := viewmodel.CreateTradeFormViewModel(title, actionURL, "", backLink)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
