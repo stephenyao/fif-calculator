@@ -1,53 +1,54 @@
 package trades
 
-import "fif-calculator/views"
-import "fif-calculator/internal/model"
+import (
+	"fif-calculator/internal/model"
+	"fif-calculator/internal/viewmodel"
+	. "fif-calculator/views"
+)
 
-templ TradeDetail(curentPath string, trade *model.Trade, backURL, editURL, deleteURL string) {
-	@views.Layout("Trade detail", curentPath) {
-		@details(trade, backURL, editURL, deleteURL)
+templ TradeDetail(curentPath string, vm viewmodel.TradeDetailsViewModel, backURL, editURL, deleteURL string) {
+	@Layout("Trade detail", curentPath) {
+		@Page() {
+			<div class="mb-4 flex flex-col gap-4">
+				@BackLink(backURL, "")
+				<div class="flex justify-between items-center">
+					@H2(vm.HoldingName + " (" + vm.Symbol + ")")
+					<div class="flex items-center gap-2">
+						@Link(editURL, "Edit")
+						<form action={ deleteURL } method="post" onsubmit="return confirm('Are you sure you want to delete this trade?');">
+							@DestructButton("Delete")
+						</form>
+					</div>
+				</div>
+			</div>
+			@Section() {
+				<div class="grid grid-cols-2 gap-x-6 gap-y-2">
+					<div class="mb-4">
+						@VPairedLabel("Date", vm.Date)
+					</div>
+					<div class="mb-4">
+						@VPairedLabel("Quantity", vm.Quantity)
+					</div>
+					<div class="mb-4">
+						@VPairedLabel("Price", vm.Price)
+					</div>
+					<div class="mb-4">
+						@VPairedLabel("Currency", vm.Currency)
+					</div>
+					<div class="mb-4">
+						@VPairedLabel("Exchange Rate", vm.ExchangeRate)
+					</div>
+					<div class="mb-4">
+						@VPairedLabel("Action", vm.Action)
+					</div>
+				</div>
+			}
+		}
 	}
 }
 
 templ details(trade *model.Trade, backURL, editURL, deleteURL string) {
 	<div class="max-w-2xl mx-auto p-6">
-		<h1 class="text-2xl font-bold mb-4">Trade Details</h1>
-		<table class="w-full text-left border-collapse">
-			<tbody>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Holding</th>
-					<td class="py-2">{ trade.HoldingName }</td>
-				</tr>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Symbol</th>
-					<td class="py-2">{ trade.Symbol }</td>
-				</tr>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Buy Date</th>
-					<td class="py-2">{ trade.BuyDate }</td>
-				</tr>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Quantity</th>
-					<td class="py-2">{ trade.Quantity }</td>
-				</tr>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Price</th>
-					<td class="py-2">{ trade.Price }</td>
-				</tr>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Currency</th>
-					<td class="py-2">{ trade.Currency }</td>
-				</tr>
-			    <tr>
-					<th class="py-2 pr-4 text-gray-500">Exchange rate</th>
-					<td class="py-2">{ trade.ExchangeRate }</td>
-				</tr>
-				<tr>
-					<th class="py-2 pr-4 text-gray-500">Action</th>
-					<td class="py-2">{ trade.Action }</td>
-				</tr>
-			</tbody>
-		</table>
 		<a href={ templ.SafeURL(editURL) } class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
 			Edit Trade
 		</a>

@@ -2,6 +2,7 @@ package tradehandler
 
 import (
 	"fif-calculator/internal/utils"
+	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/trades"
 	"github.com/go-chi/chi/v5"
 	"net/http"
@@ -30,10 +31,12 @@ func (h *TradeHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	viewModel := viewmodel.NewTradeDetailsViewModel(*trade)
+
 	backURL := "/holdings/" + holdingIDParam
 	editURL := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam + "/edit"
 	deleteURL := "/holdings/" + holdingIDParam + "/trades/" + tradeIDParam + "/delete"
-	err = trades.TradeDetail(r.URL.Path, trade, backURL, editURL, deleteURL).Render(r.Context(), w)
+	err = trades.TradeDetail(r.URL.Path, viewModel, backURL, editURL, deleteURL).Render(r.Context(), w)
 
 	if err != nil {
 		http.Error(w, "Could not render start page", http.StatusInternalServerError)
