@@ -2,6 +2,7 @@ package fif
 
 import "fmt"
 import . "fif-calculator/internal/model"
+import . "fif-calculator/views"
 
 templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	<form
@@ -12,59 +13,69 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	>
 		<div class="space-y-6">
 			for _, h := range holdings {
-				<div class="bg-white border border-gray-200 rounded-lg p-6">
-					<div class="mb-4">
-						<h4 class="text-lg font-medium text-gray-900">{ h.Symbol }</h4>
-						<div class="text-sm text-gray-600 mt-1">
-							<span>Qty on 1 Apr { year - 1 }: { h.QuantityStart }</span>
-							<span class="mx-4">•</span>
-							<span>Qty on 31 Mar { year }: { h.QuantityEnd }</span>
-						</div>
-						<div class="text-sm text-gray-600 mt-1">
-							if h.NumberOfTrades > 0 {
-								<div>There were a total of { h.NumberOfTrades } trades during the period </div>
-							}
-						</div>
-					</div>
-					<input type="hidden" name={ "symbol_" + h.Symbol } value={ h.Symbol }/>
-					<input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityStart) }/>
-					<input type="hidden" name={ "quantity_end_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityEnd) }/>
-					<input type="hidden" name="financialYear" value={ year }/>
-					<!-- Price Information -->
-					<div class="mb-6">
-						<h5 class="text-md font-medium text-gray-900 mb-3">Price Information</h5>
-						@grid() {
-							@input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true)
-							@input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true)
-						}
-					</div>
-					<!-- Income and Costs -->
-					<div class="mb-6">
-						<h5 class="text-md font-medium text-gray-900 mb-3">Income</h5>
-						@grid() {
-							@input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true)
-							@input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", fmt.Sprintf("%.2f", h.GainLoss.Dividends), true)
-							@input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true)
-							@input(h.Symbol, "Other Gains (NZD)", "other-gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), "0.00", true)
-						}
-					</div>
-					<div class="mb-3">
-						<h5 class="text-md font-medium text-gray-900 mb-3">Costs</h5>
-						@grid() {
-							@input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true)
-							@input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), "0.00", true)
-							@input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_cost", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true)
-						}
-					</div>
-				</div>
+			    @Section() {
+                    <div>
+                        <div class="mb-4">
+                            @H4(h.Symbol)
+                            <div class="text-sm text-gray-600 mt-1 dark:text-gray-400">
+                                <span>Qty on 1 Apr { year - 1 }: { h.QuantityStart }</span>
+                                <span class="mx-4">•</span>
+                                <span>Qty on 31 Mar { year }: { h.QuantityEnd }</span>
+                            </div>
+                            <div class="text-sm text-gray-600 mt-1 dark:text-gray-400">
+                                if h.NumberOfTrades > 0 {
+                                    <div>There were a total of { h.NumberOfTrades } trades during the period </div>
+                                }
+                            </div>
+                        </div>
+
+                        <input type="hidden" name={ "symbol_" + h.Symbol } value={ h.Symbol }/>
+                        <input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityStart) }/>
+                        <input type="hidden" name={ "quantity_end_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityEnd) }/>
+                        <input type="hidden" name="financialYear" value={ year }/>
+
+                        <!-- Price Information -->
+                        <div class="mb-6">
+                            <h5 class="text-md font-medium text-gray-900 mb-3 dark:text-gray-100">Price Information</h5>
+                            @grid() {
+                                @input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true)
+                                @input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true)
+                            }
+                        </div>
+
+                        <!-- Income and Costs -->
+                        <div class="mb-6">
+                            <h5 class="text-md font-medium text-gray-900 mb-3 dark:text-gray-100">Income</h5>
+                            @grid() {
+                                @input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true)
+                                @input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", fmt.Sprintf("%.2f", h.GainLoss.Dividends), true)
+                                @input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true)
+                                // FIXED: added missing 'name' arg for other_gains
+                                @input(h.Symbol, "Other Gains (NZD)", "other-gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true)
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <h5 class="text-md font-medium text-gray-900 mb-3 dark:text-gray-100">Costs</h5>
+                            @grid() {
+                                @input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true)
+                                // FIXED: added missing 'name' arg for foreign_income_tax
+                                @input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", "foreign_income_tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), true)
+                                @input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_costs", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true)
+                            }
+                        </div>
+                    </div>
+				}
 			}
 		</div>
+
 		<div class="flex justify-start space-x-4">
 			<button
 				type="submit"
 				name="action"
 				value="calculate"
-				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
+				       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
 			>
 				Calculate FIF
 			</button>
@@ -73,7 +84,7 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 }
 
 templ NoFIFApplicable() {
-	<div>FIF not applicable</div>
+	<div class="text-gray-900 dark:text-gray-100">FIF not applicable</div>
 }
 
 templ grid() {
@@ -84,7 +95,10 @@ templ grid() {
 
 templ input(symbol, label, id, name string, value string, enabled bool) {
 	<div>
-		<label class="block text-sm font-medium text-gray-700 mb-1" for={ id + "-" + symbol }>
+		<label
+			class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+			for={ id + "-" + symbol }
+		>
 			{ label }
 		</label>
 		if enabled {
@@ -94,7 +108,11 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 				min="0"
 				id={ id + "-" + symbol }
 				name={ name + "_" + symbol }
-				class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+				class="block w-full px-3 py-2 border border-gray-300 rounded-md
+				       bg-white text-gray-900 placeholder:text-gray-400
+				       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+				       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500
+				       dark:focus:ring-blue-400 dark:focus:border-blue-400"
 				placeholder="5.00"
 				value={ value }
 			/>
@@ -104,7 +122,11 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 				min="0"
 				id={ id + "-" + symbol }
 				name={ name + "_" + symbol }
-				class="block w-full px-3 py-2 border border-gray-300 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+				class="block w-full px-3 py-2 border border-gray-300 rounded-md
+				       bg-gray-100 text-gray-900
+				       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+				       dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100
+				       dark:focus:ring-blue-400 dark:focus:border-blue-400"
 				value={ value }
 				disabled
 			/>

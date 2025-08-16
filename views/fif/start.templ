@@ -27,20 +27,19 @@ templ fifStartPage(vm FIFStartViewModel) {
 }
 
 templ RenderFIFHoldingQuantities(vm FIFHoldingsViewModel) {
-	@Section() {
-		<div>
-			<div class="mb-8">
-                @H2(vm.Title)
-			</div>
-			@HoldingsInputForm(vm.Holdings, vm.Year)
-			<div id="fif-result" class="mt-6"></div>
-		</div>
-	}
+    <div class="mb-8">
+        @H2(vm.Title)
+    </div>
+
+    <div>
+        @HoldingsInputForm(vm.Holdings, vm.Year)
+        <div id="fif-result" class="mt-6"></div>
+    </div>
 }
 
 templ RenderFIFResult(vm FIFCalculationViewModel) {
 	<div>
-		<h4 class="text-lg font-semibold mb-3">
+		<h4 class="text-lg font-semiboldmb-3">
 			FIF Calculation Results for { vm.Year - 1 }–{ vm.Year }
 		</h4>
 		<!-- FDR Results Table -->
