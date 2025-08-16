@@ -2,108 +2,100 @@ package fif
 
 import . "fif-calculator/views"
 import . "fif-calculator/internal/viewmodel"
-import . "fif-calculator/internal/model"
 import "fmt"
 
 templ Start(currentPath string, vm FIFStartViewModel) {
-    @Layout("Start FIF Calculation", currentPath) {
-        @Page() {
-            <div class="mb-4">
-                @H2("Start new calculation")
-            </div>
-            @Section() {
-                @fifStartPage(vm)
-            }
-        }
+	@Layout("Start FIF Calculation", currentPath) {
+		@Page() {
+			<div class="mb-4">
+				@H2("Start new calculation")
+			</div>
+			@Section() {
+				@fifStartPage(vm)
+			}
+			<div id="holdings-results" class="mt-8"></div>
+		}
 	}
 }
 
 templ fifStartPage(vm FIFStartViewModel) {
-    <form hx-post="/fif/start" hx-target="#holdings-results" hx-swap="innerHTML" class="space-y-4">
-        <label for="financialYear" class="block font-medium">Financial Year Ending</label>
-        @Select("financialYear", "financialYear", vm.FinancialYearOptions, "")
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Continue</button>
-    </form>
-
-    <div id="holdings-results" class="mt-8"></div>
+	<form hx-post="/fif/start" hx-target="#holdings-results" hx-swap="innerHTML" class="space-y-4">
+		<label for="financialYear" class="block font-medium">Financial Year Ending</label>
+		@Select("financialYear", "financialYear", vm.FinancialYearOptions, "")
+		<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Continue</button>
+	</form>
 }
 
-templ RenderFIFHoldingQuantities(holdings []*HoldingInfo, year int) {
-    <div class="max-w-4xl mx-auto p-6">
-        <div class="mb-8">
-            <h3 class="text-2xl font-semibold text-gray-900 mb-2">
-                Holdings for Financial Year {year - 1}–{year}
-            </h3>
-        </div>
-
-        @HoldingsInputForm(holdings, year)
-
-        <div id="fif-result" class="mt-6"></div>
-    </div>
+templ RenderFIFHoldingQuantities(vm FIFHoldingsViewModel) {
+	@Section() {
+		<div>
+			<div class="mb-8">
+                @H2(vm.Title)
+			</div>
+			@HoldingsInputForm(vm.Holdings, vm.Year)
+			<div id="fif-result" class="mt-6"></div>
+		</div>
+	}
 }
 
 templ RenderFIFResult(vm FIFCalculationViewModel) {
-    <div>
-        <h4 class="text-lg font-semibold mb-3">
-            FIF Calculation Results for {vm.Year - 1}–{vm.Year}
-        </h4>
-
-        <!-- FDR Results Table -->
-        <h5 class="text-md font-semibold mt-4 mb-2">Fair Dividend Rate (FDR) Method</h5>
-        <table class="w-full text-left border-collapse mb-6">
-            <thead>
-                <tr class="border-b">
-                    <th class="py-1" scope="col">Symbol</th>
-                    <th class="py-1 text-right" scope="col">Start Value (NZD)</th>
-                    <th class="py-1 text-right" scope="col">Quick sale adjustment</th>
-                    <th class="py-1 text-right" scope="col">FDR Income</th>
-                </tr>
-            </thead>
-            <tbody>
-                for _, r := range vm.FDRResults {
-                    <tr class="border-t">
-                        <td>{r.Symbol}</td>
-                        <td class="text-right">{fmt.Sprintf("%.2f", r.StartValue)}</td>
-                        <td class="text-right font-semibold text-blue-700">{fmt.Sprintf("%.2f", r.QuickSaleAdjustment)}</td>
-                        <td class="text-right font-semibold text-blue-700">{fmt.Sprintf("%.2f", r.TotalFDRIncome())}</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <div class="text-right font-bold text-lg mb-6">
-            Total FIF Income (FDR): <span class="text-green-700">{fmt.Sprintf("NZ$%.2f", vm.TotalFDR)}</span>
-        </div>
-
-        <!-- CV Results Table -->
-        <h5 class="text-md font-semibold mt-4 mb-2">Comparative Value (CV) Method</h5>
-        <table class="w-full text-left border-collapse mb-6">
-            <thead>
-                <tr class="border-b">
-                    <th class="py-1" scope="col">Symbol</th>
-                    <th class="py-1 text-right" scope="col">Opening Value (NZD)</th>
-                    <th class="py-1 text-right" scope="col">Closing Value (NZD)</th>
-                    <th class="py-1 text-right" scope="col">Gains</th>
-                    <th class="py-1 text-right" scope="col">Costs</th>
-                    <th class="py-1 text-right" scope="col">CV Income</th>
-                </tr>
-            </thead>
-            <tbody>
-                for _, r := range vm.CVResults {
-                    <tr class="border-t">
-                        <td>{r.Symbol}</td>
-                        <td class="text-right">{fmt.Sprintf("%.2f", r.OpeningValue)}</td>
-                        <td class="text-right">{fmt.Sprintf("%.2f", r.ClosingValue)}</td>
-                        <td class="text-right">{fmt.Sprintf("%.2f", r.Gains)}</td>
-                        <td class="text-right">{fmt.Sprintf("%.2f", r.Costs)}</td>
-                        <td class="text-right font-semibold text-purple-700">{fmt.Sprintf("%.2f", (r.ClosingValue + r.Gains) - (r.OpeningValue + r.Costs))}</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <div class="text-right font-bold text-lg">
-            Total FIF Income (CV): <span class="text-purple-700">{fmt.Sprintf("NZ$%.2f", vm.TotalCV)}</span>
-        </div>
-    </div>
+	<div>
+		<h4 class="text-lg font-semibold mb-3">
+			FIF Calculation Results for { vm.Year - 1 }–{ vm.Year }
+		</h4>
+		<!-- FDR Results Table -->
+		<h5 class="text-md font-semibold mt-4 mb-2">Fair Dividend Rate (FDR) Method</h5>
+		<table class="w-full text-left border-collapse mb-6">
+			<thead>
+				<tr class="border-b">
+					<th class="py-1" scope="col">Symbol</th>
+					<th class="py-1 text-right" scope="col">Start Value (NZD)</th>
+					<th class="py-1 text-right" scope="col">Quick sale adjustment</th>
+					<th class="py-1 text-right" scope="col">FDR Income</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, r := range vm.FDRResults {
+					<tr class="border-t">
+						<td>{ r.Symbol }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.StartValue) }</td>
+						<td class="text-right font-semibold text-blue-700">{ fmt.Sprintf("%.2f", r.QuickSaleAdjustment) }</td>
+						<td class="text-right font-semibold text-blue-700">{ fmt.Sprintf("%.2f", r.TotalFDRIncome()) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="text-right font-bold text-lg mb-6">
+			Total FIF Income (FDR): <span class="text-green-700">{ fmt.Sprintf("NZ$%.2f", vm.TotalFDR) }</span>
+		</div>
+		<!-- CV Results Table -->
+		<h5 class="text-md font-semibold mt-4 mb-2">Comparative Value (CV) Method</h5>
+		<table class="w-full text-left border-collapse mb-6">
+			<thead>
+				<tr class="border-b">
+					<th class="py-1" scope="col">Symbol</th>
+					<th class="py-1 text-right" scope="col">Opening Value (NZD)</th>
+					<th class="py-1 text-right" scope="col">Closing Value (NZD)</th>
+					<th class="py-1 text-right" scope="col">Gains</th>
+					<th class="py-1 text-right" scope="col">Costs</th>
+					<th class="py-1 text-right" scope="col">CV Income</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, r := range vm.CVResults {
+					<tr class="border-t">
+						<td>{ r.Symbol }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.OpeningValue) }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.ClosingValue) }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.Gains) }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.Costs) }</td>
+						<td class="text-right font-semibold text-purple-700">{ fmt.Sprintf("%.2f", (r.ClosingValue + r.Gains) - (r.OpeningValue + r.Costs)) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="text-right font-bold text-lg">
+			Total FIF Income (CV): <span class="text-purple-700">{ fmt.Sprintf("NZ$%.2f", vm.TotalCV) }</span>
+		</div>
+	</div>
 }

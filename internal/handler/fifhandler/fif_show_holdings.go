@@ -4,6 +4,7 @@ import (
 	"fif-calculator/internal/service/costbasisservice"
 	"fif-calculator/internal/service/fifservice"
 	"fif-calculator/internal/utils"
+	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
 	"log"
 	"net/http"
@@ -42,7 +43,10 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = fif.RenderFIFHoldingQuantities(holdings, year).Render(r.Context(), w)
+
+	vm := viewmodel.CreateFIFHoldingsViewModel(holdings, year)
+
+	err = fif.RenderFIFHoldingQuantities(vm).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Failed to render fif", http.StatusInternalServerError)
 		return
