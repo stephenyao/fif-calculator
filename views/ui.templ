@@ -1,11 +1,15 @@
 package views
 
 templ H2(t string) {
-	<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">{ t }</h2>
+	<h2 class="text-2xl font-bold mb-4">{ t }</h2>
 }
 
 templ H4(t string) {
-	<h4 class="text-lg font-medium text-gray-900 dark:text-gray-100">{ t }</h4>
+	<h4 class="text-lg font-medium">{ t }</h4>
+}
+
+templ H5(t string) {
+	<h5 class="text-md font-medium">Price Information</h5>
 }
 
 templ VPairedLabel(title string, content string) {
@@ -17,6 +21,17 @@ templ VPairedLabel(title string, content string) {
 
 templ BackLink(link, t string) {
 	<a href={ link } class="text-blue-600 underline">
-		← Back to {t}
+		← Back to { t }
 	</a>
+}
+
+templ SelectableButton(t string, fn string, data string) {
+	<button
+		type="button"
+		class={ "px-3 py-1.5 text-sm rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:focus:ring-blue-400/30 bg-white text-gray-800 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700" }
+		data-symbol={ t }
+		onclick={ templ.JSFuncCall(fn, templ.JSExpression("event"), data) }
+	>
+		{t}
+	</button>
 }
