@@ -44,7 +44,7 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	holdings, err := fifservice.ComputeHoldingsBetween(trades, startDate, endDate)
+	holdings, err := fifservice.ComputeHoldingsBetween(trades, year)
 
 	for _, hq := range holdings {
 		priceStartStr := r.FormValue("price_start_" + hq.Symbol)

@@ -1,5 +1,7 @@
 package model
 
+import "strconv"
+
 type HoldingInfo struct {
 	Symbol            string
 	QuantityStart     float64
@@ -10,6 +12,8 @@ type HoldingInfo struct {
 	ProceedsFromSales float64
 	CostOfPurchases   float64
 	GainLoss          GainLossParams
+	Year              int
+	HoldingId         int
 }
 
 type GainLossParams struct {
@@ -18,4 +22,9 @@ type GainLossParams struct {
 	OtherGains       float64
 	ForeignIncomeTax float64
 	OtherCosts       float64
+}
+
+func (h HoldingInfo) GetHoldingFIFInfoURL() string {
+	return "/fif/holding/" + strconv.Itoa(h.HoldingId) + "/year/" + strconv.Itoa(h.Year)
+
 }
