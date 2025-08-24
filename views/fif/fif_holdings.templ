@@ -38,6 +38,17 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	@Section() {
 	    @RenderHoldingDetail(holdings[0], year)
 	}
+	@Section() {
+        <button
+            type="submit"
+            name="action"
+            value="calculate"
+            class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
+                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
+        >
+            Calculate FIF
+        </button>
+	}
 }
 
 templ InitializeClientSideScripts(data []*HoldingInfo) {
@@ -46,25 +57,68 @@ templ InitializeClientSideScripts(data []*HoldingInfo) {
 
 templ Scripts() {
     <script>
-		window.fifState = {};
+        (function () {
+            // guard against re-running if this script is included multiple times
+            if (window.__fifInit) return;
+            window.__fifInit = true;
 
-		const form = document.getElementById("fif-form");
+            // global cache of values: { "price-start-AAPL": "123.45", ... }
+            window.fifState = window.fifState || {};
 
-		document.body.addEventListener("htmx:afterSwap", function (e) {
-    		console.log("HTMX swap finished on:", e.target);
-  		});
+            // --- helpers ---
+            function applyCacheToPanel(rootEl) {
+                if (!rootEl) return;
+                // apply cached values to any numeric input with an id
+                rootEl.querySelectorAll('input[type="number"][id]').forEach(el => {
+                    const key = el.id;               // e.g. "price-start-AAPL"
+                    if (key in window.fifState) {
+                        el.value = window.fifState[key];
+                    }
+                });
+            }
 
-		form.addEventListener("change", (e) => {
-    		if (e.target.tagName === "INPUT" && e.target.type === "number") {
-			const id = e.target.id;      // e.g. "price-start-AAPL"
-			const val = e.target.value;  // e.g. "123.45"
+            function capturePanelIntoCache(rootEl) {
+                if (!rootEl) return;
+                rootEl.querySelectorAll('input[type="number"][id]').forEach(el => {
+                    window.fifState[el.id] = el.value;
+                });
+            }
 
-		    window.fifState[id] = val;
+            function wireFormChangeListener() {
+                const form = document.getElementById('fif-form');
+                if (!form || form.__fifWired) return;
+                form.addEventListener('change', (e) => {
+                    const el = e.target;
+                    if (!(el instanceof HTMLInputElement)) return;
+                    if (el.type !== 'number') return;
+                    if (!el.id) return;
+                    window.fifState[el.id] = el.value;
+                    // console.log('fifState updated:', el.id, '=', el.value);
+                });
+                form.__fifWired = true;
+            }
 
-      		console.log("Updated fifState:", window.fifState);
-    		}
-		});
+            // Initial wire-up and first-visit hydration
+            document.addEventListener('DOMContentLoaded', () => {
+                wireFormChangeListener();
+                applyCacheToPanel(document.getElementById('holding-panel'));
+            });
 
+            // Before HTMX request (user clicked another symbol): snapshot current panel,
+            // so we don't lose in-progress edits if the user didn't blur the field.
+            document.body.addEventListener('htmx:beforeRequest', (e) => {
+                const panel = document.getElementById('holding-panel');
+                capturePanelIntoCache(panel);
+            });
+
+            // After HTMX swaps in the new holding panel: hydrate from cache and (re)wire
+            document.body.addEventListener('htmx:afterSwap', (e) => {
+                if (e.target && e.target.id === 'holding-panel') {
+                    applyCacheToPanel(e.target);
+                    wireFormChangeListener();
+                }
+            });
+        })();
     </script>
 }
 
