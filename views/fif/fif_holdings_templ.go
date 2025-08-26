@@ -179,7 +179,7 @@ func HoldingsInputForm(holdings []*HoldingInfo, year int) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button type=\"submit\" name=\"action\" value=\"calculate\" class=\"px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors\n                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900\">Calculate FIF</button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button type=\"button\" hx-post=\"/fif/calculate\" hx-vals=\"js:{...window.buildFIFSubmission()}\" hx-include=\"#fif-form\" name=\"action\" value=\"calculate\" class=\"px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors\n                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900\">Calculate FIF</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -243,7 +243,7 @@ func Scripts() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script>\n        (function () {\n            // guard against re-running if this script is included multiple times\n            if (window.__fifInit) return;\n            window.__fifInit = true;\n\n            // global cache of values: { \"price-start-AAPL\": \"123.45\", ... }\n            window.fifState = window.fifState || {};\n\n            // --- helpers ---\n            function applyCacheToPanel(rootEl) {\n                if (!rootEl) return;\n                // apply cached values to any numeric input with an id\n                rootEl.querySelectorAll('input[type=\"number\"][id]').forEach(el => {\n                    const key = el.id;               // e.g. \"price-start-AAPL\"\n                    if (key in window.fifState) {\n                        el.value = window.fifState[key];\n                    }\n                });\n            }\n\n            function capturePanelIntoCache(rootEl) {\n                if (!rootEl) return;\n                rootEl.querySelectorAll('input[type=\"number\"][id]').forEach(el => {\n                    window.fifState[el.id] = el.value;\n                });\n            }\n\n            function wireFormChangeListener() {\n                const form = document.getElementById('fif-form');\n                if (!form || form.__fifWired) return;\n                form.addEventListener('change', (e) => {\n                    const el = e.target;\n                    if (!(el instanceof HTMLInputElement)) return;\n                    if (el.type !== 'number') return;\n                    if (!el.id) return;\n                    window.fifState[el.id] = el.value;\n                    // console.log('fifState updated:', el.id, '=', el.value);\n                });\n                form.__fifWired = true;\n            }\n\n            // Initial wire-up and first-visit hydration\n            document.addEventListener('DOMContentLoaded', () => {\n                wireFormChangeListener();\n                applyCacheToPanel(document.getElementById('holding-panel'));\n            });\n\n            // Before HTMX request (user clicked another symbol): snapshot current panel,\n            // so we don't lose in-progress edits if the user didn't blur the field.\n            document.body.addEventListener('htmx:beforeRequest', (e) => {\n                const panel = document.getElementById('holding-panel');\n                capturePanelIntoCache(panel);\n            });\n\n            // After HTMX swaps in the new holding panel: hydrate from cache and (re)wire\n            document.body.addEventListener('htmx:afterSwap', (e) => {\n                if (e.target && e.target.id === 'holding-panel') {\n                    applyCacheToPanel(e.target);\n                    wireFormChangeListener();\n                }\n            });\n        })();\n    </script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script>\n   (function () {\n     if (window.__fifInit) return;\n     window.__fifInit = true;\n\n     // global cache of values keyed by input id, e.g. price_start_AAPL\n     window.fifState = window.fifState || {};\n\n     // Debug so you can see the wiring happened\n     console.log(\"[FIF] input capture initialized\");\n\n     // Only fire when the event comes from within the current form\n     function inForm(target) {\n       const form = document.getElementById('fif-form');\n       return form && form.contains(target);\n     }\n\n     // 1) Capture on committed change (blur or enter)\n     document.addEventListener('change', (e) => {\n       const el = e.target;\n       if (!inForm(el)) return;\n       if (!(el instanceof HTMLInputElement)) return;\n       if (el.type !== 'number') return;\n       if (!el.id) return;\n\n       window.fifState[el.id] = el.value;\n       // console.log('[FIF] change:', el.id, '=', el.value);\n     });\n\n     // 2) (Optional) Also capture in-progress typing\n     // document.addEventListener('input', (e) => {\n     //   const el = e.target;\n     //   if (!inForm(el)) return;\n     //   if (!(el instanceof HTMLInputElement)) return;\n     //   if (el.type !== 'number' || !el.id) return;\n     //   window.fifState[el.id] = el.value;\n     // });\n\n     // 3) Hydrate inputs inside #holding-panel after HTMX swaps\n     document.body.addEventListener('htmx:afterSwap', (e) => {\n       if (e.target && e.target.id === 'holding-panel') {\n         e.target.querySelectorAll('input[type=\"number\"][id]').forEach((el) => {\n           if (el.id in window.fifState) el.value = window.fifState[el.id];\n         });\n         // console.log('[FIF] hydrated panel from fifState');\n       }\n     });\n\n     // 4) (Optional) Snapshot current panel before a request in case user hasn't blurred\n     document.body.addEventListener('htmx:beforeRequest', () => {\n       const panel = document.getElementById('holding-panel');\n       if (!panel) return;\n       panel.querySelectorAll('input[type=\"number\"][id]').forEach((el) => {\n         window.fifState[el.id] = el.value;\n       });\n       // console.log('[FIF] snapshot before request');\n     });\n\n     // 5) Your HTMX POST will include these values:\n     window.buildFIFSubmission = function () {\n       return window.fifState; // keys like price_start_AAPL, etc.\n     };\n   })();\n   </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -287,7 +287,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(year - 1)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 132, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 134, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -300,7 +300,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(h.QuantityStart)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 132, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 134, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -313,7 +313,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(year)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 134, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 136, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -326,7 +326,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(h.QuantityEnd)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 134, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 136, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -344,7 +344,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(h.NumberOfTrades)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 138, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 140, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs("symbol_" + h.Symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 143, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 145, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -375,7 +375,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(h.Symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 143, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 145, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -388,7 +388,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs("quantity_start_" + h.Symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 144, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 146, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -401,7 +401,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", h.QuantityStart))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 144, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 146, Col: 106}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -414,7 +414,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs("quantity_end_" + h.Symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 145, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 147, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -427,7 +427,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", h.QuantityEnd))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 145, Col: 102}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 147, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -440,7 +440,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(year)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 146, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 148, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -466,7 +466,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Opening Price (NZD)", "price_start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -474,7 +474,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Closing Price (NZD)", "price_end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -504,7 +504,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Proceeds from sales", "proceeds_from_sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -520,7 +520,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Tax Credits (NZD)", "tax_credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -528,7 +528,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = input(h.Symbol, "Other Gains (NZD)", "other-gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Other Gains (NZD)", "other_gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -558,7 +558,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Cost of purchases", "cost_of_purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -566,7 +566,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", "foreign_income_tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Foreign Income Tax (NZD)", "foreign_income_tax", "foreign_income_tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -574,7 +574,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_costs", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = input(h.Symbol, "Other Costs (NZD)", "other_costs", "other_costs", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -684,9 +684,9 @@ func input(symbol, label, id, name string, value string, enabled bool) templ.Com
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var30 string
-		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(id + "-" + symbol)
+		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(id + "_" + symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 196, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 198, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -699,7 +699,7 @@ func input(symbol, label, id, name string, value string, enabled bool) templ.Com
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 198, Col: 10}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 200, Col: 10}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -710,9 +710,9 @@ func input(symbol, label, id, name string, value string, enabled bool) templ.Com
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var32 string
-		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(id + "-" + symbol)
+		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(id + "_" + symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 204, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 206, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -725,7 +725,7 @@ func input(symbol, label, id, name string, value string, enabled bool) templ.Com
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(name + "_" + symbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 205, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 207, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -738,7 +738,7 @@ func input(symbol, label, id, name string, value string, enabled bool) templ.Com
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 212, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/fif/fif_holdings.templ`, Line: 214, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {

@@ -40,7 +40,10 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	}
 	@Section() {
         <button
-            type="submit"
+            type="button"
+            hx-post="/fif/calculate"
+            hx-vals="js:{...window.buildFIFSubmission()}"
+            hx-include="#fif-form"
             name="action"
             value="calculate"
             class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
@@ -56,70 +59,70 @@ templ InitializeClientSideScripts(data []*HoldingInfo) {
 }
 
 templ Scripts() {
-    <script>
-        (function () {
-            // guard against re-running if this script is included multiple times
-            if (window.__fifInit) return;
-            window.__fifInit = true;
+   <script>
+   (function () {
+     if (window.__fifInit) return;
+     window.__fifInit = true;
 
-            // global cache of values: { "price-start-AAPL": "123.45", ... }
-            window.fifState = window.fifState || {};
+     // global cache of values keyed by input id, e.g. price_start_AAPL
+     window.fifState = window.fifState || {};
 
-            // --- helpers ---
-            function applyCacheToPanel(rootEl) {
-                if (!rootEl) return;
-                // apply cached values to any numeric input with an id
-                rootEl.querySelectorAll('input[type="number"][id]').forEach(el => {
-                    const key = el.id;               // e.g. "price-start-AAPL"
-                    if (key in window.fifState) {
-                        el.value = window.fifState[key];
-                    }
-                });
-            }
+     // Debug so you can see the wiring happened
+     console.log("[FIF] input capture initialized");
 
-            function capturePanelIntoCache(rootEl) {
-                if (!rootEl) return;
-                rootEl.querySelectorAll('input[type="number"][id]').forEach(el => {
-                    window.fifState[el.id] = el.value;
-                });
-            }
+     // Only fire when the event comes from within the current form
+     function inForm(target) {
+       const form = document.getElementById('fif-form');
+       return form && form.contains(target);
+     }
 
-            function wireFormChangeListener() {
-                const form = document.getElementById('fif-form');
-                if (!form || form.__fifWired) return;
-                form.addEventListener('change', (e) => {
-                    const el = e.target;
-                    if (!(el instanceof HTMLInputElement)) return;
-                    if (el.type !== 'number') return;
-                    if (!el.id) return;
-                    window.fifState[el.id] = el.value;
-                    // console.log('fifState updated:', el.id, '=', el.value);
-                });
-                form.__fifWired = true;
-            }
+     // 1) Capture on committed change (blur or enter)
+     document.addEventListener('change', (e) => {
+       const el = e.target;
+       if (!inForm(el)) return;
+       if (!(el instanceof HTMLInputElement)) return;
+       if (el.type !== 'number') return;
+       if (!el.id) return;
 
-            // Initial wire-up and first-visit hydration
-            document.addEventListener('DOMContentLoaded', () => {
-                wireFormChangeListener();
-                applyCacheToPanel(document.getElementById('holding-panel'));
-            });
+       window.fifState[el.id] = el.value;
+       // console.log('[FIF] change:', el.id, '=', el.value);
+     });
 
-            // Before HTMX request (user clicked another symbol): snapshot current panel,
-            // so we don't lose in-progress edits if the user didn't blur the field.
-            document.body.addEventListener('htmx:beforeRequest', (e) => {
-                const panel = document.getElementById('holding-panel');
-                capturePanelIntoCache(panel);
-            });
+     // 2) (Optional) Also capture in-progress typing
+     // document.addEventListener('input', (e) => {
+     //   const el = e.target;
+     //   if (!inForm(el)) return;
+     //   if (!(el instanceof HTMLInputElement)) return;
+     //   if (el.type !== 'number' || !el.id) return;
+     //   window.fifState[el.id] = el.value;
+     // });
 
-            // After HTMX swaps in the new holding panel: hydrate from cache and (re)wire
-            document.body.addEventListener('htmx:afterSwap', (e) => {
-                if (e.target && e.target.id === 'holding-panel') {
-                    applyCacheToPanel(e.target);
-                    wireFormChangeListener();
-                }
-            });
-        })();
-    </script>
+     // 3) Hydrate inputs inside #holding-panel after HTMX swaps
+     document.body.addEventListener('htmx:afterSwap', (e) => {
+       if (e.target && e.target.id === 'holding-panel') {
+         e.target.querySelectorAll('input[type="number"][id]').forEach((el) => {
+           if (el.id in window.fifState) el.value = window.fifState[el.id];
+         });
+         // console.log('[FIF] hydrated panel from fifState');
+       }
+     });
+
+     // 4) (Optional) Snapshot current panel before a request in case user hasn't blurred
+     document.body.addEventListener('htmx:beforeRequest', () => {
+       const panel = document.getElementById('holding-panel');
+       if (!panel) return;
+       panel.querySelectorAll('input[type="number"][id]').forEach((el) => {
+         window.fifState[el.id] = el.value;
+       });
+       // console.log('[FIF] snapshot before request');
+     });
+
+     // 5) Your HTMX POST will include these values:
+     window.buildFIFSubmission = function () {
+       return window.fifState; // keys like price_start_AAPL, etc.
+     };
+   })();
+   </script>
 }
 
 templ HoldingPanel(h *HoldingInfo, year int) {
@@ -148,8 +151,8 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Price Information")
 				@grid() {
-					@input(h.Symbol, "Opening Price (NZD)", "price-start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true)
-					@input(h.Symbol, "Closing Price (NZD)", "price-end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true)
+					@input(h.Symbol, "Opening Price (NZD)", "price_start", "price_start", fmt.Sprintf("%.2f", h.OpeningPrice), true)
+					@input(h.Symbol, "Closing Price (NZD)", "price_end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true)
 				}
 			</div>
 
@@ -157,10 +160,10 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Income")
 				@grid() {
-					@input(h.Symbol, "Proceeds from sales", "proceeds-from-sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true)
+					@input(h.Symbol, "Proceeds from sales", "proceeds_from_sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true)
 					@input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", fmt.Sprintf("%.2f", h.GainLoss.Dividends), true)
-					@input(h.Symbol, "Tax Credits (NZD)", "tax-credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true)
-					@input(h.Symbol, "Other Gains (NZD)", "other-gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true)
+					@input(h.Symbol, "Tax Credits (NZD)", "tax_credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true)
+					@input(h.Symbol, "Other Gains (NZD)", "other_gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true)
 				}
 			</div>
 
@@ -168,9 +171,9 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Costs")
 				@grid() {
-					@input(h.Symbol, "Cost of purchases", "cost-of-purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true)
-					@input(h.Symbol, "Foreign Income Tax (NZD)", "foreign-income-tax", "foreign_income_tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), true)
-					@input(h.Symbol, "Other Costs (NZD)", "other-costs", "other_costs", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true)
+					@input(h.Symbol, "Cost of purchases", "cost_of_purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true)
+					@input(h.Symbol, "Foreign Income Tax (NZD)", "foreign_income_tax", "foreign_income_tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), true)
+					@input(h.Symbol, "Other Costs (NZD)", "other_costs", "other_costs", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true)
 				}
 			</div>
 		</div>
@@ -192,7 +195,7 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 	<div>
 		<label
 			class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
-			for={ id + "-" + symbol }
+			for={ id + "_" + symbol }
 		>
 			{ label }
 		</label>
@@ -200,7 +203,7 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 				type="number"
 				step="0.01"
 				min="0"
-				id={ id + "-" + symbol }
+				id={ id + "_" + symbol }
 				name={ name + "_" + symbol }
 				class="block w-full px-3 py-2 border border-gray-300 rounded-md
 				       bg-white text-gray-900 placeholder:text-gray-400
