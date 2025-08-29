@@ -20,6 +20,9 @@ templ RenderHoldingDetail(holding *HoldingInfo, year int) {
 templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	@InitializeClientSideScripts(holdings)
 	@Section() {
+	    <div class="mb-2">
+	        <p>Please fill in the required information for each holding</p>
+	    </div>
 		<div id="holdings-segment"class="flex flex-wrap gap-2">
 			for _, h := range holdings {
 				<button
@@ -29,6 +32,7 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 					hx-get={h.GetHoldingFIFInfoURL()}
 					hx-target="#holding-panel"
 					hx-swap="innerHTML"
+                    onclick={ templ.JSFuncCall("handleHoldingClicked", templ.JSExpression("event"), h.Symbol) }
 				>
 					{h.Symbol}
 				</button>
@@ -40,6 +44,7 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	}
 	@Section() {
         <button
+            id="calculate-btn"
             type="button"
             hx-post="/fif/calculate"
             hx-vals="js:{...window.buildFIFSubmission()}"
@@ -47,7 +52,7 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
             name="action"
             value="calculate"
             class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
-                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
+                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900 hidden"
         >
             Calculate FIF
         </button>
@@ -56,16 +61,46 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 
 templ InitializeClientSideScripts(data []*HoldingInfo) {
 	@Scripts()
+	@templ.JSFuncCall("initRequiredSymbols", data)
 }
 
 templ Scripts() {
-   <script>
+    <script>
+    function handleHoldingClicked(event, symbol) {
+      console.log(event.target.dataset?.symbol);
+      window.viewedHoldings[symbol] = true;
+      // After marking visited, see if we can show the Calculate button
+      if (window.allHoldingsVisited && window.allHoldingsVisited()) {
+        const btn = document.getElementById('calculate-btn');
+        if (btn) btn.classList.remove('hidden');
+      }
+    }
+
    (function () {
      if (window.__fifInit) return;
      window.__fifInit = true;
 
      // global cache of values keyed by input id, e.g. price_start_AAPL
      window.fifState = window.fifState || {};
+
+     window.viewedHoldings = {};
+     window.requiredSymbols = window.requiredSymbols || new Set();
+
+      // called once from Go with the holdings array
+       window.initRequiredSymbols = function (data) {
+         window.requiredSymbols = new Set((data || []).map(h => h.Symbol));
+         // on init, keep button hidden
+         const btn = document.getElementById('calculate-btn');
+         if (btn) btn.classList.add('hidden');
+       };
+
+ // returns true when every required symbol has been clicked
+  window.allHoldingsVisited = function () {
+    for (const sym of window.requiredSymbols) {
+      if (!window.viewedHoldings[sym]) return false;
+    }
+    return window.requiredSymbols.size > 0;
+  };
 
      // Debug so you can see the wiring happened
      console.log("[FIF] input capture initialized");
@@ -88,38 +123,28 @@ templ Scripts() {
        // console.log('[FIF] change:', el.id, '=', el.value);
      });
 
-     // 2) (Optional) Also capture in-progress typing
-     // document.addEventListener('input', (e) => {
-     //   const el = e.target;
-     //   if (!inForm(el)) return;
-     //   if (!(el instanceof HTMLInputElement)) return;
-     //   if (el.type !== 'number' || !el.id) return;
-     //   window.fifState[el.id] = el.value;
-     // });
-
      // 3) Hydrate inputs inside #holding-panel after HTMX swaps
      document.body.addEventListener('htmx:afterSwap', (e) => {
-       if (e.target && e.target.id === 'holding-panel') {
-         e.target.querySelectorAll('input[type="number"][id]').forEach((el) => {
-           if (el.id in window.fifState) el.value = window.fifState[el.id];
-         });
-         // console.log('[FIF] hydrated panel from fifState');
-       }
+        if (e.target && e.target.id === 'holding-panel') {
+            e.target.querySelectorAll('input[type="number"][id]').forEach((el) => {
+                if (el.id in window.fifState) el.value = window.fifState[el.id];
+            });
+        }
      });
 
      // 4) (Optional) Snapshot current panel before a request in case user hasn't blurred
      document.body.addEventListener('htmx:beforeRequest', () => {
-       const panel = document.getElementById('holding-panel');
-       if (!panel) return;
-       panel.querySelectorAll('input[type="number"][id]').forEach((el) => {
-         window.fifState[el.id] = el.value;
-       });
+        const panel = document.getElementById('holding-panel');
+        if (!panel) return;
+        panel.querySelectorAll('input[type="number"][id]').forEach((el) => {
+            window.fifState[el.id] = el.value;
+        });
        // console.log('[FIF] snapshot before request');
      });
 
      // 5) Your HTMX POST will include these values:
      window.buildFIFSubmission = function () {
-       return window.fifState; // keys like price_start_AAPL, etc.
+        return window.fifState; // keys like price_start_AAPL, etc.
      };
    })();
    </script>
