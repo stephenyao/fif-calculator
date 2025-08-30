@@ -3,6 +3,11 @@ package main
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	authmiddleware "fif-calculator/internal/authmiddleware"
 	"fif-calculator/internal/handler/accounthandler"
 	"fif-calculator/internal/handler/authhandler"
@@ -11,10 +16,6 @@ import (
 	"fif-calculator/internal/handler/holdingshandler"
 	"fif-calculator/internal/handler/tradehandler"
 	"fif-calculator/internal/repository"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/go-chi/chi/v5"
@@ -26,18 +27,21 @@ import (
 )
 
 func main() {
+	// DB
 	db := sqlx.MustConnect("sqlite3", "./trades.db")
 	repository.InitSchema(db)
 
-	r := chi.NewRouter()
-
+	// Firebase
 	firebaseApp, err := initFirebaseApp()
-	globalAuthClient, _ := firebaseApp.Auth(context.Background())
-
 	if err != nil {
 		log.Fatalf("Failed to init Firebase: %v", err)
 	}
+	globalAuthClient, err := firebaseApp.Auth(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to create Firebase Auth client: %v", err)
+	}
 
+	// Handlers
 	tradeHandler := tradehandler.NewTradeHandler(db)
 	costBasisHandler := costbasishandler.NewCostBasisHandler(db)
 	fifHandler := fifhandler.NewFIFHandler(db)
@@ -45,14 +49,38 @@ func main() {
 	authHandler := authhandler.NewAuthHandler(firebaseApp)
 	accountHandler := accounthandler.NewAccountHandler()
 
-	r.Use(middleware.StripSlashes)
+	r := chi.NewRouter()
 
+	// ----------------------------
+	// STATIC: do NOT apply StripSlashes here
+	// ----------------------------
+	// Redirect /static -> /static/
+	r.Get("/static", http.RedirectHandler("/static/", http.StatusMovedPermanently).ServeHTTP)
+	// Serve /static/* from ./static
+	staticFS := http.FileServer(http.Dir("static"))
+	r.Handle("/static/*", http.StripPrefix("/static/", staticFS))
+
+	// ----------------------------
+	// PUBLIC ROUTES (can use StripSlashes)
+	// ----------------------------
+	r.Group(func(pub chi.Router) {
+		pub.Use(middleware.StripSlashes)
+		pub.Get("/login", authHandler.ShowLoginPage)
+		pub.Post("/session-login", authHandler.PostLogin)
+	})
+
+	// ----------------------------
+	// PROTECTED ROUTES (use StripSlashes + auth)
+	// ----------------------------
 	r.Group(func(protected chi.Router) {
+		protected.Use(middleware.StripSlashes)
 		protected.Use(authmiddleware.RequireAuth(globalAuthClient))
-		protected.Get("/holdings", holdingsHandler.List)
+
 		protected.Get("/", holdingsHandler.Index)
+		protected.Get("/holdings", holdingsHandler.List)
 
 		protected.Get("/cost-basis", costBasisHandler.Index)
+
 		protected.Get("/fif", fifHandler.Index)
 		protected.Get("/fif/start", fifHandler.New)
 		protected.Post("/fif/start", fifHandler.HoldingsInfo)
@@ -66,8 +94,9 @@ func main() {
 		protected.Post("/holdings/{id}/delete", holdingsHandler.Delete)
 		protected.Get("/holdings/{id}/edit", holdingsHandler.EditForm)
 		protected.Post("/holdings/{id}/edit", holdingsHandler.Update)
-		protected.Get("/holdings/{id}/trades/new", tradeHandler.New)
-		protected.Post("/holdings/{id}/trades/new", tradeHandler.Create)
+
+		protected.Get("/holdings/{holdingID}/trades/new", tradeHandler.New)
+		protected.Post("/holdings/{holdingID}/trades/new", tradeHandler.Create)
 		protected.Get("/holdings/{holdingID}/trades/{tradeID}", tradeHandler.Show)
 		protected.Get("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.EditForm)
 		protected.Post("/holdings/{holdingID}/trades/{tradeID}/edit", tradeHandler.Update)
@@ -77,19 +106,17 @@ func main() {
 		protected.Post("/logout", accounthandler.Logout)
 	})
 
-	r.Get("/login", authHandler.ShowLoginPage)
-	r.Post("/session-login", authHandler.PostLogin)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
 func initFirebaseApp() (*firebase.App, error) {
-	// Load .env (only useful for local dev; no-op in App Platform)
+	// Load .env for local/dev
 	_ = godotenv.Load()
+
 	b64 := os.Getenv("FIREBASE_KEY_B64")
 	if b64 == "" {
 		return nil, fmt.Errorf("FIREBASE_KEY_B64 is not set")
 	}
-
 	decoded, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode FIREBASE_KEY_B64: %w", err)
@@ -99,6 +126,5 @@ func initFirebaseApp() (*firebase.App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize Firebase App: %w", err)
 	}
-
 	return app, nil
 }
