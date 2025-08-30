@@ -78,4 +78,37 @@ function initRequiredSymbols(data) {
     window.buildFIFSubmission = function () {
         return window.fifState; // keys like price_start_AAPL, etc.
     };
+
+    window.verifyCurrentAndNext = function (symbol) {
+        // mark current visited
+        window.viewedHoldings = window.viewedHoldings || {};
+        window.viewedHoldings[symbol] = true;
+
+        // list of holding buttons in their visual order
+        const buttons = document.querySelectorAll('#holdings-segment > button[data-symbol]');
+        const idx = Array.prototype.findIndex.call(buttons, (b) => b.dataset.symbol === symbol);
+
+        // try next
+        const next = idx >= 0 ? buttons[idx + 1] : null;
+        if (next) {
+            next.click();     // triggers hx-get to load next HoldingPanel
+            next.focus();     // nice UX
+        } else {
+            // last one – show & nudge the Calculate button
+            const btn = document.getElementById('calculate-btn');
+            if (btn) {
+                btn.classList.remove('hidden');
+                // optional: bring it into view + quick highlight
+                btn.scrollIntoView({behavior: 'smooth', block: 'center'});
+                btn.classList.add('ring-2', 'ring-blue-500');
+                setTimeout(() => btn.classList.remove('ring-2', 'ring-blue-500'), 700);
+            }
+        }
+
+        // also reveal Calculate if everything has been visited
+        if (window.allHoldingsVisited && window.allHoldingsVisited()) {
+            const btn = document.getElementById('calculate-btn');
+            if (btn) btn.classList.remove('hidden');
+        }
+    };
 })();

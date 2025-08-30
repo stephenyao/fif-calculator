@@ -12,56 +12,54 @@ templ RenderHoldingDetail(holding *HoldingInfo, year int) {
 		class="space-y-6"
 		id="fif-form"
 	>
-        @HoldingPanel(holding, year)
+		@HoldingPanel(holding, year)
 	</form>
 }
-
 
 templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	@InitializeClientSideScripts(holdings)
 	@Section() {
-	    <div class="mb-2">
-	        <p>Please fill in the required information for each holding</p>
-	    </div>
-		<div id="holdings-segment"class="flex flex-wrap gap-2">
+		<div class="mb-2">
+			<p>Please fill in the required information for each holding</p>
+		</div>
+		<div id="holdings-segment" class="flex flex-wrap gap-2">
 			for _, h := range holdings {
 				<button
 					type="button"
 					class="px-3 py-1.5 text-sm rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:focus:ring-blue-400/30 bg-white text-gray-800 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-700"
-					data-symbol={h.Symbol}
-					hx-get={h.GetHoldingFIFInfoURL()}
+					data-symbol={ h.Symbol }
+					hx-get={ h.GetHoldingFIFInfoURL() }
 					hx-target="#holding-panel"
 					hx-swap="innerHTML"
-                    onclick={ templ.JSFuncCall("handleHoldingClicked", templ.JSExpression("event"), h.Symbol) }
+					onclick={ templ.JSFuncCall("handleHoldingClicked", templ.JSExpression("event"), h.Symbol) }
 				>
-					{h.Symbol}
+					{ h.Symbol }
 				</button>
 			}
 		</div>
 	}
 	@Section() {
-	    @RenderHoldingDetail(holdings[0], year)
+		@RenderHoldingDetail(holdings[0], year)
 	}
 	@Section() {
-        <button
-            id="calculate-btn"
-            type="button"
-            hx-post="/fif/calculate"
-            hx-vals="js:{...window.buildFIFSubmission()}"
-            hx-include="#fif-form"
-            name="action"
-            value="calculate"
-            class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
+		<button
+			id="calculate-btn"
+			type="button"
+			hx-post="/fif/calculate"
+			hx-vals="js:{...window.buildFIFSubmission()}"
+			hx-include="#fif-form"
+			name="action"
+			value="calculate"
+			class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
                        dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900 hidden"
-        >
-            Calculate FIF
-        </button>
+		>
+			Calculate FIF
+		</button>
 	}
 }
 
 templ InitializeClientSideScripts(data []*HoldingInfo) {
-	<script src="/static/fifCalculate.js"
-              onload={ templ.JSFuncCall("initRequiredSymbols", data) }>
+	<script src="/static/fifCalculate.js" onload={ templ.JSFuncCall("initRequiredSymbols", data) }>
     </script>
 }
 
@@ -81,12 +79,10 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 					</div>
 				}
 			</div>
-
 			<input type="hidden" name={ "symbol_" + h.Symbol } value={ h.Symbol }/>
 			<input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityStart) }/>
 			<input type="hidden" name={ "quantity_end_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityEnd) }/>
 			<input type="hidden" name="financialYear" value={ year }/>
-
 			<!-- Price Information -->
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Price Information")
@@ -95,7 +91,6 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 					@input(h.Symbol, "Closing Price (NZD)", "price_end", "price_end", fmt.Sprintf("%.2f", h.ClosingPrice), true)
 				}
 			</div>
-
 			<!-- Income -->
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Income")
@@ -106,7 +101,6 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 					@input(h.Symbol, "Other Gains (NZD)", "other_gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true)
 				}
 			</div>
-
 			<!-- Costs -->
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Costs")
@@ -117,9 +111,21 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 				}
 			</div>
 		</div>
+		<!-- Full-width Verify button -->
+		<div class="mt-6">
+			<button
+				id="verify-btn"
+				type="button"
+				onclick={ templ.JSFuncCall("verifyCurrentAndNext", h.Symbol) }
+				class="w-full px-6 py-3 bg-gray-200 text-gray-900 font-medium rounded-md
+               hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500
+               dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+			>
+				Next
+			</button>
+		</div>
 	</div>
 }
-
 
 templ NoFIFApplicable() {
 	<div class="text-gray-900 dark:text-gray-100">FIF not applicable</div>
@@ -139,19 +145,19 @@ templ input(symbol, label, id, name string, value string, enabled bool) {
 		>
 			{ label }
 		</label>
-			<input
-				type="number"
-				step="0.01"
-				min="0"
-				id={ id + "_" + symbol }
-				name={ name + "_" + symbol }
-				class="block w-full px-3 py-2 border border-gray-300 rounded-md
+		<input
+			type="number"
+			step="0.01"
+			min="0"
+			id={ id + "_" + symbol }
+			name={ name + "_" + symbol }
+			class="block w-full px-3 py-2 border border-gray-300 rounded-md
 				       bg-white text-gray-900 placeholder:text-gray-400
 				       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
 				       dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500
 				       dark:focus:ring-blue-400 dark:focus:border-blue-400"
-				placeholder="5.00"
-				value={ value }
-			/>
+			placeholder="5.00"
+			value={ value }
+		/>
 	</div>
 }
