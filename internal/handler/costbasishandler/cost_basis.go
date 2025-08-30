@@ -9,6 +9,7 @@ import (
 	"fif-calculator/views/costbasis"
 	"github.com/jmoiron/sqlx"
 	"net/http"
+	"time"
 )
 
 type CostBasisHandler struct {
@@ -45,7 +46,8 @@ func (h *CostBasisHandler) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func ccostBasisViewModel(trades []model.Trade) CostBasisViewModel {
-	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades)
+	now := time.Now()
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(trades, now)
 	totalCostBasis := 0.0
 
 	for _, costBasisSymbol := range costBasisBySymbol {

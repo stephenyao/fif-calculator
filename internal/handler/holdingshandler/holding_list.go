@@ -5,6 +5,7 @@ import (
 	"fif-calculator/internal/utils"
 	"fif-calculator/views/holdings"
 	"net/http"
+	"time"
 )
 
 func (h *HoldingsHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +30,7 @@ func (h *HoldingsHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	costBasisBySymbol := costbasisservice.CostBasisBySymbol(allTrades)
+	costBasisBySymbol := costbasisservice.CostBasisBySymbol(allTrades, time.Now())
 
 	viewModels := convertToHoldingViewModels(allHoldings, costBasisBySymbol)
 

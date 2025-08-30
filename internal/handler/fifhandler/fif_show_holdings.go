@@ -73,10 +73,10 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !costbasisservice.IsEligibleForFIF(trades, startDate, endDate) {
-		err = fif.NoFIFApplicable().Render(r.Context(), w)
-		log.Printf("%v", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	isEligible := costbasisservice.IsEligibleForFIF(trades, startDate, endDate)
+
+	if !isEligible {
+		_ = fif.NoFIFApplicable().Render(r.Context(), w)
 		return
 	}
 
@@ -88,7 +88,6 @@ func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vm := viewmodel.CreateFIFHoldingsViewModel(holdings, year)
-
 	err = fif.RenderFIFHoldingQuantities(vm).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Failed to render fif", http.StatusInternalServerError)

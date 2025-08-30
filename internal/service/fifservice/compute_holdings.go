@@ -3,6 +3,7 @@ package fifservice
 import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
+	"sort"
 	"time"
 )
 
@@ -89,6 +90,11 @@ func ComputeHoldingsBetween(trades []Trade, year int) ([]*HoldingInfo, error) {
 			HoldingId:         holdingID,
 		})
 	}
+
+	// Sort the holdings alphbetically before returning
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Symbol < result[j].Symbol
+	})
 
 	return result, nil
 }

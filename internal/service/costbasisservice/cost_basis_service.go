@@ -4,19 +4,20 @@ import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
 	. "fif-calculator/internal/viewmodel"
+	"log"
 	"time"
 )
 
 func IsEligibleForFIF(trades []Trade, start, end time.Time) bool {
-	costBasisBySymbol := CostBasisBySymbol(trades)
+	costBasisBySymbol := CostBasisBySymbol(trades, end)
 	totalCostBasis := totalCostBasis(costBasisBySymbol)
 	maxCostBasisForYear := MaxCostBasisDuringYear(trades, start, end)
-
+	log.Printf("totalCostBasisForYear: %v, maxcost: %v", totalCostBasis, maxCostBasisForYear)
 	notEligible := totalCostBasis < constants.FIFThreshold && maxCostBasisForYear < constants.FIFThreshold
 	return !notEligible
 }
 
-func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {
+func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCostBasis {
 	costBasisBySymbol := make(map[string]SymbolCostBasis)
 
 	// Build up a map of trades by symbol so they can be iterated through
@@ -33,6 +34,12 @@ func CostBasisBySymbol(trades []Trade) map[string]SymbolCostBasis {
 		var totalBought, totalSold float64
 
 		for _, trade := range trades {
+			tradeDate, _ := time.Parse(time.DateOnly, trade.BuyDate)
+
+			if tradeDate.After(untilDate) {
+				break
+			}
+
 			switch trade.Action {
 			case constants.Buy:
 				queue = append(queue, trade)
