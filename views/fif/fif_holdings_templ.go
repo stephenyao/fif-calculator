@@ -593,15 +593,15 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, templ.JSFuncCall("verifyCurrent", h.Symbol))
+		templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, templ.JSFuncCall("markHoldingDone", h.Symbol))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<button id=\"verify-btn\" type=\"button\" onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<button id=\"markdone-btn\" type=\"button\" onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var28 templ.ComponentScript = templ.JSFuncCall("verifyCurrent", h.Symbol)
+		var templ_7745c5c3_Var28 templ.ComponentScript = templ.JSFuncCall("markHoldingDone", h.Symbol)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var28.Call)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

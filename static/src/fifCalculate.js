@@ -1,14 +1,11 @@
-// fifCalculate.js
 (function () {
     if (window.__fifInit) return;
     window.__fifInit = true;
 
-    // ---------- Global state ----------
-    window.fifState = window.fifState || {};          // input snapshot by id
-    window.viewedHoldings = window.viewedHoldings || {}; // VERIFIED symbols only
+    window.fifState = window.fifState || {};
+    window.viewedHoldings = window.viewedHoldings || {};
     window.requiredSymbols = window.requiredSymbols || new Set();
 
-    // ---------- Helpers ----------
     function inForm(target) {
         const form = document.getElementById('fif-form');
         return form && form.contains(target);
@@ -21,7 +18,6 @@
         return window.requiredSymbols.size > 0;
     };
 
-    // Update segment buttons' look (verified => green + ✔)
     window.refreshHoldingButtons = function () {
         const buttons = document.querySelectorAll('#holdings-segment > button[data-symbol]');
         buttons.forEach(btn => {
@@ -53,65 +49,60 @@
         });
     };
 
-    // Toggle bottom-panel Verify visibility and global Calculate visibility
     window.updateActionButtons = function () {
         const allVisited = window.allHoldingsVisited && window.allHoldingsVisited();
         const calc = document.getElementById('calculate-btn');
-        const verify = document.getElementById('verify-btn'); // in the panel
+        const markBtn = document.getElementById('markdone-btn');
 
         if (calc) {
             if (allVisited) calc.classList.remove('hidden');
             else calc.classList.add('hidden');
         }
-        if (verify) {
-            // Verify button can remain visible; hide it only when all are visited
-            if (allVisited) verify.classList.add('hidden');
-            else verify.classList.remove('hidden');
+        if (markBtn) {
+            if (allVisited) markBtn.classList.add('hidden');
+            else markBtn.classList.remove('hidden');
         }
 
         window.refreshHoldingButtons();
     };
 
-    // ---------- Public API (called from templates) ----------
-
-    // Called once (Templ onload) with holdings slice
+    // Called once with holdings slice
     window.initRequiredSymbols = function (data) {
         window.requiredSymbols = new Set((data || []).map(h => h.Symbol));
-        // DO NOT auto-mark anything as visited here
         window.updateActionButtons();
     };
 
-    // Called by each segment button onclick
-    // NOTE: This now ONLY navigates; it DOES NOT mark as visited.
-    window.handleHoldingClicked = function (_event, _symbol) {
-        // intentionally do nothing to viewedHoldings
-        // HTMX will load the panel; buttons/panel will sync after swap
-    };
-
-    // Called by the panel's full-width Verify button
-    // This marks the CURRENT symbol as verified and updates UI.
-    window.verifyCurrent = function (symbol) {
+    // Only marks as done when the Mark button is clicked
+    window.markHoldingDone = function (symbol) {
         window.viewedHoldings[symbol] = true;
         window.updateActionButtons();
     };
 
-    // HTMX will post these values
-    window.buildFIFSubmission = function () {
-        return window.fifState;
-    };
+    // Reset "done" if any input changes in that holding’s panel
+    function resetDoneOnInputChange(symbol) {
+        window.viewedHoldings[symbol] = false;
+        window.updateActionButtons();
+    }
 
-    // ---------- Event wiring ----------
-    // Capture committed changes on number inputs (inside the form)
-    document.addEventListener('change', (e) => {
+    // Track changes in numeric inputs
+    document.addEventListener('input', (e) => {
         const el = e.target;
         if (!inForm(el)) return;
         if (!(el instanceof HTMLInputElement)) return;
         if (el.type !== 'number') return;
         if (!el.id) return;
+
         window.fifState[el.id] = el.value;
+
+        // symbol is encoded in input id e.g. "price_start_AAPL"
+        const parts = el.id.split('_');
+        const sym = parts[parts.length - 1];
+        if (sym && window.requiredSymbols.has(sym)) {
+            resetDoneOnInputChange(sym);
+        }
     });
 
-    // Snapshot the current panel before HTMX sends a request
+    // Snapshot before request
     document.body.addEventListener('htmx:beforeRequest', () => {
         const panel = document.getElementById('holding-panel');
         if (!panel) return;
@@ -120,15 +111,19 @@
         });
     });
 
-    // After HTMX swaps in a new holding panel, rehydrate values and sync buttons
+    // Rehydrate and update after swap
     document.body.addEventListener('htmx:afterSwap', (e) => {
         if (e.target && e.target.id === 'holding-panel') {
             e.target.querySelectorAll('input[type="number"][id]').forEach((el) => {
                 if (el.id in window.fifState) el.value = window.fifState[el.id];
             });
-            window.updateActionButtons(); // hide Verify if all done; refresh ticks/colors
+            window.updateActionButtons();
         }
     });
 
-    console.log('[FIF] verify-only flow initialized');
+    window.buildFIFSubmission = function () {
+        return window.fifState;
+    };
+
+    console.log('[FIF] mark-as-done flow with reset-on-input-change initialized');
 })();
