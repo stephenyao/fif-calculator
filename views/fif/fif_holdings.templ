@@ -63,7 +63,7 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 }
 
 templ InitializeClientSideScripts(data []*HoldingInfo) {
-	<script src="/static/fifCalculate.js" onload={ templ.JSFuncCall("initRequiredSymbols", data) }>
+	<script src="/static/js/fifCalculate.js" onload={ templ.JSFuncCall("initRequiredSymbols", data) }>
     </script>
 }
 

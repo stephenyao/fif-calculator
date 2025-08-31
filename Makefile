@@ -2,7 +2,11 @@
 BINARY_NAME=app
 
 # Default target: generate, build, and run
-all: generate build run
+all: generate js build run
+# Step 0: Bundle/minify JS
+js:
+	@echo "Bundling JS with esbuild..."
+	esbuild static/src/fifCalculate.js --bundle --minify --sourcemap --outfile=static/js/fifCalculate.js
 
 # Step 1: Generate Go code from .templ files
 generate:
@@ -22,4 +26,4 @@ run:
 # Clean built binary
 clean:
 	@echo "Cleaning up..."
-	rm -f $(BINARY_NAME)
+	rm -f $(BINARY_NAME) static/fifCalculate.js
