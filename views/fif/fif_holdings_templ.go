@@ -606,7 +606,7 @@ func HoldingPanel(h *HoldingInfo, year int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"w-full px-6 py-3 bg-gray-200 text-gray-900 font-medium rounded-md\n                      hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500\n                      dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600\">Done</button></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"w-full px-6 py-3 bg-gray-200 text-gray-900 font-medium rounded-md\n                      hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500\n                      dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600\">Mark as Done</button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
