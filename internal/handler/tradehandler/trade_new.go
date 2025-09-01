@@ -12,7 +12,7 @@ import (
 )
 
 func (h *TradeHandler) New(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := strconv.Atoi(chi.URLParam(r, "holdingID"))
 
 	if err != nil {
 		http.Error(w, "Could not parse id", http.StatusBadRequest)

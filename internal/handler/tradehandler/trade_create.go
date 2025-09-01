@@ -26,7 +26,7 @@ func (h *TradeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	price, _ := strconv.ParseFloat(r.FormValue("price"), 64)
 	rate, _ := strconv.ParseFloat(r.FormValue("rate"), 64)
 	action := r.FormValue("action")
-	holdingIDParam := chi.URLParam(r, "id")
+	holdingIDParam := chi.URLParam(r, "holdingID")
 	holdingID, err := strconv.Atoi(holdingIDParam)
 
 	if err != nil {
