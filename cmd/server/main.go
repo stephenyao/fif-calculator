@@ -11,7 +11,6 @@ import (
 	authmiddleware "fif-calculator/internal/authmiddleware"
 	"fif-calculator/internal/handler/accounthandler"
 	"fif-calculator/internal/handler/authhandler"
-	"fif-calculator/internal/handler/costbasishandler"
 	"fif-calculator/internal/handler/fifhandler"
 	"fif-calculator/internal/handler/holdingshandler"
 	"fif-calculator/internal/handler/tradehandler"
@@ -43,7 +42,6 @@ func main() {
 
 	// Handlers
 	tradeHandler := tradehandler.NewTradeHandler(db)
-	costBasisHandler := costbasishandler.NewCostBasisHandler(db)
 	fifHandler := fifhandler.NewFIFHandler(db)
 	holdingsHandler := holdingshandler.NewHoldingsHandler(db)
 	authHandler := authhandler.NewAuthHandler(firebaseApp)
@@ -78,8 +76,6 @@ func main() {
 
 		protected.Get("/", holdingsHandler.Index)
 		protected.Get("/holdings", holdingsHandler.List)
-
-		protected.Get("/cost-basis", costBasisHandler.Index)
 
 		protected.Get("/fif", fifHandler.Index)
 		protected.Get("/fif/start", fifHandler.New)

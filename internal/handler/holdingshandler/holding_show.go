@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 const pageLimit = 10
@@ -58,7 +57,7 @@ func (h *HoldingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 	trades, err := h.TradeRepository.GetByHoldingID(id, uid)
 	paginatedTrades, _, err := h.TradeRepository.GetByHoldingIDPaginated(id, pageLimit, page, uid)
-	costBasis := costbasisservice.CostBasisBySymbol(trades, time.Now())[holding.Symbol]
+	costBasis := costbasisservice.CostBasisBySymbol(trades, nil)[holding.Symbol]
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

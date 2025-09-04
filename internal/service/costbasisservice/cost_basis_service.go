@@ -8,14 +8,14 @@ import (
 )
 
 func IsEligibleForFIF(trades []Trade, start, end time.Time) bool {
-	costBasisBySymbol := CostBasisBySymbol(trades, end)
+	costBasisBySymbol := CostBasisBySymbol(trades, &end)
 	totalCostBasis := totalCostBasis(costBasisBySymbol)
 	maxCostBasisForYear := MaxCostBasisDuringYear(trades, start, end)
 	notEligible := totalCostBasis < constants.FIFThreshold && maxCostBasisForYear < constants.FIFThreshold
 	return !notEligible
 }
 
-func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCostBasis {
+func CostBasisBySymbol(trades []Trade, untilDate *time.Time) map[string]SymbolCostBasis {
 	costBasisBySymbol := make(map[string]SymbolCostBasis)
 
 	// Build up a map of trades by symbol so they can be iterated through
@@ -34,7 +34,7 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 		for _, trade := range trades {
 			tradeDate, _ := time.Parse(time.DateOnly, trade.BuyDate)
 
-			if tradeDate.After(untilDate) {
+			if untilDate != nil && tradeDate.After(*untilDate) {
 				break
 			}
 
@@ -76,6 +76,7 @@ func CostBasisBySymbol(trades []Trade, untilDate time.Time) map[string]SymbolCos
 			costBasisNZDForSymbol += buyTrade.Price * buyTrade.Quantity * buyTrade.ExchangeRate
 		}
 		overSold := totalSold > totalBought
+
 		costBasisBySymbol[symbol] =
 			SymbolCostBasis{
 				CostBasisFX:     costBasisFXForSymbol,
