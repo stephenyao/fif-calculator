@@ -4,7 +4,6 @@ import (
 	"fif-calculator/internal/constants"
 	. "fif-calculator/internal/model"
 	. "fif-calculator/internal/viewmodel"
-	"log"
 	"time"
 )
 
@@ -12,7 +11,6 @@ func IsEligibleForFIF(trades []Trade, start, end time.Time) bool {
 	costBasisBySymbol := CostBasisBySymbol(trades, end)
 	totalCostBasis := totalCostBasis(costBasisBySymbol)
 	maxCostBasisForYear := MaxCostBasisDuringYear(trades, start, end)
-	log.Printf("totalCostBasisForYear: %v, maxcost: %v", totalCostBasis, maxCostBasisForYear)
 	notEligible := totalCostBasis < constants.FIFThreshold && maxCostBasisForYear < constants.FIFThreshold
 	return !notEligible
 }

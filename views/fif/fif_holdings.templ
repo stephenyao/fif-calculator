@@ -7,7 +7,6 @@ import . "fif-calculator/views"
 templ RenderHoldingDetail(holding *HoldingInfo, year int) {
 	<form
 		hx-post="/fif/calculate"
-		hx-target="#fif-result"
 		hx-swap="innerHTML"
 		class="space-y-6"
 		id="fif-form"
@@ -51,6 +50,8 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 				hx-post="/fif/calculate"
 				hx-vals="js:{...window.buildFIFSubmission()}"
 				hx-include="#fif-form"
+				hx-target="#fif-result"
+				hx-swap="innerHTML"
 				name="action"
 				value="calculate"
 				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
@@ -87,7 +88,6 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 			<input type="hidden" name={ "quantity_start_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityStart) }/>
 			<input type="hidden" name={ "quantity_end_" + h.Symbol } value={ fmt.Sprintf("%.2f", h.QuantityEnd) }/>
 			<input type="hidden" name="financialYear" value={ year }/>
-			<!-- Price Information -->
 			<div class="mb-6 flex flex-col space-y-3">
 				@H5("Price Information")
 				@grid() {
@@ -101,7 +101,6 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 				@grid() {
 					@input(h.Symbol, "Proceeds from sales", "proceeds_from_sales", "proceeds_from_sales", fmt.Sprintf("%.2f", h.ProceedsFromSales), true)
 					@input(h.Symbol, "Dividends (NZD)", "dividends", "dividends", fmt.Sprintf("%.2f", h.GainLoss.Dividends), true)
-					@input(h.Symbol, "Tax Credits (NZD)", "tax_credits", "tax_credits", fmt.Sprintf("%.2f", h.GainLoss.TaxCredits), true)
 					@input(h.Symbol, "Other Gains (NZD)", "other_gains", "other_gains", fmt.Sprintf("%.2f", h.GainLoss.OtherGains), true)
 				}
 			</div>
@@ -110,7 +109,6 @@ templ HoldingPanel(h *HoldingInfo, year int) {
 				@H5("Costs")
 				@grid() {
 					@input(h.Symbol, "Cost of purchases", "cost_of_purchases", "cost_of_purchases", fmt.Sprintf("%.2f", h.CostOfPurchases), true)
-					@input(h.Symbol, "Foreign Income Tax (NZD)", "foreign_income_tax", "foreign_income_tax", fmt.Sprintf("%.2f", h.GainLoss.ForeignIncomeTax), true)
 					@input(h.Symbol, "Other Costs (NZD)", "other_costs", "other_costs", fmt.Sprintf("%.2f", h.GainLoss.OtherCosts), true)
 				}
 			</div>

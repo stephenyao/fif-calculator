@@ -17,11 +17,9 @@ type HoldingInfo struct {
 }
 
 type GainLossParams struct {
-	Dividends        float64
-	TaxCredits       float64
-	OtherGains       float64
-	ForeignIncomeTax float64
-	OtherCosts       float64
+	Dividends  float64
+	OtherGains float64
+	OtherCosts float64
 }
 
 func (h HoldingInfo) GetHoldingFIFInfoURL() string {

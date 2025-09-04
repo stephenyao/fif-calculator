@@ -36,8 +36,8 @@ func ComputeCVIncome(trades []Trade, holdings []*HoldingInfo, startDate, endDate
 			}
 		}
 
-		gains := proceedsFromSales + holding.GainLoss.Dividends + holding.GainLoss.TaxCredits + holding.GainLoss.OtherGains
-		costs := costsOfPurchases + holding.GainLoss.ForeignIncomeTax + holding.GainLoss.OtherCosts
+		gains := proceedsFromSales + holding.GainLoss.Dividends + holding.GainLoss.OtherGains
+		costs := costsOfPurchases + holding.GainLoss.OtherCosts
 
 		result := CVResult{
 			Symbol:       holding.Symbol,

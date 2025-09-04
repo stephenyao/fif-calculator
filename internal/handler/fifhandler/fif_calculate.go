@@ -102,9 +102,7 @@ func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, er
 	}
 
 	dividends, err := strconv.ParseFloat(r.FormValue("dividends_"+symbol), 64)
-	taxCredits, err := strconv.ParseFloat(r.FormValue("tax_credits"+symbol), 64)
 	otherGains, err := strconv.ParseFloat(r.FormValue("other_gains"+symbol), 64)
-	foreignIncomeTax, err := strconv.ParseFloat(r.FormValue("foreign_income_tax"+symbol), 64)
 	otherCosts, err := strconv.ParseFloat(r.FormValue("other_costs"+symbol), 64)
 
 	if err != nil {
@@ -112,10 +110,8 @@ func getGainLossParams(symbol string, r *http.Request) (model.GainLossParams, er
 	}
 
 	return model.GainLossParams{
-		Dividends:        dividends,
-		TaxCredits:       taxCredits,
-		OtherGains:       otherGains,
-		ForeignIncomeTax: foreignIncomeTax,
-		OtherCosts:       otherCosts,
+		Dividends:  dividends,
+		OtherGains: otherGains,
+		OtherCosts: otherCosts,
 	}, nil
 }
