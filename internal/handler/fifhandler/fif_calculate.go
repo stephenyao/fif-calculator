@@ -48,13 +48,17 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 
 	for _, hq := range holdings {
 		priceStartStr := r.FormValue("price_start_" + hq.Symbol)
+		priceStartExStr := r.FormValue("price_start_exchange_" + hq.Symbol)
 		priceEndStr := r.FormValue("price_end_" + hq.Symbol)
+		pricenEndExStr := r.FormValue("price_end_exchange_" + hq.Symbol)
 
 		priceStart, _ := strconv.ParseFloat(priceStartStr, 64)
 		priceEnd, _ := strconv.ParseFloat(priceEndStr, 64)
+		priceStartEx, _ := strconv.ParseFloat(priceStartExStr, 64)
+		pricenEndEx, _ := strconv.ParseFloat(pricenEndExStr, 64)
 
-		hq.OpeningPrice = priceStart
-		hq.ClosingPrice = priceEnd
+		hq.OpeningPrice = priceStart * priceStartEx
+		hq.ClosingPrice = priceEnd * pricenEndEx
 
 		gainLossParams, _ := getGainLossParams(hq.Symbol, r)
 

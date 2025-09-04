@@ -3,17 +3,20 @@ package model
 import "strconv"
 
 type HoldingInfo struct {
-	Symbol            string
-	QuantityStart     float64
-	QuantityEnd       float64
-	OpeningPrice      float64
-	ClosingPrice      float64
-	NumberOfTrades    int
-	ProceedsFromSales float64
-	CostOfPurchases   float64
-	GainLoss          GainLossParams
-	Year              int
-	HoldingId         int
+	Symbol              string
+	Currency            string
+	QuantityStart       float64
+	QuantityEnd         float64
+	OpeningPrice        float64
+	OpeningExchangeRate float64
+	ClosingPrice        float64
+	ClosingExchangeRate float64
+	NumberOfTrades      int
+	ProceedsFromSales   float64
+	CostOfPurchases     float64
+	GainLoss            GainLossParams
+	Year                int
+	HoldingId           int
 }
 
 type GainLossParams struct {

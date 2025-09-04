@@ -20,6 +20,7 @@ func ComputeHoldingsBetween(trades []Trade, year int) ([]*HoldingInfo, error) {
 	numberOfTrades := make(map[string]int)
 	proceedsFromSales := make(map[string]float64)
 	costOfPurchases := make(map[string]float64)
+	currencies := make(map[string]string)
 	holdingIds := make(map[string]int)
 	startDate, endDate := StartEndDates(year)
 
@@ -55,6 +56,7 @@ func ComputeHoldingsBetween(trades []Trade, year int) ([]*HoldingInfo, error) {
 		}
 
 		holdingIds[trade.Symbol] = trade.HoldingID
+		currencies[trade.Symbol] = trade.Currency
 	}
 
 	symbolSet := map[string]struct{}{}
@@ -69,6 +71,7 @@ func ComputeHoldingsBetween(trades []Trade, year int) ([]*HoldingInfo, error) {
 		numberOfTrades := numberOfTrades[symbol]
 		proceedsFromSales := proceedsFromSales[symbol]
 		costOfPurchases := costOfPurchases[symbol]
+		currency := currencies[symbol]
 		holdingID := holdingIds[symbol]
 
 		if quantityStart < 0 || quantityEnd < 0 {
@@ -81,6 +84,7 @@ func ComputeHoldingsBetween(trades []Trade, year int) ([]*HoldingInfo, error) {
 
 		result = append(result, &HoldingInfo{
 			Symbol:            symbol,
+			Currency:          currency,
 			QuantityStart:     quantityStart,
 			QuantityEnd:       quantityEnd,
 			NumberOfTrades:    numberOfTrades,
