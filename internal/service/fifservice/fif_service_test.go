@@ -9,9 +9,13 @@ import (
 type MockFIFRepository struct {
 }
 
-func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]float64 {
-	return map[HoldingID]float64{
-		0: 200,
+func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]HoldingFDRInfo {
+	return map[HoldingID]HoldingFDRInfo{
+		0: {
+			Quantity: 200,
+			Name:     "Google",
+			Symbol:   "GOOG",
+		},
 	}
 }
 
@@ -35,8 +39,8 @@ func TestFDRIncome(t *testing.T) {
 		want := FDRResult{
 			Holdings: []FDRHoldingResult{
 				FDRHoldingResult{
-					Name:                "",
-					Symbol:              "",
+					Name:                "Google",
+					Symbol:              "GOOG",
 					OpeningValue:        30000,
 					QuickSaleAdjustment: 0,
 					Income:              1500,

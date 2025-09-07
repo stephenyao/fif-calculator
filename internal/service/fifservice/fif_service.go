@@ -11,7 +11,13 @@ type FIFService interface {
 type HoldingID int
 
 type FIFRepository interface {
-	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]float64
+	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]HoldingFDRInfo
+}
+
+type HoldingFDRInfo struct {
+	Quantity float64
+	Name     string
+	Symbol   string
 }
 
 type FIFCalculationService struct {
@@ -55,19 +61,19 @@ func (s FIFCalculationService) FDRDIncome(input FDRInput, startDate time.Time, e
 
 	// 2. Get the quantity for each holding at the start date
 
-	holdingQuantities := s.repository.GetHoldingQuantities(holdingIDs, startDate)
+	holdings := s.repository.GetHoldingQuantities(holdingIDs, startDate)
 
 	// 3. For each holding calculate the FDR (5% * opening market value)
 
 	result := FDRResult{}
 	for _, holding := range input.Holdings {
-		quantity := holdingQuantities[holding.HoldingID]
-		openingValue := quantity * holding.OpeningPrice * holding.ExchangeRateToNZD
+		info := holdings[holding.HoldingID]
+		openingValue := info.Quantity * holding.OpeningPrice * holding.ExchangeRateToNZD
 		fdrRate := 0.05
 
 		r := FDRHoldingResult{
-			Name:                "",
-			Symbol:              "",
+			Name:                info.Name,
+			Symbol:              info.Symbol,
 			OpeningValue:        openingValue,
 			QuickSaleAdjustment: 0,
 			Income:              openingValue * fdrRate,
