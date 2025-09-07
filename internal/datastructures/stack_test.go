@@ -6,7 +6,9 @@ import (
 )
 
 func TestStack_Push(t *testing.T) {
-	trade := model.Trade{0, "XYZ", "2021-01-01", 1000, 100, "USD", "buy"}
+	trade := model.Trade{
+		ID: 0,
+	}
 	stack := &Stack{}
 
 	stack.Push(trade)
@@ -16,7 +18,9 @@ func TestStack_Push(t *testing.T) {
 }
 
 func TestStack_Pop(t *testing.T) {
-	trade := model.Trade{0, "XYZ", "2021-01-01", 1000, 100, "USD", "buy"}
+	trade := model.Trade{
+		ID: 0,
+	}
 	stack := &Stack{}
 
 	stack.Push(trade)

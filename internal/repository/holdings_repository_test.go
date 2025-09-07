@@ -3,16 +3,33 @@ package repository
 import (
 	"database/sql"
 	"fif-calculator/internal/model"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"testing"
 	"time"
 )
+
+func setupTestDB(t *testing.T) *sqlx.DB {
+	t.Helper()
+
+	db, err := sqlx.Open("sqlite3", "file::memory:?cache=shared&_foreign_keys=on")
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	InitSchema(db)
+
+	t.Cleanup(func() { _ = db.Close() })
+	return db
+}
+
+const userID = "1"
 
 func TestHoldingsRepository(t *testing.T) {
 	t.Run("CreateHolding stores record and assigns ID", func(t *testing.T) {
 		db := setupTestDB(t)
 		repo := NewHoldingsRepository(db)
 		record := &model.HoldingRecord{
-			UserID:   1,
+			UserID:   userID,
 			Name:     "Apple",
 			Symbol:   "APPL",
 			Currency: "USD",
@@ -26,7 +43,7 @@ func TestHoldingsRepository(t *testing.T) {
 			t.Fatal("expected ID to be set after insert")
 		}
 
-		actual, err := repo.GetHolding(record.ID)
+		actual, err := repo.GetHolding(record.ID, userID)
 		if err != nil {
 			t.Fatalf("failed to fetch inserted record: %v", err)
 		}
@@ -41,7 +58,7 @@ func TestHoldingsRepository(t *testing.T) {
 	t.Run("GetHolding returns error if not found", func(t *testing.T) {
 		db := setupTestDB(t)
 		repo := NewHoldingsRepository(db)
-		_, err := repo.GetHolding(9999)
+		_, err := repo.GetHolding(9999, userID)
 		if err == nil {
 			t.Fatal("expected error for missing holding, got nil")
 		}
@@ -54,13 +71,13 @@ func TestHoldingsRepository(t *testing.T) {
 		db := setupTestDB(t)
 		repo := NewHoldingsRepository(db)
 		record1 := &model.HoldingRecord{
-			UserID:   1,
+			UserID:   userID,
 			Name:     "Microsoft",
 			Symbol:   "MSFT",
 			Currency: "USD",
 		}
 		record2 := &model.HoldingRecord{
-			UserID:   1,
+			UserID:   userID,
 			Name:     "Apple",
 			Symbol:   "APPL",
 			Currency: "USD",
@@ -75,7 +92,7 @@ func TestHoldingsRepository(t *testing.T) {
 			t.Fatalf("failed to insert record2: %v", err)
 		}
 
-		records, err := repo.AllHoldings()
+		records, err := repo.AllHoldings(userID)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

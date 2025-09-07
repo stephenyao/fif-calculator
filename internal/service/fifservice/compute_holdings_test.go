@@ -16,9 +16,6 @@ func mustDate(s string) time.Time {
 }
 
 func TestComputeHoldingsBetween(t *testing.T) {
-	start := mustDate("2024-04-01")
-	end := mustDate("2025-03-31")
-
 	t.Run("compute holdings", func(t *testing.T) {
 		cases := []struct {
 			name   string
@@ -99,7 +96,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 
 		for _, tt := range cases {
 			t.Run(tt.name, func(t *testing.T) {
-				holdings, err := ComputeHoldingsBetween(tt.trades, start, end)
+				holdings, err := ComputeHoldingsBetween(tt.trades, 2025)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -225,7 +222,7 @@ func TestComputeHoldingsBetween(t *testing.T) {
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				holdings, err := ComputeHoldingsBetween(tt.trades, start, end)
+				holdings, err := ComputeHoldingsBetween(tt.trades, 2025)
 				if err != nil {
 					t.Fatal(err)
 				}

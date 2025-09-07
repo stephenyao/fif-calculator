@@ -3,7 +3,6 @@ package fifservice
 import (
 	"fif-calculator/internal/constants"
 	"fif-calculator/internal/datastructures"
-	"log"
 	"time"
 )
 import . "fif-calculator/internal/model"
@@ -16,7 +15,6 @@ func ComputeFRDIncome(trades []Trade, holdings []*HoldingInfo, startDate, endDat
 	for _, holding := range holdings {
 
 		peakDifferential, err := peakDifferentialForSymbol(*holding, tradesBySymbol[holding.Symbol], startDate, endDate)
-		log.Printf("peak differential for symbol %s: %v", holding.Symbol, peakDifferential)
 		actualGain, err := calculateRealGainForSymbol(tradesBySymbol[holding.Symbol], startDate, endDate)
 
 		if err != nil {
