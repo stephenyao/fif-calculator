@@ -5,7 +5,7 @@ import (
 )
 
 type FIFService interface {
-	FDRDIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult
+	FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult
 }
 
 type HoldingID int
@@ -47,14 +47,14 @@ type FDRHoldingInput struct {
 }
 
 func NewFIFService(repo FIFRepository) FIFService {
-	return FIFCalculationService{
+	return &FIFCalculationService{
 		repository: repo,
 	}
 }
 
-func (s FIFCalculationService) FDRDIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult {
+func (s *FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult {
 	// 1. Get all the holding IDs that need to be computed
-	holdingIDs := make([]HoldingID, len(input.Holdings))
+	holdingIDs := []HoldingID{}
 	for _, holding := range input.Holdings {
 		holdingIDs = append(holdingIDs, holding.HoldingID)
 	}
@@ -67,7 +67,12 @@ func (s FIFCalculationService) FDRDIncome(input FDRInput, startDate time.Time, e
 
 	result := FDRResult{}
 	for _, holding := range input.Holdings {
-		info := holdings[holding.HoldingID]
+		info, ok := holdings[holding.HoldingID]
+
+		if !ok {
+			continue
+		}
+
 		openingValue := info.Quantity * holding.OpeningPrice * holding.ExchangeRateToNZD
 		fdrRate := 0.05
 
