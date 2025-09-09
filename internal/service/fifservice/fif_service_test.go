@@ -10,12 +10,12 @@ type MockFIFRepository struct {
 	returnsEmpty bool
 }
 
-func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]HoldingFDRInfo {
+func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FDRHoldingQuantity {
 	if r.returnsEmpty {
-		return make(map[HoldingID]HoldingFDRInfo)
+		return make(map[HoldingID]FDRHoldingQuantity)
 	}
 
-	return map[HoldingID]HoldingFDRInfo{
+	return map[HoldingID]FDRHoldingQuantity{
 		0: {
 			Quantity: 200,
 			Name:     "Google",
@@ -27,6 +27,13 @@ func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil
 			Symbol:   "XYZ",
 		},
 	}
+}
+
+func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Time) map[HoldingID][]FDRTradeActivity {
+	if r.returnsEmpty {
+		return make(map[HoldingID][]FDRTradeActivity)
+	}
+	return make(map[HoldingID][]FDRTradeActivity)
 }
 
 func TestFDRIncome(t *testing.T) {
@@ -84,6 +91,69 @@ func TestFDRIncome(t *testing.T) {
 
 		if !slices.Equal(got.Holdings, want.Holdings) {
 			t.Errorf("got %v, want %v", got.Holdings, want.Holdings)
+		}
+	})
+}
+
+func TestPeakDifferential(t *testing.T) {
+	service := NewFIFService(MockFIFRepository{})
+
+	t.Run("no trade activity throughout period", func(t *testing.T) {
+		got := service.PeakHoldingDifferential(FDRHoldingQuantity{
+			Quantity: 100,
+			Name:     "Block",
+			Symbol:   "XYZ",
+		}, []FDRTradeActivity{})
+		want := PeakDifferentialResult{}
+		if got != want {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("there was a buy activity in the period", func(t *testing.T) {
+		holdingInfo := FDRHoldingQuantity{
+			Quantity: 10000,
+			Name:     "Block",
+			Symbol:   "XYZ",
+		}
+		trades := []FDRTradeActivity{
+			{
+				Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+				Action:       "buy",
+				Quantity:     5000,
+				Price:        22,
+				ExchangeRate: 1,
+				AmountInNZD:  110000,
+			},
+			{
+				Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+				Action:       "sell",
+				Quantity:     4000,
+				Price:        25,
+				ExchangeRate: 1,
+				AmountInNZD:  100000,
+			},
+			{
+				Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
+				Action:       "buy",
+				Quantity:     2000,
+				Price:        22,
+				ExchangeRate: 1,
+				AmountInNZD:  44000,
+			},
+		}
+
+		got := service.PeakHoldingDifferential(holdingInfo, trades)
+		want := PeakDifferentialResult{
+			PeakQuantity:  2000,
+			QuantityStart: 10000,
+			QuantityEnd:   13000,
+			AverageCost:   22,
+			Result:        2200,
+		}
+
+		if got != want {
+			t.Errorf("got %v, want %v", got, want)
 		}
 	})
 }

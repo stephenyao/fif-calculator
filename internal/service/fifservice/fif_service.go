@@ -1,23 +1,37 @@
 package fifservice
 
 import (
+	"fif-calculator/internal/constants"
 	"time"
 )
 
 type FIFService interface {
 	FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult
+	PeakHoldingDifferential(
+		holdingInfo FDRHoldingQuantity,
+		trades []FDRTradeActivity) PeakDifferentialResult
 }
 
 type HoldingID int
 
 type FIFRepository interface {
-	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]HoldingFDRInfo
+	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FDRHoldingQuantity
+	GetTrades(holdingsIDs []HoldingID, startDate time.Time, endDate time.Time) map[HoldingID][]FDRTradeActivity
 }
 
-type HoldingFDRInfo struct {
+type FDRHoldingQuantity struct {
 	Quantity float64
 	Name     string
 	Symbol   string
+}
+
+type FDRTradeActivity struct {
+	Date         time.Time
+	Action       string
+	Quantity     float64
+	Price        float64
+	ExchangeRate float64
+	AmountInNZD  float64
 }
 
 type FIFCalculationService struct {
@@ -47,14 +61,16 @@ type FDRHoldingInput struct {
 }
 
 func NewFIFService(repo FIFRepository) FIFService {
-	return &FIFCalculationService{
+	return FIFCalculationService{
 		repository: repo,
 	}
 }
 
-func (s *FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult {
+const fdrRate = 0.05
+
+func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult {
 	// 1. Get all the holding IDs that need to be computed
-	holdingIDs := []HoldingID{}
+	holdingIDs := make([]HoldingID, 0, len(input.Holdings))
 	for _, holding := range input.Holdings {
 		holdingIDs = append(holdingIDs, holding.HoldingID)
 	}
@@ -70,11 +86,11 @@ func (s *FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, e
 		info, ok := holdings[holding.HoldingID]
 
 		if !ok {
+			// Potentially return an error here
 			continue
 		}
 
 		openingValue := info.Quantity * holding.OpeningPrice * holding.ExchangeRateToNZD
-		fdrRate := 0.05
 
 		r := FDRHoldingResult{
 			Name:                info.Name,
@@ -87,4 +103,52 @@ func (s *FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, e
 	}
 
 	return result
+}
+
+type PeakDifferentialResult struct {
+	PeakQuantity  float64
+	QuantityStart float64
+	QuantityEnd   float64
+	AverageCost   float64
+	Result        float64
+}
+
+func (s FIFCalculationService) PeakHoldingDifferential(
+	holdingInfo FDRHoldingQuantity,
+	trades []FDRTradeActivity) PeakDifferentialResult {
+
+	peakQuantity := holdingInfo.Quantity
+	currentQuantity := holdingInfo.Quantity
+	var totalBuyQuantity float64
+	var totalBuyAmount float64
+
+	for _, trade := range trades {
+		switch trade.Action {
+		case constants.Buy:
+			currentQuantity += trade.Quantity
+			totalBuyQuantity += trade.Quantity
+			totalBuyAmount += trade.Quantity * trade.Price * trade.ExchangeRate
+		case constants.Sell:
+			currentQuantity -= trade.Quantity
+		}
+		peakQuantity = max(peakQuantity, currentQuantity)
+	}
+
+	if totalBuyQuantity == 0 && totalBuyAmount == 0 {
+		return PeakDifferentialResult{}
+	}
+
+	peakToStart := peakQuantity - holdingInfo.Quantity
+	peakToEnd := peakQuantity - currentQuantity
+	peakDifferential := min(peakToStart, peakToEnd)
+
+	averageCost := totalBuyAmount / totalBuyQuantity
+
+	return PeakDifferentialResult{
+		PeakQuantity:  peakDifferential,
+		QuantityStart: holdingInfo.Quantity,
+		QuantityEnd:   currentQuantity,
+		AverageCost:   averageCost,
+		Result:        averageCost * fdrRate * peakDifferential,
+	}
 }
