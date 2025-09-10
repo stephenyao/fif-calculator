@@ -157,3 +157,53 @@ func TestPeakDifferential(t *testing.T) {
 		}
 	})
 }
+
+func TestRealGain(t *testing.T) {
+	service := NewFIFService(MockFIFRepository{})
+	trades := []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     4000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  100000,
+		},
+		{
+			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     2000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  44000,
+		},
+	}
+
+	got := service.RealGain(trades)
+	want := RealGainResult{
+		Sales: []GainOnSale{
+			{
+				Quantity:          4000,
+				Gain:              12000,
+				CostOfAcquisition: 88000,
+			},
+		},
+		Result: 12000,
+	}
+
+	if !slices.Equal(got.Sales, want.Sales) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	if got.Result != want.Result {
+		t.Errorf("got %v, want %v", got.Result, want.Result)
+	}
+}

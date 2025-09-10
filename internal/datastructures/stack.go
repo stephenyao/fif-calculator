@@ -31,3 +31,34 @@ func (s *Stack) Peek() (Trade, bool) {
 func (s *Stack) Len() int {
 	return len(s.data)
 }
+
+type GenericStack[T any] struct {
+	data []T
+}
+
+func (s *GenericStack[T]) Push(t T) {
+	s.data = append(s.data, t)
+}
+
+func (s *GenericStack[T]) Pop() (T, bool) {
+	var zero T
+	if len(s.data) == 0 {
+		return zero, false
+	}
+
+	last := s.data[len(s.data)-1]
+	s.data = s.data[:len(s.data)-1]
+	return last, true
+}
+
+func (s *GenericStack[T]) Peek() (T, bool) {
+	var zero T
+	if len(s.data) == 0 {
+		return zero, false
+	}
+	return s.data[len(s.data)-1], true
+}
+
+func (s *GenericStack[T]) Len() int {
+	return len(s.data)
+}

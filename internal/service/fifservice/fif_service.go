@@ -2,6 +2,7 @@ package fifservice
 
 import (
 	"fif-calculator/internal/constants"
+	"fif-calculator/internal/datastructures"
 	"time"
 )
 
@@ -10,6 +11,7 @@ type FIFService interface {
 	PeakHoldingDifferential(
 		holdingInfo FDRHoldingQuantity,
 		trades []FDRTradeActivity) PeakDifferentialResult
+	RealGain(trades []FDRTradeActivity) RealGainResult
 }
 
 type HoldingID int
@@ -134,7 +136,7 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 		peakQuantity = max(peakQuantity, currentQuantity)
 	}
 
-	if totalBuyQuantity == 0 && totalBuyAmount == 0 {
+	if totalBuyQuantity == 0 {
 		return PeakDifferentialResult{}
 	}
 
@@ -151,4 +153,71 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 		AverageCost:   averageCost,
 		Result:        averageCost * fdrRate * peakDifferential,
 	}
+}
+
+type RealGainResult struct {
+	Sales  []GainOnSale
+	Result float64
+}
+
+type GainOnSale struct {
+	Quantity          float64
+	Gain              float64
+	CostOfAcquisition float64
+}
+
+func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResult {
+	type BuyActivity struct {
+		quantity     float64
+		price        float64
+		exchangeRate float64
+	}
+
+	var result RealGainResult = RealGainResult{}
+	var stack datastructures.GenericStack[*BuyActivity]
+	var totalGain float64
+
+	for _, trade := range trades {
+		switch trade.Action {
+		case constants.Buy:
+			activity := BuyActivity{
+				quantity:     trade.Quantity,
+				price:        trade.Price,
+				exchangeRate: trade.ExchangeRate,
+			}
+			stack.Push(&activity)
+		case constants.Sell:
+			sellQuantity := trade.Quantity
+
+			var costOfAcquisition float64
+			for sellQuantity > 0 {
+				buyActivity, ok := stack.Peek()
+				if !ok {
+					break
+				}
+				// if the buy order is bigger than the sell order, drain the quanitity. Otherwise, pop the activity.
+				if buyActivity.quantity > sellQuantity {
+					buyActivity.quantity -= sellQuantity
+					costOfAcquisition += buyActivity.price * buyActivity.exchangeRate * sellQuantity
+					sellQuantity = 0
+				} else {
+					stack.Pop()
+					sellQuantity -= buyActivity.quantity
+					costOfAcquisition += buyActivity.price * buyActivity.exchangeRate * buyActivity.quantity
+				}
+			}
+
+			totalGain += trade.AmountInNZD - costOfAcquisition
+			sale := GainOnSale{
+				Quantity:          trade.Quantity,
+				Gain:              totalGain,
+				CostOfAcquisition: costOfAcquisition,
+			}
+			result.Sales = append(result.Sales, sale)
+		}
+	}
+
+	result.Result = totalGain
+
+	return result
 }
