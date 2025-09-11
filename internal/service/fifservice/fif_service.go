@@ -176,7 +176,6 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 	var result RealGainResult = RealGainResult{}
 	var stack datastructures.GenericStack[*BuyActivity]
 	var totalGain float64
-
 	for _, trade := range trades {
 		switch trade.Action {
 		case constants.Buy:
@@ -187,8 +186,11 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 			}
 			stack.Push(&activity)
 		case constants.Sell:
-			sellQuantity := trade.Quantity
+			if stack.Len() == 0 {
+				break
+			}
 
+			sellQuantity := trade.Quantity
 			var costOfAcquisition float64
 			for sellQuantity > 0 {
 				buyActivity, ok := stack.Peek()
@@ -207,7 +209,7 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 				}
 			}
 
-			totalGain += trade.AmountInNZD - costOfAcquisition
+			totalGain += (trade.Quantity-sellQuantity)*trade.Price*trade.ExchangeRate - costOfAcquisition
 			sale := GainOnSale{
 				Quantity:          trade.Quantity,
 				Gain:              totalGain,

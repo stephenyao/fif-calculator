@@ -98,69 +98,109 @@ func TestFDRIncome(t *testing.T) {
 func TestPeakDifferential(t *testing.T) {
 	service := NewFIFService(MockFIFRepository{})
 
-	t.Run("no trade activity throughout period", func(t *testing.T) {
-		got := service.PeakHoldingDifferential(FDRHoldingQuantity{
-			Quantity: 100,
-			Name:     "Block",
-			Symbol:   "XYZ",
-		}, []FDRTradeActivity{})
-		want := PeakDifferentialResult{}
-		if got != want {
-			t.Errorf("got %v, want %v", got, want)
-		}
-	})
-
-	t.Run("there was a buy activity in the period", func(t *testing.T) {
-		holdingInfo := FDRHoldingQuantity{
-			Quantity: 10000,
-			Name:     "Block",
-			Symbol:   "XYZ",
-		}
-		trades := []FDRTradeActivity{
-			{
-				Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
-				Action:       "buy",
-				Quantity:     5000,
-				Price:        22,
-				ExchangeRate: 1,
-				AmountInNZD:  110000,
+	testCases := []struct {
+		name     string
+		quantity FDRHoldingQuantity
+		trades   []FDRTradeActivity
+		want     PeakDifferentialResult
+	}{
+		{
+			name: "buy and sell activity",
+			quantity: FDRHoldingQuantity{
+				Quantity: 10000,
+				Name:     "Block",
+				Symbol:   "XYZ",
+			}, trades: buySellActivities(),
+			want: PeakDifferentialResult{
+				PeakQuantity:  2000,
+				QuantityStart: 10000,
+				QuantityEnd:   13000,
+				AverageCost:   22,
+				Result:        2200,
 			},
-			{
-				Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
-				Action:       "sell",
-				Quantity:     4000,
-				Price:        25,
-				ExchangeRate: 1,
-				AmountInNZD:  100000,
+		}, {
+			name: "no trade activity throoughout period",
+			quantity: FDRHoldingQuantity{
+				Quantity: 100,
+				Name:     "Block",
+				Symbol:   "XYZ",
 			},
-			{
-				Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
-				Action:       "buy",
-				Quantity:     2000,
-				Price:        22,
-				ExchangeRate: 1,
-				AmountInNZD:  44000,
-			},
-		}
+			trades: []FDRTradeActivity{},
+			want:   PeakDifferentialResult{},
+		},
+	}
 
-		got := service.PeakHoldingDifferential(holdingInfo, trades)
-		want := PeakDifferentialResult{
-			PeakQuantity:  2000,
-			QuantityStart: 10000,
-			QuantityEnd:   13000,
-			AverageCost:   22,
-			Result:        2200,
-		}
-
-		if got != want {
-			t.Errorf("got %v, want %v", got, want)
-		}
-	})
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := service.PeakHoldingDifferential(tc.quantity, tc.trades)
+			if got != tc.want {
+				t.Errorf("got %v, want %v", got, tc.want)
+			}
+		})
+	}
 }
 
 func TestRealGain(t *testing.T) {
 	service := NewFIFService(MockFIFRepository{})
-	trades := []FDRTradeActivity{
+
+	testCases := []struct {
+		name   string
+		trades []FDRTradeActivity
+		want   RealGainResult
+	}{
+		{
+			name:   "buy activity bigger than sell activity",
+			trades: buySellActivities(),
+			want: RealGainResult{
+				Sales: []GainOnSale{
+					{
+						Quantity:          4000,
+						Gain:              12000,
+						CostOfAcquisition: 88000,
+					},
+				},
+				Result: 12000,
+			},
+		}, {
+			name:   "buy activity not big enough for sell activity",
+			trades: sellQuantityGreaterThanBuy(),
+			want: RealGainResult{
+				Sales: []GainOnSale{
+					{
+						Quantity:          10000,
+						Gain:              -12000,
+						CostOfAcquisition: 210000,
+					},
+				},
+				Result: -12000,
+			},
+		}, {
+			name:   "no sell activities",
+			trades: noSellActivities(),
+			want:   RealGainResult{},
+		}, {
+			name:   "no buy activities",
+			trades: noBuyActivities(),
+			want:   RealGainResult{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := service.RealGain(tc.trades)
+			if !slices.Equal(got.Sales, tc.want.Sales) {
+				t.Errorf("got %v, want %v", got.Sales, tc.want.Sales)
+			}
+
+			if got.Result != tc.want.Result {
+				t.Errorf("got %v, want %v", got.Result, tc.want.Result)
+			}
+		})
+	}
+}
+
+func buySellActivities() []FDRTradeActivity {
+	return []FDRTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -186,24 +226,75 @@ func TestRealGain(t *testing.T) {
 			AmountInNZD:  44000,
 		},
 	}
+}
 
-	got := service.RealGain(trades)
-	want := RealGainResult{
-		Sales: []GainOnSale{
-			{
-				Quantity:          4000,
-				Gain:              12000,
-				CostOfAcquisition: 88000,
-			},
+func sellQuantityGreaterThanBuy() []FDRTradeActivity {
+	return []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
 		},
-		Result: 12000,
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     4000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  100000,
+		},
+		{
+			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     10000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  220000,
+		},
 	}
+}
 
-	if !slices.Equal(got.Sales, want.Sales) {
-		t.Errorf("got %v, want %v", got, want)
+func noBuyActivities() []FDRTradeActivity {
+	return []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     4000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  100000,
+		},
 	}
+}
 
-	if got.Result != want.Result {
-		t.Errorf("got %v, want %v", got.Result, want.Result)
+func noSellActivities() []FDRTradeActivity {
+	return []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     4000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  100000,
+		},
 	}
 }
