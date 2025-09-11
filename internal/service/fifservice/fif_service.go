@@ -123,6 +123,7 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 	currentQuantity := holdingInfo.Quantity
 	var totalBuyQuantity float64
 	var totalBuyAmount float64
+	var totalSellQuantity float64
 
 	for _, trade := range trades {
 		switch trade.Action {
@@ -132,11 +133,12 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 			totalBuyAmount += trade.Quantity * trade.Price * trade.ExchangeRate
 		case constants.Sell:
 			currentQuantity -= trade.Quantity
+			totalSellQuantity += trade.Quantity
 		}
 		peakQuantity = max(peakQuantity, currentQuantity)
 	}
 
-	if totalBuyQuantity == 0 {
+	if totalBuyQuantity == 0 || totalSellQuantity == 0 {
 		return PeakDifferentialResult{}
 	}
 

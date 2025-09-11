@@ -119,13 +119,33 @@ func TestPeakDifferential(t *testing.T) {
 				Result:        2200,
 			},
 		}, {
-			name: "no trade activity throoughout period",
+			name: "no trade activity throughout period",
 			quantity: FDRHoldingQuantity{
 				Quantity: 100,
 				Name:     "Block",
 				Symbol:   "XYZ",
 			},
 			trades: []FDRTradeActivity{},
+			want:   PeakDifferentialResult{},
+		},
+		{
+			name: "no buy activities",
+			quantity: FDRHoldingQuantity{
+				Quantity: 10000,
+				Name:     "Block",
+				Symbol:   "XYZ",
+			},
+			trades: noBuyActivities(),
+			want:   PeakDifferentialResult{},
+		},
+		{
+			name: "no sell activities",
+			quantity: FDRHoldingQuantity{
+				Quantity: 10000,
+				Name:     "Block",
+				Symbol:   "XYZ",
+			},
+			trades: noSellActivities(),
 			want:   PeakDifferentialResult{},
 		},
 	}
