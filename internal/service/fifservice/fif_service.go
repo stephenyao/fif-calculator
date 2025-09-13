@@ -81,6 +81,7 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 	// 2. Get the quantity for each holding at the start date
 
 	holdings := s.repository.GetHoldingQuantities(holdingIDs, startDate)
+	activities := s.repository.GetTrades(holdingIDs, startDate, endDate)
 
 	// 3. For each holding calculate the FDR (5% * opening market value)
 
@@ -94,13 +95,16 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 		}
 
 		openingValue := info.Quantity * holding.OpeningPrice * holding.ExchangeRateToNZD
+		peak := s.PeakHoldingDifferential(holdings[holding.HoldingID], activities[holding.HoldingID])
+		realGain := s.RealGain(activities[holding.HoldingID])
+		quickSales := s.QuickSaleAdjustment(peak, realGain)
 
 		r := FDRHoldingResult{
 			Name:                info.Name,
 			Symbol:              info.Symbol,
 			OpeningValue:        openingValue,
-			QuickSaleAdjustment: QuickSaleAdjustmentResult{},
-			Income:              openingValue * fdrRate,
+			QuickSaleAdjustment: quickSales,
+			Income:              openingValue*fdrRate + quickSales.Result,
 		}
 		result.Holdings = append(result.Holdings, r)
 	}
@@ -166,7 +170,7 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 	averageCost := totalBuyAmount / totalBuyQuantity
 
 	return PeakDifferentialResult{
-		PeakQuantity:  peakDifferential,
+		PeakQuantity:  peakQuantity,
 		QuantityStart: holdingInfo.Quantity,
 		QuantityEnd:   currentQuantity,
 		AverageCost:   averageCost,

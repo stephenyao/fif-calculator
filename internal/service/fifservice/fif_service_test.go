@@ -8,33 +8,16 @@ import (
 )
 
 type MockFIFRepository struct {
-	returnsEmpty bool
+	holdingQuantities map[HoldingID]FDRHoldingQuantity
+	tradeActivities   map[HoldingID][]FDRTradeActivity
 }
 
 func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FDRHoldingQuantity {
-	if r.returnsEmpty {
-		return make(map[HoldingID]FDRHoldingQuantity)
-	}
-
-	return map[HoldingID]FDRHoldingQuantity{
-		0: {
-			Quantity: 200,
-			Name:     "Google",
-			Symbol:   "GOOG",
-		},
-		1: {
-			Quantity: 200,
-			Name:     "Block",
-			Symbol:   "XYZ",
-		},
-	}
+	return r.holdingQuantities
 }
 
 func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Time) map[HoldingID][]FDRTradeActivity {
-	if r.returnsEmpty {
-		return make(map[HoldingID][]FDRTradeActivity)
-	}
-	return make(map[HoldingID][]FDRTradeActivity)
+	return r.tradeActivities
 }
 
 func TestQuickSaleAdjustment(t *testing.T) {
@@ -126,7 +109,9 @@ func TestFDRIncome(t *testing.T) {
 	}
 
 	t.Run("test FDR income - no sales throughout period", func(t *testing.T) {
-		service := NewFIFService(MockFIFRepository{})
+		service := NewFIFService(MockFIFRepository{
+			holdingQuantities: holdingQuantities(),
+		})
 		got := service.FDRIncome(input, start, end)
 		want := FDRResult{
 			Holdings: []FDRHoldingResult{
@@ -153,12 +138,63 @@ func TestFDRIncome(t *testing.T) {
 	})
 
 	t.Run("fif repository returns no holdings", func(t *testing.T) {
-		service := NewFIFService(MockFIFRepository{
-			returnsEmpty: true,
-		})
+		service := NewFIFService(MockFIFRepository{})
 
 		got := service.FDRIncome(input, start, end)
 		want := FDRResult{}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("with quick sales adjustment", func(t *testing.T) {
+		service := NewFIFService(MockFIFRepository{
+			holdingQuantities: holdingWithQuickSales(),
+			tradeActivities:   tradeActivitiesWithQuickSales(),
+		})
+
+		input := FDRInput{
+			Holdings: []FDRHoldingInput{
+				{
+					OpeningPrice:      20,
+					ExchangeRateToNZD: 1,
+					HoldingID:         0,
+				},
+			},
+		}
+
+		got := service.FDRIncome(input, start, end)
+		want := FDRResult{
+			Holdings: []FDRHoldingResult{
+				{
+					Name:         "Google",
+					Symbol:       "GOOG",
+					OpeningValue: 200000,
+					QuickSaleAdjustment: QuickSaleAdjustmentResult{
+						PeakDifferentialResult: PeakDifferentialResult{
+							PeakQuantity:  15000,
+							QuantityStart: 10000,
+							QuantityEnd:   13000,
+							AverageCost:   22,
+							Result:        2200,
+						},
+						RealGainResult: RealGainResult{
+							Sales: []GainOnSale{
+								{
+									Quantity:          4000,
+									Gain:              12000,
+									CostOfAcquisition: 88000,
+								},
+							},
+							Result: 10000,
+						},
+						Result: 2200,
+					},
+					Income: 12200,
+				},
+			},
+		}
 
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
@@ -183,7 +219,7 @@ func TestPeakDifferential(t *testing.T) {
 				Symbol:   "XYZ",
 			}, trades: buySellActivities(),
 			want: PeakDifferentialResult{
-				PeakQuantity:  2000,
+				PeakQuantity:  15000,
 				QuantityStart: 10000,
 				QuantityEnd:   13000,
 				AverageCost:   22,
@@ -387,5 +423,36 @@ func noSellActivities() []FDRTradeActivity {
 			ExchangeRate: 1,
 			AmountInNZD:  100000,
 		},
+	}
+}
+
+func holdingQuantities() map[HoldingID]FDRHoldingQuantity {
+	return map[HoldingID]FDRHoldingQuantity{
+		0: {
+			Quantity: 200,
+			Name:     "Google",
+			Symbol:   "GOOG",
+		},
+		1: {
+			Quantity: 200,
+			Name:     "Block",
+			Symbol:   "XYZ",
+		},
+	}
+}
+
+func holdingWithQuickSales() map[HoldingID]FDRHoldingQuantity {
+	return map[HoldingID]FDRHoldingQuantity{
+		0: {
+			Quantity: 10000,
+			Name:     "Google",
+			Symbol:   "GOOG",
+		},
+	}
+}
+
+func tradeActivitiesWithQuickSales() map[HoldingID][]FDRTradeActivity {
+	return map[HoldingID][]FDRTradeActivity{
+		0: buySellActivities(),
 	}
 }
