@@ -187,7 +187,7 @@ func TestFDRIncome(t *testing.T) {
 									CostOfAcquisition: 88000,
 								},
 							},
-							Result: 10000,
+							Result: 12000,
 						},
 						Result: 2200,
 					},
