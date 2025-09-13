@@ -49,7 +49,7 @@ type FDRHoldingResult struct {
 	Name                string
 	Symbol              string
 	OpeningValue        float64
-	QuickSaleAdjustment float64
+	QuickSaleAdjustment QuickSaleAdjustmentResult
 	Income              float64
 }
 
@@ -99,7 +99,7 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 			Name:                info.Name,
 			Symbol:              info.Symbol,
 			OpeningValue:        openingValue,
-			QuickSaleAdjustment: 0,
+			QuickSaleAdjustment: QuickSaleAdjustmentResult{},
 			Income:              openingValue * fdrRate,
 		}
 		result.Holdings = append(result.Holdings, r)

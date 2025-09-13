@@ -134,21 +134,21 @@ func TestFDRIncome(t *testing.T) {
 					Name:                "Google",
 					Symbol:              "GOOG",
 					OpeningValue:        30000,
-					QuickSaleAdjustment: 0,
+					QuickSaleAdjustment: QuickSaleAdjustmentResult{},
 					Income:              1500,
 				},
 				{
 					Name:                "Block",
 					Symbol:              "XYZ",
 					OpeningValue:        60000,
-					QuickSaleAdjustment: 0,
+					QuickSaleAdjustment: QuickSaleAdjustmentResult{},
 					Income:              3000,
 				},
 			},
 		}
 
-		if !slices.Equal(got.Holdings, want.Holdings) {
-			t.Errorf("got %v, want %v", got.Holdings, want.Holdings)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
 		}
 	})
 
@@ -160,8 +160,8 @@ func TestFDRIncome(t *testing.T) {
 		got := service.FDRIncome(input, start, end)
 		want := FDRResult{}
 
-		if !slices.Equal(got.Holdings, want.Holdings) {
-			t.Errorf("got %v, want %v", got.Holdings, want.Holdings)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
 		}
 	})
 }
