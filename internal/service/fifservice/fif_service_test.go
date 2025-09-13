@@ -38,6 +38,8 @@ func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Ti
 }
 
 func TestQuickSaleAdjustment(t *testing.T) {
+	service := NewFIFService(MockFIFRepository{})
+
 	t.Run("peak differential is smaller than real gain", func(t *testing.T) {
 		peakDiff := PeakDifferentialResult{
 			PeakQuantity:  10000,
@@ -52,7 +54,6 @@ func TestQuickSaleAdjustment(t *testing.T) {
 			Result: 20000,
 		}
 
-		service := NewFIFService(MockFIFRepository{})
 		got := service.QuickSaleAdjustment(peakDiff, realGain)
 
 		want := QuickSaleAdjustmentResult{
@@ -80,7 +81,6 @@ func TestQuickSaleAdjustment(t *testing.T) {
 			Result: 80000,
 		}
 
-		service := NewFIFService(MockFIFRepository{})
 		got := service.QuickSaleAdjustment(peakDiff, realGain)
 
 		want := QuickSaleAdjustmentResult{
@@ -88,6 +88,18 @@ func TestQuickSaleAdjustment(t *testing.T) {
 			RealGainResult:         realGain,
 			Result:                 50000,
 		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("no peak differential or real gain", func(t *testing.T) {
+		peakDiff := PeakDifferentialResult{}
+		realGain := RealGainResult{}
+
+		got := service.QuickSaleAdjustment(peakDiff, realGain)
+		want := QuickSaleAdjustmentResult{}
 
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
