@@ -302,6 +302,24 @@ func TestRealGain(t *testing.T) {
 				Result: -12000,
 			},
 		}, {
+			name:   "multiple buy and sells should drain first buy in the queue",
+			trades: buyQuantityGreaterThanSell(),
+			want: RealGainResult{
+				Sales: []GainOnSale{
+					{
+						Quantity:          3000,
+						Gain:              9000,
+						CostOfAcquisition: 66000,
+					},
+					{
+						Quantity:          3000,
+						Gain:              6000,
+						CostOfAcquisition: 69000,
+					},
+				},
+				Result: 15000,
+			},
+		}, {
 			name:   "no sell activities",
 			trades: noSellActivities(),
 			want:   RealGainResult{},
@@ -380,6 +398,43 @@ func sellQuantityGreaterThanBuy() []FDRTradeActivity {
 			Price:        22,
 			ExchangeRate: 1,
 			AmountInNZD:  220000,
+		},
+	}
+}
+
+func buyQuantityGreaterThanSell() []FDRTradeActivity {
+	return []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     4000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  100000,
+		},
+		{
+			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     3000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  75000,
+		},
+		{
+			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     3000,
+			Price:        25,
+			ExchangeRate: 1,
+			AmountInNZD:  75000,
 		},
 	}
 }

@@ -2,7 +2,6 @@ package fifservice
 
 import (
 	"fif-calculator/internal/constants"
-	"fif-calculator/internal/datastructures"
 	"time"
 )
 
@@ -197,7 +196,8 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 	}
 
 	var result RealGainResult = RealGainResult{}
-	var stack datastructures.GenericStack[*BuyActivity]
+	var queue []*BuyActivity
+
 	var totalGain float64
 	for _, trade := range trades {
 		switch trade.Action {
@@ -207,35 +207,38 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 				price:        trade.Price,
 				exchangeRate: trade.ExchangeRate,
 			}
-			stack.Push(&activity)
+			queue = append(queue, &activity)
 		case constants.Sell:
-			if stack.Len() == 0 {
+			if len(queue) == 0 {
 				break
 			}
 
 			sellQuantity := trade.Quantity
 			var costOfAcquisition float64
 			for sellQuantity > 0 {
-				buyActivity, ok := stack.Peek()
-				if !ok {
+				if len(queue) == 0 {
 					break
 				}
+
+				buyActivity := queue[0]
+
 				// if the buy order is bigger than the sell order, drain the quanitity. Otherwise, pop the activity.
 				if buyActivity.quantity > sellQuantity {
 					buyActivity.quantity -= sellQuantity
 					costOfAcquisition += buyActivity.price * buyActivity.exchangeRate * sellQuantity
 					sellQuantity = 0
 				} else {
-					stack.Pop()
+					queue = queue[1:]
 					sellQuantity -= buyActivity.quantity
 					costOfAcquisition += buyActivity.price * buyActivity.exchangeRate * buyActivity.quantity
 				}
 			}
 
-			totalGain += (trade.Quantity-sellQuantity)*trade.Price*trade.ExchangeRate - costOfAcquisition
+			gainOnSale := (trade.Quantity-sellQuantity)*trade.Price*trade.ExchangeRate - costOfAcquisition
+			totalGain += gainOnSale
 			sale := GainOnSale{
 				Quantity:          trade.Quantity,
-				Gain:              totalGain,
+				Gain:              gainOnSale,
 				CostOfAcquisition: costOfAcquisition,
 			}
 			result.Sales = append(result.Sales, sale)
