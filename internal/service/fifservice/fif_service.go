@@ -12,6 +12,7 @@ type FIFService interface {
 		holdingInfo FDRHoldingQuantity,
 		trades []FDRTradeActivity) PeakDifferentialResult
 	RealGain(trades []FDRTradeActivity) RealGainResult
+	QuickSaleAdjustment(peakDifferential PeakDifferentialResult, realGain RealGainResult) QuickSaleAdjustmentResult
 }
 
 type HoldingID int
@@ -105,6 +106,22 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 	}
 
 	return result
+}
+
+type QuickSaleAdjustmentResult struct {
+	PeakDifferentialResult PeakDifferentialResult
+	RealGainResult         RealGainResult
+	Result                 float64
+}
+
+func (s FIFCalculationService) QuickSaleAdjustment(peakDifferential PeakDifferentialResult, realGain RealGainResult) QuickSaleAdjustmentResult {
+	result := min(peakDifferential.Result, realGain.Result)
+
+	return QuickSaleAdjustmentResult{
+		PeakDifferentialResult: peakDifferential,
+		RealGainResult:         realGain,
+		Result:                 result,
+	}
 }
 
 type PeakDifferentialResult struct {
