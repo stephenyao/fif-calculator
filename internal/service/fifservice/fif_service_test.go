@@ -178,6 +178,7 @@ func TestFDRIncome(t *testing.T) {
 							QuantityEnd:   13000,
 							AverageCost:   22,
 							Result:        2200,
+							TimeStamp:     time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 						},
 						RealGainResult: RealGainResult{
 							Sales: []GainOnSale{
@@ -224,6 +225,7 @@ func TestPeakDifferential(t *testing.T) {
 				QuantityEnd:   13000,
 				AverageCost:   22,
 				Result:        2200,
+				TimeStamp:     time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			},
 		}, {
 			name: "no trade activity throughout period",

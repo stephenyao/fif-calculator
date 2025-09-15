@@ -133,6 +133,7 @@ type PeakDifferentialResult struct {
 	QuantityEnd   float64
 	AverageCost   float64
 	Result        float64
+	TimeStamp     time.Time
 }
 
 func (s FIFCalculationService) PeakHoldingDifferential(
@@ -144,6 +145,7 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 	var totalBuyQuantity float64
 	var totalBuyAmount float64
 	var totalSellQuantity float64
+	var peakDate time.Time
 
 	for _, trade := range trades {
 		switch trade.Action {
@@ -155,7 +157,12 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 			currentQuantity -= trade.Quantity
 			totalSellQuantity += trade.Quantity
 		}
-		peakQuantity = max(peakQuantity, currentQuantity)
+		if currentQuantity > peakQuantity {
+			peakQuantity = currentQuantity
+			peakDate = trade.Date
+		}
+
+		//peakQuantity = max(peakQuantity, currentQuantity)
 	}
 
 	if totalBuyQuantity == 0 || totalSellQuantity == 0 {
@@ -174,6 +181,7 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 		QuantityEnd:   currentQuantity,
 		AverageCost:   averageCost,
 		Result:        averageCost * fdrRate * peakDifferential,
+		TimeStamp:     peakDate,
 	}
 }
 
