@@ -1,6 +1,7 @@
 package fifservice
 
 import (
+	. "fif-calculator/internal/repository"
 	"reflect"
 	"slices"
 	"testing"
@@ -8,15 +9,15 @@ import (
 )
 
 type MockFIFRepository struct {
-	holdingQuantities map[HoldingID]FDRHoldingQuantity
-	tradeActivities   map[HoldingID][]FDRTradeActivity
+	holdingQuantities map[HoldingID]FIFHoldingQuantity
+	tradeActivities   map[HoldingID][]FIFTradeActivity
 }
 
-func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FDRHoldingQuantity {
+func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FIFHoldingQuantity {
 	return r.holdingQuantities
 }
 
-func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Time) map[HoldingID][]FDRTradeActivity {
+func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Time) map[HoldingID][]FIFTradeActivity {
 	return r.tradeActivities
 }
 
@@ -209,13 +210,13 @@ func TestPeakDifferential(t *testing.T) {
 
 	testCases := []struct {
 		name     string
-		quantity FDRHoldingQuantity
-		trades   []FDRTradeActivity
+		quantity FIFHoldingQuantity
+		trades   []FIFTradeActivity
 		want     PeakDifferentialResult
 	}{
 		{
 			name: "buy and sell activity",
-			quantity: FDRHoldingQuantity{
+			quantity: FIFHoldingQuantity{
 				Quantity: 10000,
 				Name:     "Block",
 				Symbol:   "XYZ",
@@ -231,17 +232,17 @@ func TestPeakDifferential(t *testing.T) {
 			},
 		}, {
 			name: "no trade activity throughout period",
-			quantity: FDRHoldingQuantity{
+			quantity: FIFHoldingQuantity{
 				Quantity: 100,
 				Name:     "Block",
 				Symbol:   "XYZ",
 			},
-			trades: []FDRTradeActivity{},
+			trades: []FIFTradeActivity{},
 			want:   PeakDifferentialResult{},
 		},
 		{
 			name: "no buy activities",
-			quantity: FDRHoldingQuantity{
+			quantity: FIFHoldingQuantity{
 				Quantity: 10000,
 				Name:     "Block",
 				Symbol:   "XYZ",
@@ -251,7 +252,7 @@ func TestPeakDifferential(t *testing.T) {
 		},
 		{
 			name: "no sell activities",
-			quantity: FDRHoldingQuantity{
+			quantity: FIFHoldingQuantity{
 				Quantity: 10000,
 				Name:     "Block",
 				Symbol:   "XYZ",
@@ -276,7 +277,7 @@ func TestRealGain(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		trades []FDRTradeActivity
+		trades []FIFTradeActivity
 		want   RealGainResult
 	}{
 		{
@@ -357,8 +358,8 @@ func TestRealGain(t *testing.T) {
 	}
 }
 
-func buySellActivities() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func buySellActivities() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -386,8 +387,8 @@ func buySellActivities() []FDRTradeActivity {
 	}
 }
 
-func sellQuantityGreaterThanBuy() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func sellQuantityGreaterThanBuy() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -415,8 +416,8 @@ func sellQuantityGreaterThanBuy() []FDRTradeActivity {
 	}
 }
 
-func buyQuantityGreaterThanSell() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func buyQuantityGreaterThanSell() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -452,8 +453,8 @@ func buyQuantityGreaterThanSell() []FDRTradeActivity {
 	}
 }
 
-func noBuyActivities() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func noBuyActivities() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "sell",
@@ -473,8 +474,8 @@ func noBuyActivities() []FDRTradeActivity {
 	}
 }
 
-func sellAtLossActivities() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func sellAtLossActivities() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -510,8 +511,8 @@ func sellAtLossActivities() []FDRTradeActivity {
 	}
 }
 
-func sellAtLossThenProfit() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func sellAtLossThenProfit() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -547,8 +548,8 @@ func sellAtLossThenProfit() []FDRTradeActivity {
 	}
 }
 
-func noSellActivities() []FDRTradeActivity {
-	return []FDRTradeActivity{
+func noSellActivities() []FIFTradeActivity {
+	return []FIFTradeActivity{
 		{
 			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			Action:       "buy",
@@ -568,8 +569,8 @@ func noSellActivities() []FDRTradeActivity {
 	}
 }
 
-func holdingQuantities() map[HoldingID]FDRHoldingQuantity {
-	return map[HoldingID]FDRHoldingQuantity{
+func holdingQuantities() map[HoldingID]FIFHoldingQuantity {
+	return map[HoldingID]FIFHoldingQuantity{
 		0: {
 			Quantity: 200,
 			Name:     "Google",
@@ -583,8 +584,8 @@ func holdingQuantities() map[HoldingID]FDRHoldingQuantity {
 	}
 }
 
-func holdingWithQuickSales() map[HoldingID]FDRHoldingQuantity {
-	return map[HoldingID]FDRHoldingQuantity{
+func holdingWithQuickSales() map[HoldingID]FIFHoldingQuantity {
+	return map[HoldingID]FIFHoldingQuantity{
 		0: {
 			Quantity: 10000,
 			Name:     "Google",
@@ -593,8 +594,8 @@ func holdingWithQuickSales() map[HoldingID]FDRHoldingQuantity {
 	}
 }
 
-func tradeActivitiesWithQuickSales() map[HoldingID][]FDRTradeActivity {
-	return map[HoldingID][]FDRTradeActivity{
+func tradeActivitiesWithQuickSales() map[HoldingID][]FIFTradeActivity {
+	return map[HoldingID][]FIFTradeActivity{
 		0: buySellActivities(),
 	}
 }

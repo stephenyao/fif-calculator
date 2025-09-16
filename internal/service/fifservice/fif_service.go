@@ -2,38 +2,17 @@ package fifservice
 
 import (
 	"fif-calculator/internal/constants"
+	. "fif-calculator/internal/repository"
 	"time"
 )
 
 type FIFService interface {
 	FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult
 	PeakHoldingDifferential(
-		holdingInfo FDRHoldingQuantity,
-		trades []FDRTradeActivity) PeakDifferentialResult
-	RealGain(trades []FDRTradeActivity) RealGainResult
+		holdingInfo FIFHoldingQuantity,
+		trades []FIFTradeActivity) PeakDifferentialResult
+	RealGain(trades []FIFTradeActivity) RealGainResult
 	QuickSaleAdjustment(peakDifferential PeakDifferentialResult, realGain RealGainResult) QuickSaleAdjustmentResult
-}
-
-type HoldingID int
-
-type FIFRepository interface {
-	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FDRHoldingQuantity
-	GetTrades(holdingsIDs []HoldingID, startDate time.Time, endDate time.Time) map[HoldingID][]FDRTradeActivity
-}
-
-type FDRHoldingQuantity struct {
-	Quantity float64
-	Name     string
-	Symbol   string
-}
-
-type FDRTradeActivity struct {
-	Date         time.Time
-	Action       string
-	Quantity     float64
-	Price        float64
-	ExchangeRate float64
-	AmountInNZD  float64
 }
 
 type FIFCalculationService struct {
@@ -62,13 +41,13 @@ type FDRHoldingInput struct {
 	HoldingID         HoldingID
 }
 
+const fdrRate = 0.05
+
 func NewFIFService(repo FIFRepository) FIFService {
 	return FIFCalculationService{
 		repository: repo,
 	}
 }
-
-const fdrRate = 0.05
 
 func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, endDate time.Time) FDRResult {
 	// 1. Get all the holding IDs that need to be computed
@@ -138,8 +117,8 @@ type PeakDifferentialResult struct {
 }
 
 func (s FIFCalculationService) PeakHoldingDifferential(
-	holdingInfo FDRHoldingQuantity,
-	trades []FDRTradeActivity) PeakDifferentialResult {
+	holdingInfo FIFHoldingQuantity,
+	trades []FIFTradeActivity) PeakDifferentialResult {
 
 	peakQuantity := holdingInfo.Quantity
 	currentQuantity := holdingInfo.Quantity
@@ -198,7 +177,7 @@ type GainOnSale struct {
 	CostOfAcquisition float64
 }
 
-func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResult {
+func (s FIFCalculationService) RealGain(trades []FIFTradeActivity) RealGainResult {
 	type BuyActivity struct {
 		quantity     float64
 		price        float64
