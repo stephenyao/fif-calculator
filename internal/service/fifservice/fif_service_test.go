@@ -173,12 +173,13 @@ func TestFDRIncome(t *testing.T) {
 					OpeningValue: 200000,
 					QuickSaleAdjustment: QuickSaleAdjustmentResult{
 						PeakDifferentialResult: PeakDifferentialResult{
-							PeakQuantity:  15000,
-							QuantityStart: 10000,
-							QuantityEnd:   13000,
-							AverageCost:   22,
-							Result:        2200,
-							TimeStamp:     time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+							PeakQuantity:     15000,
+							PeakDifferential: 2000,
+							QuantityStart:    10000,
+							QuantityEnd:      13000,
+							AverageCost:      22,
+							Result:           2200,
+							TimeStamp:        time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 						},
 						RealGainResult: RealGainResult{
 							Sales: []GainOnSale{
@@ -220,12 +221,13 @@ func TestPeakDifferential(t *testing.T) {
 				Symbol:   "XYZ",
 			}, trades: buySellActivities(),
 			want: PeakDifferentialResult{
-				PeakQuantity:  15000,
-				QuantityStart: 10000,
-				QuantityEnd:   13000,
-				AverageCost:   22,
-				Result:        2200,
-				TimeStamp:     time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+				PeakQuantity:     15000,
+				PeakDifferential: 2000,
+				QuantityStart:    10000,
+				QuantityEnd:      13000,
+				AverageCost:      22,
+				Result:           2200,
+				TimeStamp:        time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			},
 		}, {
 			name: "no trade activity throughout period",
@@ -296,7 +298,7 @@ func TestRealGain(t *testing.T) {
 			want: RealGainResult{
 				Sales: []GainOnSale{
 					{
-						Quantity:          10000,
+						Quantity:          9000,
 						Gain:              -12000,
 						CostOfAcquisition: 210000,
 					},

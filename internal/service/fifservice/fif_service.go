@@ -128,12 +128,13 @@ func (s FIFCalculationService) QuickSaleAdjustment(peakDifferential PeakDifferen
 }
 
 type PeakDifferentialResult struct {
-	PeakQuantity  float64
-	QuantityStart float64
-	QuantityEnd   float64
-	AverageCost   float64
-	Result        float64
-	TimeStamp     time.Time
+	PeakQuantity     float64
+	PeakDifferential float64
+	QuantityStart    float64
+	QuantityEnd      float64
+	AverageCost      float64
+	Result           float64
+	TimeStamp        time.Time
 }
 
 func (s FIFCalculationService) PeakHoldingDifferential(
@@ -176,12 +177,13 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 	averageCost := totalBuyAmount / totalBuyQuantity
 
 	return PeakDifferentialResult{
-		PeakQuantity:  peakQuantity,
-		QuantityStart: holdingInfo.Quantity,
-		QuantityEnd:   currentQuantity,
-		AverageCost:   averageCost,
-		Result:        averageCost * fdrRate * peakDifferential,
-		TimeStamp:     peakDate,
+		PeakQuantity:     peakQuantity,
+		PeakDifferential: peakDifferential,
+		QuantityStart:    holdingInfo.Quantity,
+		QuantityEnd:      currentQuantity,
+		AverageCost:      averageCost,
+		Result:           averageCost * fdrRate * peakDifferential,
+		TimeStamp:        peakDate,
 	}
 }
 
@@ -243,9 +245,10 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 			}
 
 			gainOnSale := (trade.Quantity-sellQuantity)*trade.Price*trade.ExchangeRate - costOfAcquisition
+			matchedQuantity := trade.Quantity - sellQuantity
 			totalGain += gainOnSale
 			sale := GainOnSale{
-				Quantity:          trade.Quantity,
+				Quantity:          matchedQuantity,
 				Gain:              gainOnSale,
 				CostOfAcquisition: costOfAcquisition,
 			}
