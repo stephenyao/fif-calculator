@@ -295,16 +295,7 @@ func TestRealGain(t *testing.T) {
 		}, {
 			name:   "buy activity not big enough for sell activity",
 			trades: sellQuantityGreaterThanBuy(),
-			want: RealGainResult{
-				Sales: []GainOnSale{
-					{
-						Quantity:          9000,
-						Gain:              -12000,
-						CostOfAcquisition: 210000,
-					},
-				},
-				Result: -12000,
-			},
+			want:   RealGainResult{},
 		}, {
 			name:   "multiple buy and sells should drain first buy in the queue",
 			trades: buyQuantityGreaterThanSell(),
@@ -331,6 +322,24 @@ func TestRealGain(t *testing.T) {
 			name:   "no buy activities",
 			trades: noBuyActivities(),
 			want:   RealGainResult{},
+		}, {
+			name:   "sell at loss",
+			trades: sellAtLossActivities(),
+			want:   RealGainResult{},
+		},
+		{
+			name:   "sell at loss then profit",
+			trades: sellAtLossThenProfit(),
+			want: RealGainResult{
+				Sales: []GainOnSale{
+					{
+						Quantity:          4000,
+						Gain:              112000,
+						CostOfAcquisition: 88000,
+					},
+				},
+				Result: 112000,
+			},
 		},
 	}
 
@@ -460,6 +469,80 @@ func noBuyActivities() []FDRTradeActivity {
 			Price:        25,
 			ExchangeRate: 1,
 			AmountInNZD:  100000,
+		},
+	}
+}
+
+func sellAtLossActivities() []FDRTradeActivity {
+	return []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     4000,
+			Price:        10,
+			ExchangeRate: 1,
+			AmountInNZD:  40000,
+		},
+		{
+			Date:         time.Date(2024, 12, 10, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 22, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     4000,
+			Price:        10,
+			ExchangeRate: 1,
+			AmountInNZD:  40000,
+		},
+	}
+}
+
+func sellAtLossThenProfit() []FDRTradeActivity {
+	return []FDRTradeActivity{
+		{
+			Date:         time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     4000,
+			Price:        10,
+			ExchangeRate: 1,
+			AmountInNZD:  40000,
+		},
+		{
+			Date:         time.Date(2024, 12, 10, 0, 0, 0, 0, time.UTC),
+			Action:       "buy",
+			Quantity:     5000,
+			Price:        22,
+			ExchangeRate: 1,
+			AmountInNZD:  110000,
+		},
+		{
+			Date:         time.Date(2024, 12, 22, 0, 0, 0, 0, time.UTC),
+			Action:       "sell",
+			Quantity:     4000,
+			Price:        50,
+			ExchangeRate: 1,
+			AmountInNZD:  200000,
 		},
 	}
 }

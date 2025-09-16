@@ -245,6 +245,11 @@ func (s FIFCalculationService) RealGain(trades []FDRTradeActivity) RealGainResul
 			}
 
 			gainOnSale := (trade.Quantity-sellQuantity)*trade.Price*trade.ExchangeRate - costOfAcquisition
+
+			if gainOnSale <= 0 {
+				continue
+			}
+
 			matchedQuantity := trade.Quantity - sellQuantity
 			totalGain += gainOnSale
 			sale := GainOnSale{
