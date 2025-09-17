@@ -3,24 +3,10 @@ package repository
 import (
 	"database/sql"
 	"fif-calculator/internal/model"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"testing"
 	"time"
 )
-
-func setupTestDB(t *testing.T) *sqlx.DB {
-	t.Helper()
-
-	db, err := sqlx.Open("sqlite3", "file::memory:?cache=shared&_foreign_keys=on")
-	if err != nil {
-		t.Fatalf("open sqlite: %v", err)
-	}
-	InitSchema(db)
-
-	t.Cleanup(func() { _ = db.Close() })
-	return db
-}
 
 const userID = "1"
 

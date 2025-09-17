@@ -56,6 +56,7 @@ func InitSchema(db *sqlx.DB) {
 
 	-- Index for quick lookups
 	CREATE INDEX IF NOT EXISTS idx_fif_holdings_calculation ON fif_holdings(fif_calculation_id);
+	CREATE INDEX IF NOT EXISTS idx_trades_holding_date ON trades(holding_id, buy_date);
 	`
 	_, err := db.Exec(schema)
 	if err != nil {
