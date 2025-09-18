@@ -141,8 +141,6 @@ func (s FIFCalculationService) PeakHoldingDifferential(
 			peakQuantity = currentQuantity
 			peakDate = trade.Date
 		}
-
-		//peakQuantity = max(peakQuantity, currentQuantity)
 	}
 
 	if totalBuyQuantity == 0 || totalSellQuantity == 0 {
