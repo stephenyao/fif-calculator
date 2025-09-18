@@ -33,6 +33,11 @@ func TestFIFRepository(t *testing.T) {
 					Name:     "Google",
 					Symbol:   "GOOG",
 				},
+				2: {
+					Quantity: 0,
+					Name:     "Apple",
+					Symbol:   "APPL",
+				},
 			},
 		},
 		{
@@ -81,6 +86,11 @@ func TestFIFRepository(t *testing.T) {
 			holdingIDs: []HoldingID{1, 2},
 			upUntil:    cutoff,
 			want: map[HoldingID]FIFHoldingQuantity{
+				1: {
+					Quantity: 0,
+					Name:     "Google",
+					Symbol:   "GOOG",
+				},
 				2: {
 					Quantity: 0,
 					Name:     "Apple",
