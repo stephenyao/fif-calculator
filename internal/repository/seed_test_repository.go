@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/jmoiron/sqlx"
 	"testing"
+
+	"github.com/jmoiron/sqlx"
 )
 
 func setupTestDB(t *testing.T) *sqlx.DB {
@@ -66,9 +67,9 @@ func insertTradesMultipleHoldings(t *testing.T, db *sqlx.DB) {
 	`
 
 	_, err := db.Exec(query, "1", "2024-08-08", 100, 100, 1.6, "buy")
-	_, err = db.Exec(query, "1", "2024-09-08", 50, 200, 1.6, "sell")
+	_, err = db.Exec(query, "1", "2024-09-08", 30, 200, 1.6, "sell")
 	_, err = db.Exec(query, "1", "2024-09-09", 50, 200, 1.6, "buy")
-	_, err = db.Exec(query, "1", "2024-09-10", 50, 200, 1.6, "sell")
+	_, err = db.Exec(query, "1", "2024-09-10", 20, 200, 1.6, "sell")
 	_, err = db.Exec(query, "1", "2024-09-11", 50, 200, 1.6, "buy")
 	_, err = db.Exec(query, "1", "2024-09-12", 50, 200, 1.6, "buy")
 

@@ -2,8 +2,9 @@ package repository
 
 import (
 	"fif-calculator/internal/constants"
-	"github.com/jmoiron/sqlx"
 	"time"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type HoldingID int
@@ -71,9 +72,8 @@ func (r FIFSQLRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil 
 		case constants.Buy:
 			holdingQuantitiesMap[holdingID] += activity.Quantity
 		case constants.Sell:
-			newQty := holdingQuantitiesMap[holdingID] - activity.Quantity
-			holdingQuantitiesMap[holdingID] -= newQty
-			holdingQuantitiesMap[holdingID] = max(0, newQty)
+			newQty := max(0, holdingQuantitiesMap[holdingID]-activity.Quantity)
+			holdingQuantitiesMap[holdingID] = newQty
 		}
 	}
 

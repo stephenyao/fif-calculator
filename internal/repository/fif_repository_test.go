@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"github.com/jmoiron/sqlx"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/jmoiron/sqlx"
 )
 
 func TestFIFRepository(t *testing.T) {
@@ -50,7 +51,7 @@ func TestFIFRepository(t *testing.T) {
 			upUntil:    cutoff,
 			want: map[HoldingID]FIFHoldingQuantity{
 				1: {
-					Quantity: 150,
+					Quantity: 200,
 					Name:     "Google",
 					Symbol:   "GOOG",
 				},
@@ -71,7 +72,7 @@ func TestFIFRepository(t *testing.T) {
 			upUntil:    cutoff,
 			want: map[HoldingID]FIFHoldingQuantity{
 				1: {
-					Quantity: 150,
+					Quantity: 200,
 					Name:     "Google",
 					Symbol:   "GOOG",
 				},
