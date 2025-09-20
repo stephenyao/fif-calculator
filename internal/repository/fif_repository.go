@@ -10,7 +10,7 @@ import (
 type HoldingID int
 
 type FIFRepository interface {
-	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FIFHoldingQuantity
+	GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) (map[HoldingID]FIFHoldingQuantity, error)
 	GetTrades(holdingsIDs []HoldingID, startDate time.Time, endDate time.Time) map[HoldingID][]FIFTradeActivity
 }
 
@@ -22,11 +22,11 @@ type FIFHoldingQuantity struct {
 
 type FIFTradeActivity struct {
 	Date         time.Time
-	Action       string  `db:"action"`
-	Quantity     float64 `db:"quantity"`
-	Price        float64 `db:"price"`
-	ExchangeRate float64 `db:"exchange_rate"`
-	HoldingID    int     `db:"holding_id"`
+	Action       string
+	Quantity     float64
+	Price        float64
+	ExchangeRate float64
+	HoldingID    int
 	AmountInNZD  float64
 }
 
@@ -53,21 +53,26 @@ func NewFIFSQLRepository(db *sqlx.DB) FIFRepository {
 	return &FIFSQLRepository{db: db}
 }
 
-func (r FIFSQLRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FIFHoldingQuantity {
+func (r *FIFSQLRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) (map[HoldingID]FIFHoldingQuantity, error) {
 	results := make(map[HoldingID]FIFHoldingQuantity)
-	holdingActivities := make(map[HoldingID]bool)
-	holdings, err := r.fetchHoldings(holdingsIDs)
-	activities, err := r.fetchActivities(holdingsIDs, upUntil)
+	if len(holdingsIDs) == 0 {
+		return results, nil
+	}
 
+	holdings, err := r.fetchHoldings(holdingsIDs)
 	if err != nil {
-		panic(err)
+		return nil, err
+	}
+
+	activities, err := r.fetchActivities(holdingsIDs, upUntil)
+	if err != nil {
+		return nil, err
 	}
 
 	holdingQuantitiesMap := make(map[HoldingID]float64)
 
 	for _, activity := range activities {
 		holdingID := HoldingID(activity.HoldingID)
-		holdingActivities[holdingID] = true
 		switch activity.Action {
 		case constants.Buy:
 			holdingQuantitiesMap[holdingID] += activity.Quantity
@@ -86,14 +91,14 @@ func (r FIFSQLRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil 
 		}
 	}
 
-	return results
+	return results, nil
 }
 
-func (r FIFSQLRepository) GetTrades(holdingsIDs []HoldingID, startDate time.Time, endDate time.Time) map[HoldingID][]FIFTradeActivity {
+func (r *FIFSQLRepository) GetTrades(holdingsIDs []HoldingID, startDate time.Time, endDate time.Time) map[HoldingID][]FIFTradeActivity {
 	return make(map[HoldingID][]FIFTradeActivity)
 }
 
-func (r FIFSQLRepository) fetchHoldings(holdingIDs []HoldingID) (map[HoldingID]holdingRecord, error) {
+func (r *FIFSQLRepository) fetchHoldings(holdingIDs []HoldingID) (map[HoldingID]holdingRecord, error) {
 	results := make(map[HoldingID]holdingRecord)
 
 	query := `
@@ -122,7 +127,7 @@ func (r FIFSQLRepository) fetchHoldings(holdingIDs []HoldingID) (map[HoldingID]h
 	return results, nil
 }
 
-func (r FIFSQLRepository) fetchActivities(holdingsIDs []HoldingID, upUntil time.Time) ([]fifHoldingActivityRecord, error) {
+func (r *FIFSQLRepository) fetchActivities(holdingsIDs []HoldingID, upUntil time.Time) ([]fifHoldingActivityRecord, error) {
 	timeStr := upUntil.Format(time.DateOnly)
 
 	base := `
@@ -130,7 +135,6 @@ func (r FIFSQLRepository) fetchActivities(holdingsIDs []HoldingID, upUntil time.
 		    trades.action, trades.quantity, trades.price, trades.exchange_rate, trades.holding_id		    
 		FROM
 		    trades
-		JOIN holdings ON trades.holding_id = holdings.id
 		WHERE buy_date <= ? AND holding_id IN (?)
 		ORDER BY buy_date ASC;
 	`

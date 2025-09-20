@@ -94,6 +94,17 @@ func insertTradesNegativeQuantity(t *testing.T, db *sqlx.DB) {
 	}
 }
 
-func deleteTrades() {
+func insertOnlySellTrades(t *testing.T, db *sqlx.DB) {
+	query := `
+		INSERT INTO trades (holding_id, buy_date, quantity, price, exchange_rate, action)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+	_, err := db.Exec(query, "1", "2024-08-08", 100, 100, 1.6, "sell")
+	_, err = db.Exec(query, "1", "2024-09-08", 10000, 200, 1.6, "sell")
+	_, err = db.Exec(query, "2", "2024-08-08", 100, 100, 1.6, "sell")
+	_, err = db.Exec(query, "2", "2024-09-08", 10000, 200, 1.6, "sell")
 
+	if err != nil {
+		t.Fatalf("insert trades error: %v", err)
+	}
 }

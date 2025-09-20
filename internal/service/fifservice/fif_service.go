@@ -58,7 +58,12 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 
 	// 2. Get the quantity for each holding at the start date
 
-	holdings := s.repository.GetHoldingQuantities(holdingIDs, startDate)
+	holdings, err := s.repository.GetHoldingQuantities(holdingIDs, startDate)
+
+	if err != nil {
+		panic(err)
+	}
+
 	activities := s.repository.GetTrades(holdingIDs, startDate, endDate)
 
 	// 3. For each holding calculate the FDR (5% * opening market value)

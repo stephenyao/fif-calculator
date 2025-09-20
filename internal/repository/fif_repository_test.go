@@ -42,6 +42,26 @@ func TestFIFRepository(t *testing.T) {
 			},
 		},
 		{
+			name: "only sell trades",
+			seed: func(t *testing.T, db *sqlx.DB) {
+				insertHoldings(t, db)
+				insertOnlySellTrades(t, db)
+			},
+			holdingIDs: []HoldingID{1, 2},
+			want: map[HoldingID]FIFHoldingQuantity{
+				1: {
+					Quantity: 0,
+					Name:     "Google",
+					Symbol:   "GOOG",
+				},
+				2: {
+					Quantity: 0,
+					Name:     "Apple",
+					Symbol:   "APPL",
+				},
+			},
+		},
+		{
 			name: "multiple holdings",
 			seed: func(t *testing.T, db *sqlx.DB) {
 				insertHoldings(t, db)
@@ -99,6 +119,16 @@ func TestFIFRepository(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "no holding ids",
+			seed: func(t *testing.T, db *sqlx.DB) {
+				insertHoldings(t, db)
+				insertTradesNegativeQuantity(t, db)
+			},
+			holdingIDs: []HoldingID{},
+			upUntil:    cutoff,
+			want:       map[HoldingID]FIFHoldingQuantity{},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -106,7 +136,11 @@ func TestFIFRepository(t *testing.T) {
 			db := setupTestDB(t)
 			tc.seed(t, db)
 			repo := NewFIFSQLRepository(db)
-			got := repo.GetHoldingQuantities(tc.holdingIDs, tc.upUntil)
+			got, err := repo.GetHoldingQuantities(tc.holdingIDs, tc.upUntil)
+
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			if !reflect.DeepEqual(tc.want, got) {
 				t.Errorf("got %v, want %v", got, tc.want)
