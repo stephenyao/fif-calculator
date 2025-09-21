@@ -108,3 +108,30 @@ func insertOnlySellTrades(t *testing.T, db *sqlx.DB) {
 		t.Fatalf("insert trades error: %v", err)
 	}
 }
+
+func insertSingleTrade(t *testing.T, db *sqlx.DB) {
+	query := `
+		INSERT INTO trades (holding_id, buy_date, quantity, price, exchange_rate, action)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+
+	_, err := db.Exec(query, "1", "2024-08-08", 100, 100, 1.6, "sell")
+
+	if err != nil {
+		t.Fatalf("insert trades error: %v", err)
+	}
+}
+
+func insertTradesOutsideDate(t *testing.T, db *sqlx.DB) {
+	query := `
+		INSERT INTO trades (holding_id, buy_date, quantity, price, exchange_rate, action)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+	_, err := db.Exec(query, "1", "2024-07-01", 100, 100, 1.6, "sell")
+	_, err = db.Exec(query, "1", "2024-08-08", 100, 100, 1.6, "sell")
+	_, err = db.Exec(query, "1", "2024-09-01", 100, 100, 1.6, "sell")
+
+	if err != nil {
+		t.Fatalf("insert trades error: %v", err)
+	}
+}
