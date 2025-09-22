@@ -27,7 +27,6 @@ type FIFTradeActivity struct {
 	Price        float64
 	ExchangeRate float64
 	HoldingID    int
-	AmountInNZD  float64
 }
 
 type fifHoldingActivityRecord struct {
