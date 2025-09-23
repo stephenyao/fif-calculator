@@ -2,18 +2,22 @@ package fifhandler
 
 import (
 	"fif-calculator/internal/repository"
+	"fif-calculator/internal/service/fifservice"
 	"fif-calculator/views/fif"
-	"github.com/jmoiron/sqlx"
 	"net/http"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type FIFHandler struct {
 	TradeRepository repository.TradeRepository
+	Service         fifservice.FIFService
 }
 
 func NewFIFHandler(db *sqlx.DB) *FIFHandler {
 	return &FIFHandler{
 		TradeRepository: repository.NewTradeRepository(db),
+		Service:         fifservice.NewFIFService(repository.NewFIFSQLRepository(db)),
 	}
 }
 

@@ -2,10 +2,12 @@ package fifhandler
 
 import (
 	"fif-calculator/internal/model"
+	"fif-calculator/internal/repository"
 	"fif-calculator/internal/service/fifservice"
 	"fif-calculator/internal/utils"
 	. "fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -45,6 +47,7 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 	}
 
 	holdings, err := fifservice.ComputeHoldingsBetween(trades, year)
+	var fdrInputs []fifservice.FDRHoldingInput
 
 	for _, hq := range holdings {
 		priceStartStr := r.FormValue("price_start_" + hq.Symbol)
@@ -63,7 +66,23 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 		gainLossParams, _ := getGainLossParams(hq.Symbol, r)
 
 		hq.GainLoss = gainLossParams
+
+		fdrInputs = append(fdrInputs, fifservice.FDRHoldingInput{
+			OpeningPrice:      priceStart,
+			ExchangeRateToNZD: priceStartEx,
+			HoldingID:         repository.HoldingID(hq.HoldingId),
+		})
 	}
+
+	fdrInput := fifservice.FDRInput{Holdings: fdrInputs}
+	//fdrIncome := fifservice
+	results := h.Service.FDRIncome(fdrInput, startDate, endDate)
+	var income float64
+	for _, result := range results.Holdings {
+		income += result.Income
+	}
+
+	fmt.Printf("===FINAL INCOME: %f", income)
 
 	frdResults, err := fifservice.ComputeFRDIncome(trades, holdings, startDate, endDate)
 	var totalFDR float64 = 0

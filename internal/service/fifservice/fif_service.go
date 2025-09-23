@@ -20,7 +20,8 @@ type FIFCalculationService struct {
 }
 
 type FDRResult struct {
-	Holdings []FDRHoldingResult
+	Holdings    []FDRHoldingResult
+	TotalIncome float64
 }
 
 type FDRHoldingResult struct {
@@ -94,6 +95,7 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 			Income:              openingValue*fdrRate + quickSales.Result,
 		}
 		result.Holdings = append(result.Holdings, r)
+		result.TotalIncome += r.Income
 	}
 
 	return result

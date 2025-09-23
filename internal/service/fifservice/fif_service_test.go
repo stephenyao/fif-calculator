@@ -13,12 +13,12 @@ type MockFIFRepository struct {
 	tradeActivities   map[HoldingID][]FIFTradeActivity
 }
 
-func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) map[HoldingID]FIFHoldingQuantity {
-	return r.holdingQuantities
+func (r MockFIFRepository) GetHoldingQuantities(holdingsIDs []HoldingID, upUntil time.Time) (map[HoldingID]FIFHoldingQuantity, error) {
+	return r.holdingQuantities, nil
 }
 
-func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Time) map[HoldingID][]FIFTradeActivity {
-	return r.tradeActivities
+func (r MockFIFRepository) GetTrades(holdingsIDs []HoldingID, start, end time.Time) (map[HoldingID][]FIFTradeActivity, error) {
+	return r.tradeActivities, nil
 }
 
 func TestQuickSaleAdjustment(t *testing.T) {
@@ -131,6 +131,7 @@ func TestFDRIncome(t *testing.T) {
 					Income:              3000,
 				},
 			},
+			TotalIncome: 4500,
 		}
 
 		if !reflect.DeepEqual(got, want) {
@@ -197,6 +198,7 @@ func TestFDRIncome(t *testing.T) {
 					Income: 12200,
 				},
 			},
+			TotalIncome: 12200,
 		}
 
 		if !reflect.DeepEqual(got, want) {
@@ -366,7 +368,6 @@ func buySellActivities() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -374,7 +375,6 @@ func buySellActivities() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  100000,
 		},
 		{
 			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
@@ -382,7 +382,6 @@ func buySellActivities() []FIFTradeActivity {
 			Quantity:     2000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  44000,
 		},
 	}
 }
@@ -395,7 +394,6 @@ func sellQuantityGreaterThanBuy() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -403,7 +401,6 @@ func sellQuantityGreaterThanBuy() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  100000,
 		},
 		{
 			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
@@ -411,7 +408,6 @@ func sellQuantityGreaterThanBuy() []FIFTradeActivity {
 			Quantity:     10000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  220000,
 		},
 	}
 }
@@ -424,7 +420,6 @@ func buyQuantityGreaterThanSell() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -432,7 +427,6 @@ func buyQuantityGreaterThanSell() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  100000,
 		},
 		{
 			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
@@ -440,7 +434,6 @@ func buyQuantityGreaterThanSell() []FIFTradeActivity {
 			Quantity:     3000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  75000,
 		},
 		{
 			Date:         time.Date(2024, 12, 23, 0, 0, 0, 0, time.UTC),
@@ -448,7 +441,6 @@ func buyQuantityGreaterThanSell() []FIFTradeActivity {
 			Quantity:     3000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  75000,
 		},
 	}
 }
@@ -461,7 +453,6 @@ func noBuyActivities() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -469,7 +460,6 @@ func noBuyActivities() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  100000,
 		},
 	}
 }
@@ -482,7 +472,6 @@ func sellAtLossActivities() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -490,7 +479,6 @@ func sellAtLossActivities() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        10,
 			ExchangeRate: 1,
-			AmountInNZD:  40000,
 		},
 		{
 			Date:         time.Date(2024, 12, 10, 0, 0, 0, 0, time.UTC),
@@ -498,7 +486,6 @@ func sellAtLossActivities() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 22, 0, 0, 0, 0, time.UTC),
@@ -506,7 +493,6 @@ func sellAtLossActivities() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        10,
 			ExchangeRate: 1,
-			AmountInNZD:  40000,
 		},
 	}
 }
@@ -519,7 +505,6 @@ func sellAtLossThenProfit() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -527,7 +512,6 @@ func sellAtLossThenProfit() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        10,
 			ExchangeRate: 1,
-			AmountInNZD:  40000,
 		},
 		{
 			Date:         time.Date(2024, 12, 10, 0, 0, 0, 0, time.UTC),
@@ -535,7 +519,6 @@ func sellAtLossThenProfit() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 22, 0, 0, 0, 0, time.UTC),
@@ -543,7 +526,6 @@ func sellAtLossThenProfit() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        50,
 			ExchangeRate: 1,
-			AmountInNZD:  200000,
 		},
 	}
 }
@@ -556,7 +538,6 @@ func noSellActivities() []FIFTradeActivity {
 			Quantity:     5000,
 			Price:        22,
 			ExchangeRate: 1,
-			AmountInNZD:  110000,
 		},
 		{
 			Date:         time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC),
@@ -564,7 +545,6 @@ func noSellActivities() []FIFTradeActivity {
 			Quantity:     4000,
 			Price:        25,
 			ExchangeRate: 1,
-			AmountInNZD:  100000,
 		},
 	}
 }
