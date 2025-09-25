@@ -25,6 +25,14 @@ templ BackLink(link, t string) {
 	</a>
 }
 
+templ Back(t string) {
+	<a href="javascript:void(0)"
+	   onclick="window.history.back()"
+	   class="text-blue-600 underline cursor-pointer">
+		← Back to { t }
+	</a>
+}
+
 templ SelectableButton(t string, fn string, data string) {
 	<button
 		type="button"

@@ -5,13 +5,21 @@ import . "fif-calculator/internal/model"
 import . "fif-calculator/views"
 
 templ RenderHoldingDetail(holding *HoldingInfo, year int) {
-	<form
-		hx-post="/fif/calculate"
-		hx-swap="innerHTML"
-		class="space-y-6"
-		id="fif-form"
-	>
+	<form method="POST" action="/fif/calculate" class="space-y-6" id="fif-form">
 		@HoldingPanel(holding, year)
+			<div id="calculate-btn" class="hidden">
+        		@Section() {
+        			<button
+        				type="submit"
+        				name="action"
+        				value="calculate"
+        				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
+                               dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
+        			>
+        				Calculate FIF
+        			</button>
+        		}
+        	</div>
 	</form>
 }
 
@@ -43,24 +51,6 @@ templ HoldingsInputForm(holdings []*HoldingInfo, year int) {
 	@Section() {
 		@RenderHoldingDetail(holdings[0], year)
 	}
-	<div id="calculate-btn" class="hidden">
-		@Section() {
-			<button
-				type="button"
-				hx-post="/fif/calculate"
-				hx-vals="js:{...window.buildFIFSubmission()}"
-				hx-include="#fif-form"
-				hx-target="#fif-result"
-				hx-swap="innerHTML"
-				name="action"
-				value="calculate"
-				class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors
-                       dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus:ring-blue-400 dark:focus:ring-offset-gray-900"
-			>
-				Calculate FIF
-			</button>
-		}
-	</div>
 }
 
 templ InitializeClientSideScripts(data []*HoldingInfo) {

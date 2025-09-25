@@ -75,14 +75,9 @@ func (h *FIFHandler) calculateFIF(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fdrInput := fifservice.FDRInput{Holdings: fdrInputs}
-	//fdrIncome := fifservice
 	results := h.Service.FDRIncome(fdrInput, startDate, endDate)
-	var income float64
-	for _, result := range results.Holdings {
-		income += result.Income
-	}
 
-	fmt.Printf("===FINAL INCOME: %f", income)
+	fmt.Printf("===FINAL INCOME: %f", results.TotalIncome)
 
 	frdResults, err := fifservice.ComputeFRDIncome(trades, holdings, startDate, endDate)
 	var totalFDR float64 = 0
