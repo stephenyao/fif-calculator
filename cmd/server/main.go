@@ -80,7 +80,7 @@ func main() {
 		protected.Get("/fif", fifHandler.Index)
 		protected.Get("/fif/start", fifHandler.New)
 		protected.Get("/fif/holding/{id}/year/{year}", fifHandler.GetHolding)
-		protected.Post("/fif/start", fifHandler.HoldingsInfo)
+		protected.Post("/fif/showHoldings", fifHandler.ShowHoldings)
 		protected.Post("/fif/calculate", fifHandler.ShowCalculation)
 
 		protected.Get("/holdings/new", holdingsHandler.New)

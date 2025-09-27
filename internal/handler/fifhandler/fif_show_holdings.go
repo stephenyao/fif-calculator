@@ -6,10 +6,11 @@ import (
 	"fif-calculator/internal/utils"
 	"fif-calculator/internal/viewmodel"
 	"fif-calculator/views/fif"
-	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func (h *FIFHandler) GetHolding(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +52,7 @@ func (h *FIFHandler) GetHolding(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *FIFHandler) HoldingsInfo(w http.ResponseWriter, r *http.Request) {
+func (h *FIFHandler) ShowHoldings(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Could not parse start fif form", http.StatusInternalServerError)

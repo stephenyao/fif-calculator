@@ -1,0 +1,66 @@
+package fif
+
+import . "fif-calculator/internal/viewmodel"
+import "fmt"
+
+templ RenderFIFResult(vm FIFCalculationViewModel) {
+	<div>
+		<h4 class="text-lg font-semibold mb-3">
+			FIF Calculation Results for { vm.Year - 1 }–{ vm.Year }
+		</h4>
+		<!-- FDR Results Table -->
+		<h5 class="text-md font-semibold mt-4 mb-2">Fair Dividend Rate (FDR) Method</h5>
+		<table class="w-full text-left border-collapse mb-6">
+			<thead>
+				<tr class="border-b">
+					<th class="py-1" scope="col">Symbol</th>
+					<th class="py-1 text-right" scope="col">Start Value (NZD)</th>
+					<th class="py-1 text-right" scope="col">Quick sale adjustment</th>
+					<th class="py-1 text-right" scope="col">FDR Income</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, r := range vm.FDRResults {
+					<tr class="border-t">
+						<td>{ r.Symbol }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.StartValue) }</td>
+						<td clwass="text-right font-semibold text-blue-700">{ fmt.Sprintf("%.2f", r.QuickSaleAdjustment) }</td>
+						<td class="text-right font-semibold text-blue-700">{ fmt.Sprintf("%.2f", r.TotalFDRIncome()) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="text-right font-bold text-lg mb-6">
+			Total FIF Income (FDR): <span class="text-green-700">{ fmt.Sprintf("NZ$%.2f", vm.TotalFDR) }</span>
+		</div>
+		<!-- CV Results Table -->
+		<h5 class="text-md font-semibold mt-4 mb-2">Comparative Value (CV) Method</h5>
+		<table class="w-full text-left border-collapse mb-6">
+			<thead>
+				<tr class="border-b">
+					<th class="py-1" scope="col">Symbol</th>
+					<th class="py-1 text-right" scope="col">Opening Value (NZD)</th>
+					<th class="py-1 text-right" scope="col">Closing Value (NZD)</th>
+					<th class="py-1 text-right" scope="col">Gains</th>
+					<th class="py-1 text-right" scope="col">Costs</th>
+					<th class="py-1 text-right" scope="col">CV Income</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, r := range vm.CVResults {
+					<tr class="border-t">
+						<td>{ r.Symbol }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.OpeningValue) }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.ClosingValue) }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.Gains) }</td>
+						<td class="text-right">{ fmt.Sprintf("%.2f", r.Costs) }</td>
+						<td class="text-right font-semibold text-purple-700">{ fmt.Sprintf("%.2f", (r.ClosingValue + r.Gains) - (r.OpeningValue + r.Costs)) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="text-right font-bold text-lg">
+			Total FIF Income (CV): <span class="text-purple-700">{ fmt.Sprintf("NZ$%.2f", vm.TotalCV) }</span>
+		</div>
+	</div>
+}
