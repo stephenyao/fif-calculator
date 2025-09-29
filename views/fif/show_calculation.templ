@@ -4,58 +4,60 @@ import "fif-calculator/internal/service/fifservice"
 import "fmt"
 import . "fif-calculator/views"
 
-templ ShowCalculation(currentPath string, fdrResult fifservice.FDRResult) {
-	@Layout("FIF", currentPath) {
-		@Page() {
-			<div class="mb-4">
-				@Back("FIF")
-			</div>
-			@H2("FIF calculation")
-			for _, holding := range fdrResult.Holdings {
-				@Section() {
-					<div class="space-y-3 text-gray-800 dark:text-gray-100">
-                    	<!-- Heading -->
-                    	<h3 class="text-lg font-semibold">{ holding.Name }</h3>
-
-                    	<!-- Opening value -->
-                    	<div class="flex justify-between text-sm">
-                    		<span class="font-medium">Opening value:</span>
-                    		<span>{ format(holding.OpeningValue) }</span>
-                    	</div>
-
-                    	<!-- Quick sale adjustment block -->
-                    	if holding.QuickSaleAdjustment.Result != 0 {
-                    		<div class="border-l-4 border-blue-400 pl-3 space-y-1">
-                    			<div class="flex justify-between text-sm">
-                    				<span class="font-medium">Quick sale adjustment:</span>
-                    				<span>{ format(holding.QuickSaleAdjustment.Result) }</span>
-                    			</div>
-                    			<div class="flex justify-between text-sm">
-                    				<span class="font-medium">Peak differential:</span>
-                    				<span>{ format(holding.QuickSaleAdjustment.PeakDifferentialResult.Result) }</span>
-                    			</div>
-                    			<div class="flex justify-between text-sm">
-                    				<span class="font-medium">Real gain:</span>
-                    				<span>{ format(holding.QuickSaleAdjustment.RealGainResult.Result) }</span>
-                    			</div>
-                    			<p class="text-xs text-gray-600 dark:text-gray-400 italic">
-                    				Quick sale adjustment is the minimum of the peak differential and real gain
-                    			</p>
-                    		</div>
-                    	}
-
-                    	<!-- FDR income -->
-                    	<div class="flex justify-between text-sm">
-                    		<span class="font-semibold text-blue-600 dark:text-blue-400">FDR Income:</span>
-                    		<span class="font-semibold">{ format(holding.Income) }</span>
-                    	</div>
-                    </div>
+templ ShowCalculation(title string, fdrResult fifservice.FDRResult) {
+	<div class="mb-4">
+		<button
+            type="button"
+            onclick="
+              document.getElementById('fif-result').innerHTML = '';
+              document.getElementById('fif-report-input')?.classList.remove('hidden');
+            "
+            class="text-blue-600 underline cursor-pointer"
+          >
+            ← Back
+          </button>
+	</div>
+	@H2(title)
+	for _, holding := range fdrResult.Holdings {
+		@Section() {
+			<div class="space-y-3 text-gray-800 dark:text-gray-100">
+				<!-- Heading -->
+				<h3 class="text-lg font-semibold">{ holding.Name }</h3>
+				<!-- Opening value -->
+				<div class="flex justify-between text-sm">
+					<span class="font-medium">Opening value:</span>
+					<span>{ format(holding.OpeningValue) }</span>
+				</div>
+				<!-- Quick sale adjustment block -->
+				if holding.QuickSaleAdjustment.Result != 0 {
+					<div class="border-l-4 border-blue-400 pl-3 space-y-1">
+						<div class="flex justify-between text-sm">
+							<span class="font-medium">Quick sale adjustment:</span>
+							<span>{ format(holding.QuickSaleAdjustment.Result) }</span>
+						</div>
+						<div class="flex justify-between text-sm">
+							<span class="font-medium">Peak differential:</span>
+							<span>{ format(holding.QuickSaleAdjustment.PeakDifferentialResult.Result) }</span>
+						</div>
+						<div class="flex justify-between text-sm">
+							<span class="font-medium">Real gain:</span>
+							<span>{ format(holding.QuickSaleAdjustment.RealGainResult.Result) }</span>
+						</div>
+						<p class="text-xs text-gray-600 dark:text-gray-400 italic">
+							Quick sale adjustment is the minimum of the peak differential and real gain
+						</p>
+					</div>
 				}
-			}
-			@Section() {
-				Total FDR income: { fdrResult.TotalIncome }
-			}
+				<!-- FDR income -->
+				<div class="flex justify-between text-sm">
+					<span class="font-semibold text-blue-600 dark:text-blue-400">FDR Income:</span>
+					<span class="font-semibold">{ format(holding.Income) }</span>
+				</div>
+			</div>
 		}
+	}
+	@Section() {
+		Total FDR income: { fdrResult.TotalIncome }
 	}
 }
 

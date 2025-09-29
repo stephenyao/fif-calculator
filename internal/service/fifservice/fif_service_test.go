@@ -132,6 +132,7 @@ func TestFDRIncome(t *testing.T) {
 				},
 			},
 			TotalIncome: 4500,
+			Year:        2021,
 		}
 
 		if !reflect.DeepEqual(got, want) {
@@ -143,7 +144,9 @@ func TestFDRIncome(t *testing.T) {
 		service := NewFIFService(MockFIFRepository{})
 
 		got := service.FDRIncome(input, start, end)
-		want := FDRResult{}
+		want := FDRResult{
+			Year: 2021,
+		}
 
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
@@ -199,6 +202,7 @@ func TestFDRIncome(t *testing.T) {
 				},
 			},
 			TotalIncome: 12200,
+			Year:        2021,
 		}
 
 		if !reflect.DeepEqual(got, want) {

@@ -22,6 +22,7 @@ type FIFCalculationService struct {
 type FDRResult struct {
 	Holdings    []FDRHoldingResult
 	TotalIncome float64
+	Year        int
 }
 
 type FDRHoldingResult struct {
@@ -73,7 +74,9 @@ func (s FIFCalculationService) FDRIncome(input FDRInput, startDate time.Time, en
 
 	// 3. For each holding calculate the FDR (5% * opening market value)
 
-	result := FDRResult{}
+	result := FDRResult{
+		Year: startDate.Year(),
+	}
 	for _, holding := range input.Holdings {
 		info, ok := holdings[holding.HoldingID]
 

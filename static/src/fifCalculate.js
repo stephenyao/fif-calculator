@@ -125,5 +125,10 @@
         return window.fifState;
     };
 
+    window.clearFIFState = function() {
+        window.fifState = {};
+        window.viewedHoldings = {};
+    }
+
     console.log('[FIF] mark-as-done flow with reset-on-input-change initialized');
 })();

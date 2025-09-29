@@ -56,7 +56,7 @@ func Start(currentPath string, vm FIFStartViewModel) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-4\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"fif-report-input\"><div id=\"fif-start\"><div class=\"mb-4\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -90,7 +90,7 @@ func Start(currentPath string, vm FIFStartViewModel) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " <div id=\"holdings-results\" class=\"mt-8\"></div><div id=\"fif-result\" class=\"mt-6\"></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div id=\"holdings-results\" class=\"mt-8\"></div></div><div id=\"fif-result\" class=\"mt-6\"></div><script>\n                document.addEventListener('htmx:afterSwap', (e) => {\n                  // When the server swaps into #fif-result, hide the holdings list\n                    if (e.target && e.target.id === 'fif-result') {\n                        document.getElementById('fif-report-input')?.classList.add('hidden');\n                    }\n                    if (e.target && e.target.id === 'holdings-results') {\n                        document.getElementById('fif-start')?.classList.add('hidden');\n                    }\n                });\n\t\t\t</script>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -6,14 +6,29 @@ import . "fif-calculator/internal/viewmodel"
 templ Start(currentPath string, vm FIFStartViewModel) {
 	@Layout("Start FIF Calculation", currentPath) {
 		@Page() {
-			<div class="mb-4">
-				@H2("Start new calculation")
+			<div id="fif-report-input">
+				<div id="fif-start">
+					<div class="mb-4">
+						@H2("Start new calculation")
+					</div>
+					@Section() {
+						@fifStartPage(vm)
+					}
+				</div>
+				<div id="holdings-results" class="mt-8"></div>
 			</div>
-			@Section() {
-				@fifStartPage(vm)
-			}
-			<div id="holdings-results" class="mt-8"></div>
 			<div id="fif-result" class="mt-6"></div>
+			<script>
+                document.addEventListener('htmx:afterSwap', (e) => {
+                  // When the server swaps into #fif-result, hide the holdings list
+                    if (e.target && e.target.id === 'fif-result') {
+                        document.getElementById('fif-report-input')?.classList.add('hidden');
+                    }
+                    if (e.target && e.target.id === 'holdings-results') {
+                        document.getElementById('fif-start')?.classList.add('hidden');
+                    }
+                });
+			</script>
 		}
 	}
 }

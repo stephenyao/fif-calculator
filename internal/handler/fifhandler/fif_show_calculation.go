@@ -5,6 +5,7 @@ import (
 	"fif-calculator/internal/service/fifservice"
 	"fif-calculator/internal/utils"
 	"fif-calculator/views/fif"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -46,10 +47,10 @@ func (h *FIFHandler) ShowCalculation(w http.ResponseWriter, r *http.Request) {
 		priceStart, _ := strconv.ParseFloat(priceStartStr, 64)
 		priceEnd, _ := strconv.ParseFloat(priceEndStr, 64)
 		priceStartEx, _ := strconv.ParseFloat(priceStartExStr, 64)
-		pricenEndEx, _ := strconv.ParseFloat(priceEndExStr, 64)
+		priceEndEx, _ := strconv.ParseFloat(priceEndExStr, 64)
 
 		hq.OpeningPrice = priceStart * priceStartEx
-		hq.ClosingPrice = priceEnd * pricenEndEx
+		hq.ClosingPrice = priceEnd * priceEndEx
 
 		gainLossParams, _ := getGainLossParams(hq.Symbol, r)
 
@@ -64,8 +65,8 @@ func (h *FIFHandler) ShowCalculation(w http.ResponseWriter, r *http.Request) {
 
 	fdrInput := fifservice.FDRInput{Holdings: fdrInputs}
 	results := h.Service.FDRIncome(fdrInput, startDate, endDate)
-
-	err = fif.ShowCalculation(r.URL.Path, results).Render(r.Context(), w)
+	title := fmt.Sprintf("FIF report for Financial Year %d-%d", year-1, year)
+	err = fif.ShowCalculation(title, results).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
